@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Bill Timeline</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,400;1,6..72,500&family=Public+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f5f7f6;
+      --panel: #fcfdfc;
+      --panel-2: #f0f4f2;
+      --text: #4a5f58;
+      --muted: #7f918a;
+      --sage: #6f8f85;
+      --sage-dark: #5b7a70;
+      --line: #b9c9c2;
+      --shadow: 0 8px 24px rgba(74, 95, 88, 0.08);
+      --card-shadow: 0 6px 18px rgba(74, 95, 88, 0.05);
+      --radius: 16px;
+
+      --card-width: 180px;
+      --card-height: 78px;
+      --axis-pad: 140px;
+      --lane-gap: 14px;
+      --line-thickness: 4px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Public Sans', -apple-system, system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    .page {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 28px 22px 40px;
+    }
+
+    .title {
+      display: none;
+    }
+
+    .timeline-shell {
+      background: rgba(252, 253, 252, 0.78);
+      border: 1px solid #e3ebe7;
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      backdrop-filter: blur(4px);
+    }
+
+    .detail-panel {
+      min-height: 220px;
+      padding: 22px 24px;
+      background: linear-gradient(to bottom, #fbfcfb, #f7faf8);
+      border-bottom: 1px solid #e2ebe6;
+      display: grid;
+      grid-template-columns: 160px 1fr;
+      gap: 22px;
+      align-items: start;
+    }
+
+    .detail-date {
+      background: var(--panel-2);
+      border: 1px solid #dde8e3;
+      border-radius: var(--radius);
+      padding: 16px 14px;
+      color: var(--sage-dark);
+    }
+
+    .detail-date .monthday {
+      font-family: 'Newsreader', Georgia, serif;
+      font-size: 28px;
+      font-weight: 600;
+      font-style: italic;
+      line-height: 1.05;
+      margin-bottom: 6px;
+    }
+
+    .detail-date .year {
+      font-family: 'JetBrains Mono', ui-monospace, monospace;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .detail-main {
+      min-width: 0;
+    }
+
+    .detail-topline {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .group-badge {
+      display: inline-block;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-family: 'JetBrains Mono', ui-monospace, monospace;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.2px;
+      color: var(--sage-dark);
+      background: #e6efeb;
+      border: 1px solid #d3e1da;
+    }
+
+    .event-time {
+      font-family: 'JetBrains Mono', ui-monospace, monospace;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .detail-headline {
+      font-family: 'Newsreader', Georgia, serif;
+      font-size: 24px;
+      line-height: 1.3;
+      margin: 0 0 14px;
+      color: #456258;
+      font-weight: 500;
+    }
+
+    .detail-text {
+      font-size: 15px;
+      line-height: 1.65;
+      color: var(--text);
+      max-width: 820px;
+    }
+
+    .detail-text p {
+      margin: 0 0 10px;
+    }
+
+    .detail-text p:last-child {
+      margin-bottom: 0;
+    }
+
+    .timeline-wrap {
+      position: relative;
+      padding: 18px 18px 16px;
+      background: linear-gradient(to bottom, #f8fbf9, #f4f7f6);
+    }
+
+    .toolbar {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .zoom-group {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #eef4f1;
+      border: 1px solid #d8e5df;
+      padding: 6px;
+      border-radius: 999px;
+    }
+
+    .zoom-readout {
+      min-width: 56px;
+      text-align: center;
+      font-family: 'JetBrains Mono', ui-monospace, monospace;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--sage-dark);
+      letter-spacing: 0.2px;
+    }
+
+    .zoom-btn {
+      width: 30px;
+      height: 30px;
+      border: none;
+      border-radius: 999px;
+      background: #dfe9e4;
+      color: var(--sage-dark);
+      cursor: pointer;
+      font-family: 'Public Sans', system-ui, sans-serif;
+      font-size: 18px;
+      line-height: 1;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.18s ease, transform 0.18s ease;
+    }
+
+    .zoom-btn:hover {
+      background: #d0ddd7;
+      transform: translateY(-1px);
+    }
+
+    .scroller {
+      overflow-x: auto;
+      overflow-y: hidden;
+      padding-bottom: 10px;
+      scroll-behavior: smooth;
+      outline: none;
+    }
+
+    .scroller::-webkit-scrollbar {
+      height: 10px;
+    }
+
+    .scroller::-webkit-scrollbar-track {
+      background: #e7efeb;
+      border-radius: 999px;
+    }
+
+    .scroller::-webkit-scrollbar-thumb {
+      background: #b6c7c0;
+      border-radius: 999px;
+    }
+
+    .timeline {
+      position: relative;
+      min-width: 1200px;
+    }
+
+    .timeline-line {
+      position: absolute;
+      left: 0;
+      right: 0;
+      height: var(--line-thickness);
+      background: linear-gradient(to right, #cad8d2, #b8c8c1, #cad8d2);
+      border-radius: 999px;
+      z-index: 1;
+    }
+
+    .event {
+      position: absolute;
+      width: var(--card-width);
+      height: var(--card-height);
+      transform: translateX(-50%);
+      z-index: 2;
+    }
+
+    .event-card {
+      width: 100%;
+      height: 100%;
+      background: rgba(252, 253, 252, 0.98);
+      border: 1px solid #dbe7e1;
+      border-radius: 16px;
+      padding: 10px 12px 9px;
+      box-shadow: var(--card-shadow);
+      cursor: pointer;
+      transition:
+        border-color 0.18s ease,
+        box-shadow 0.18s ease,
+        background 0.18s ease,
+        transform 0.18s ease;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      row-gap: 6px;
+      min-width: 0;
+      overflow: hidden;
+    }
+
+    .event-card:hover {
+      background: #ffffff;
+      border-color: #bfd0c8;
+      box-shadow: 0 10px 22px rgba(74, 95, 88, 0.08);
+      transform: translateY(-2px);
+    }
+
+    .event.active .event-card {
+      background: #ffffff;
+      border-color: var(--sage);
+      box-shadow: 0 12px 24px rgba(91, 122, 112, 0.14);
+    }
+
+    .event-date {
+      font-family: 'JetBrains Mono', ui-monospace, monospace;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--sage-dark);
+      letter-spacing: 0.2px;
+      white-space: nowrap;
+      min-width: 0;
+    }
+
+    .event-title {
+      font-family: 'Public Sans', system-ui, sans-serif;
+      font-size: 13px;
+      line-height: 1.3;
+      color: var(--text);
+      overflow: hidden;
+      min-width: 0;
+      min-height: 0;
+      word-break: break-word;
+    }
+
+    .event-group {
+      font-family: 'JetBrains Mono', ui-monospace, monospace;
+      font-size: 10px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.35px;
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: clip;
+      min-width: 0;
+    }
+
+    .progress {
+      font-family: 'JetBrains Mono', ui-monospace, monospace;
+      font-size: 12px;
+      color: var(--muted);
+      padding: 0 18px 18px;
+      text-align: right;
+    }
+
+    @media (max-width: 880px) {
+      .detail-panel {
+        grid-template-columns: 1fr;
+      }
+
+      .detail-date {
+        max-width: 220px;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .page {
+        padding: 16px 12px 28px;
+      }
+
+      .title {
+        font-size: 24px;
+      }
+
+      .detail-headline {
+        font-size: 20px;
+      }
+
+      :root {
+        --card-width: 164px;
+        --card-height: 74px;
+        --axis-pad: 110px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <h1 class="title">25/26 Bill Timeline</h1>
+
+    <section class="timeline-shell">
+      <div class="detail-panel">
+        <div class="detail-date">
+          <div class="monthday" id="detailMonthDay">Jan 9</div>
+          <div class="year" id="detailYear">2026</div>
+        </div>
+
+        <div class="detail-main">
+          <div class="detail-topline">
+            <span class="group-badge" id="detailGroup">In the House</span>
+            <span class="event-time" id="detailTime"></span>
+          </div>
+          <h2 class="detail-headline" id="detailHeadline">Prefiled for introduction.</h2>
+          <div class="detail-text" id="detailText"></div>
+        </div>
+      </div>
+
+      <div class="timeline-wrap">
+        <div class="toolbar">
+          <div class="zoom-group">
+            <button class="zoom-btn" id="zoomOutBtn" aria-label="Zoom out">−</button>
+            <div class="zoom-readout" id="zoomReadout">Medium</div>
+            <button class="zoom-btn" id="zoomInBtn" aria-label="Zoom in">+</button>
+          </div>
+        </div>
+
+        <div class="scroller" id="scroller" tabindex="0" aria-label="Timeline">
+          <div class="timeline" id="timeline">
+            <div class="timeline-line" id="timelineLine"></div>
+            <div id="eventsLayer"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="progress" id="progressText">1 of 18</div>
+    </section>
+  </div>
+
+  <script>
+    const events = [
+      { date: "2026-01-09", displayDate: "Jan 9",  year: "2026", monthDay: "Jan 9",  group: "In the House", time: "", headline: "Prefiled for introduction.", text: "" },
+      { date: "2026-01-12", displayDate: "Jan 12", year: "2026", monthDay: "Jan 12", group: "In the House", time: "", headline: "First reading, referred to Labor & Workplace Standards. (View original bill)", text: "" },
+      { date: "2026-01-20", displayDate: "Jan 20", year: "2026", monthDay: "Jan 20", group: "In the House", time: "10:30 AM", headline: "Public hearing in the House Committee on Labor & Workplace Standards at 10:30 AM. (Committee materials)", text: "" },
+      { date: "2026-01-30", displayDate: "Jan 30", year: "2026", monthDay: "Jan 30", group: "In the House", time: "10:30 AM", headline: "Executive action taken in the House Committee on Labor & Workplace Standards at 10:30 AM. (Committee materials)", text: `<p>LAWS - Majority; 1st substitute bill be substituted, do pass. (View 1st substitute) (Majority report)</p><p>Minority; do not pass. (Minority report)</p>` },
+      { date: "2026-02-03", displayDate: "Feb 3",  year: "2026", monthDay: "Feb 3",  group: "In the House", time: "", headline: "Referred to Appropriations.", text: "" },
+      { date: "2026-02-05", displayDate: "Feb 5",  year: "2026", monthDay: "Feb 5",  group: "In the House", time: "10:30 AM", headline: "Public hearing in the House Committee on Appropriations at 10:30 AM. (Committee materials)", text: "" },
+      { date: "2026-02-07", displayDate: "Feb 7",  year: "2026", monthDay: "Feb 7",  group: "In the House", time: "9:00 AM", headline: "Executive action taken in the House Committee on Appropriations at 9:00 AM. (Committee materials)", text: `<p>APP - Majority; do pass 1st substitute bill proposed by Labor & Workplace Standards. (Majority report)</p><p>Minority; do not pass. (Minority report)</p><p>Minority; without recommendation. (Minority report)</p>` },
+      { date: "2026-02-09", displayDate: "Feb 9",  year: "2026", monthDay: "Feb 9",  group: "In the House", time: "", headline: "Referred to Rules 2 Review.", text: "" },
+      { date: "2026-02-11", displayDate: "Feb 11", year: "2026", monthDay: "Feb 11", group: "In the House", time: "", headline: "Rules Committee relieved of further consideration. Placed on second reading.", text: "" },
+      { date: "2026-02-12", displayDate: "Feb 12", year: "2026", monthDay: "Feb 12", group: "In the House", time: "", headline: "1st substitute bill substituted (LAWS 26). (View 1st substitute)", text: `<p>Rules suspended. Placed on Third Reading.</p><p>Third reading, passed; yeas, 57; nays, 39; absent, 0; excused, 2. (View this roll call)</p>` },
+      { date: "2026-02-16", displayDate: "Feb 16", year: "2026", monthDay: "Feb 16", group: "In the Senate", time: "", headline: "First reading, referred to Labor & Commerce.", text: "" },
+      { date: "2026-02-20", displayDate: "Feb 20", year: "2026", monthDay: "Feb 20", group: "In the Senate", time: "8:00 AM", headline: "Executive action taken in the Senate Committee on Labor & Commerce at 8:00 AM. (Committee materials)", text: `<p>LC - Majority; do pass. (Majority report)</p><p>Minority; do not pass. (Minority report)</p><p>Minority; without recommendation. (Minority report)</p>` },
+      { date: "2026-02-23", displayDate: "Feb 23", year: "2026", monthDay: "Feb 23", group: "In the Senate", time: "", headline: "Passed to Rules Committee for second reading.", text: "" },
+      { date: "2026-02-24", displayDate: "Feb 24", year: "2026", monthDay: "Feb 24", group: "In the Senate", time: "", headline: "Placed on second reading by Rules Committee.", text: "" },
+      { date: "2026-02-26", displayDate: "Feb 26", year: "2026", monthDay: "Feb 26", group: "In the Senate", time: "", headline: "Rules suspended. Placed on Third Reading.", text: `<p>Third reading, passed; yeas, 28; nays, 20; absent, 0; excused, 1. (View this roll call)</p>` },
+      { date: "2026-02-28", displayDate: "Feb 28", year: "2026", monthDay: "Feb 28", group: "In the House", time: "", headline: "Speaker signed.", text: "" },
+      { date: "2026-02-28", displayDate: "Feb 28", year: "2026", monthDay: "Feb 28", group: "In the Senate", time: "", headline: "President signed.", text: "" },
+      { date: "2026-03-03", displayDate: "Mar 3",  year: "2026", monthDay: "Mar 3",  group: "Other", time: "", headline: "Delivered to Governor.", text: "" },
+      { date: "2026-03-09", displayDate: "Mar 9",  year: "2026", monthDay: "Mar 9",  group: "Other", time: "", headline: "Governor signed.", text: `<p>Chapter 15, 2026 Laws. (View session law)</p><p>Effective date 7/1/2027.</p>` }
+    ];
+
+    const zoomLevels = [
+      { label: "Far", value: 36 },
+      { label: "Medium", value: 56 },
+      { label: "Near", value: 84 },
+      { label: "Close", value: 112 }
+    ];
+
+    let zoomIndex = 1;
+    let pxPerDay = zoomLevels[zoomIndex].value;
+    let activeIndex = 0;
+
+    const eventsLayer = document.getElementById("eventsLayer");
+    const timeline = document.getElementById("timeline");
+    const timelineLine = document.getElementById("timelineLine");
+    const progressText = document.getElementById("progressText");
+    const scroller = document.getElementById("scroller");
+
+    const detailMonthDay = document.getElementById("detailMonthDay");
+    const detailYear = document.getElementById("detailYear");
+    const detailGroup = document.getElementById("detailGroup");
+    const detailTime = document.getElementById("detailTime");
+    const detailHeadline = document.getElementById("detailHeadline");
+    const detailText = document.getElementById("detailText");
+    const zoomReadout = document.getElementById("zoomReadout");
+
+    function parseDate(str) {
+      const [y, m, d] = str.split("-").map(Number);
+      return new Date(y, m - 1, d);
+    }
+
+    function daysBetween(a, b) {
+      const ms = 1000 * 60 * 60 * 24;
+      return Math.round((b - a) / ms);
+    }
+
+    function getCssNumber(varName) {
+      return parseFloat(getComputedStyle(document.documentElement).getPropertyValue(varName));
+    }
+
+    function getEventXPositions() {
+      const cardWidth = getCssNumber("--card-width");
+      const axisPad = getCssNumber("--axis-pad");
+
+      const parsedDates = events.map(e => parseDate(e.date));
+      const minDate = new Date(Math.min(...parsedDates));
+      const maxDate = new Date(Math.max(...parsedDates));
+      const totalDays = Math.max(1, daysBetween(minDate, maxDate));
+      const timelineWidth = axisPad * 2 + totalDays * pxPerDay + cardWidth;
+
+      const dateCounts = {};
+      const dateSeen = {};
+
+      events.forEach(e => {
+        dateCounts[e.date] = (dateCounts[e.date] || 0) + 1;
+      });
+
+      const positioned = events.map((event, index) => {
+        const currentDate = parseDate(event.date);
+        const dayOffset = daysBetween(minDate, currentDate);
+
+        dateSeen[event.date] = (dateSeen[event.date] || 0);
+        const sameDayCount = dateCounts[event.date];
+        const sameDayIndex = dateSeen[event.date];
+        dateSeen[event.date] += 1;
+
+        const spread = 30;
+        const duplicateOffset =
+          sameDayCount > 1
+            ? (sameDayIndex - (sameDayCount - 1) / 2) * spread
+            : 0;
+
+        const centerX = axisPad + (dayOffset * pxPerDay) + duplicateOffset;
+
+        return {
+          ...event,
+          index,
+          centerX,
+          leftX: centerX - cardWidth / 2,
+          rightX: centerX + cardWidth / 2
+        };
+      });
+
+      return { positioned, timelineWidth };
+    }
+
+    function assignLanes(positioned) {
+      const laneLastRight = [-Infinity, -Infinity, -Infinity, -Infinity];
+      const laneOrder = [0, 1, 2, 3];
+
+      return positioned.map(item => {
+        let chosenLane = null;
+
+        for (const lane of laneOrder) {
+          if (item.leftX > laneLastRight[lane]) {
+            chosenLane = lane;
+            break;
+          }
+        }
+
+        if (chosenLane === null) {
+          let bestLane = 0;
+          for (let i = 1; i < laneLastRight.length; i++) {
+            if (laneLastRight[i] < laneLastRight[bestLane]) bestLane = i;
+          }
+          chosenLane = bestLane;
+        }
+
+        laneLastRight[chosenLane] = item.rightX;
+        return { ...item, lane: chosenLane };
+      });
+    }
+
+    function computeLayoutMetrics(laidOut) {
+      const cardHeight = getCssNumber("--card-height");
+      const laneGap = getCssNumber("--lane-gap");
+      const lineThickness = getCssNumber("--line-thickness");
+
+      const nearOffset = 10;
+      const farOffset = cardHeight + laneGap + 10;
+
+      const laneTops = {
+        0: -cardHeight - nearOffset,
+        1: nearOffset,
+        2: -cardHeight - farOffset,
+        3: farOffset
+      };
+
+      let minTop = 0;
+      let maxBottom = lineThickness;
+
+      for (const event of laidOut) {
+        const top = laneTops[event.lane];
+        const bottom = top + cardHeight;
+        if (top < minTop) minTop = top;
+        if (bottom > maxBottom) maxBottom = bottom;
+      }
+
+      const paddingTop = 14;
+      const paddingBottom = 14;
+      const lineY = paddingTop + Math.abs(minTop);
+      const timelineHeight = lineY + maxBottom + paddingBottom;
+
+      return {
+        laneTops,
+        lineY,
+        timelineHeight
+      };
+    }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#39;");
+    }
+
+    function fitTitleWithEllipsis(el, fullText) {
+      el.textContent = fullText;
+
+      const availableHeight = el.clientHeight;
+      if (availableHeight <= 0) return;
+
+      if (el.scrollHeight <= availableHeight + 1) return;
+
+      let low = 0;
+      let high = fullText.length;
+      let best = "…";
+
+      while (low <= high) {
+        const mid = Math.floor((low + high) / 2);
+        const candidate = fullText.slice(0, mid).trimEnd() + "…";
+        el.textContent = candidate;
+
+        if (el.scrollHeight <= availableHeight + 1) {
+          best = candidate;
+          low = mid + 1;
+        } else {
+          high = mid - 1;
+        }
+      }
+
+      el.textContent = best;
+    }
+
+    function applyTitleEllipses() {
+      const titles = document.querySelectorAll(".event-title");
+      titles.forEach(title => {
+        const fullText = title.dataset.fulltext || title.textContent || "";
+        fitTitleWithEllipsis(title, fullText);
+      });
+    }
+
+    function layoutTimeline(keepCenteredOnActive = false) {
+      const cardWidth = getCssNumber("--card-width");
+      const { positioned, timelineWidth } = getEventXPositions();
+      const laidOut = assignLanes(positioned);
+      const { laneTops, lineY, timelineHeight } = computeLayoutMetrics(laidOut);
+
+      timeline.style.width = `${timelineWidth}px`;
+      timeline.style.height = `${timelineHeight}px`;
+      timelineLine.style.top = `${lineY}px`;
+      eventsLayer.innerHTML = "";
+
+      laidOut.forEach((event) => {
+        const item = document.createElement("article");
+        item.className = "event";
+        item.dataset.index = event.index;
+        item.style.left = `${event.centerX}px`;
+        item.style.top = `${lineY + laneTops[event.lane]}px`;
+
+        const card = document.createElement("div");
+        card.className = "event-card";
+        card.setAttribute("role", "button");
+        card.setAttribute("tabindex", "0");
+        card.setAttribute("aria-pressed", String(event.index === activeIndex));
+
+        const date = document.createElement("div");
+        date.className = "event-date";
+        date.textContent = event.displayDate;
+
+        const title = document.createElement("div");
+        title.className = "event-title";
+        title.dataset.fulltext = event.headline;
+        title.title = event.headline;
+        title.textContent = event.headline;
+
+        const group = document.createElement("div");
+        group.className = "event-group";
+        group.textContent = event.group;
+        group.title = event.group;
+
+        card.appendChild(date);
+        card.appendChild(title);
+        card.appendChild(group);
+        item.appendChild(card);
+
+        item.addEventListener("click", () => setActive(event.index, true));
+        item.addEventListener("keydown", (e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            setActive(event.index, true);
+          }
+        });
+
+        eventsLayer.appendChild(item);
+      });
+
+      requestAnimationFrame(() => {
+        applyTitleEllipses();
+        updateActiveVisuals();
+
+        if (keepCenteredOnActive) {
+          const activeEl = document.querySelector(`.event[data-index="${activeIndex}"]`);
+          if (activeEl) {
+            const targetLeft = activeEl.offsetLeft - (scroller.clientWidth / 2) + (cardWidth / 2);
+            scroller.scrollTo({ left: targetLeft, behavior: "auto" });
+          }
+        }
+      });
+    }
+
+    function setActive(index, scrollIntoView = false) {
+      activeIndex = index;
+      const event = events[index];
+
+      detailMonthDay.textContent = event.monthDay;
+      detailYear.textContent = event.year;
+      detailGroup.textContent = event.group;
+      detailTime.textContent = event.time ? event.time : "";
+      detailHeadline.textContent = event.headline;
+      detailText.innerHTML = event.text || "";
+
+      progressText.textContent = `${index + 1} of ${events.length}`;
+      updateActiveVisuals();
+
+      if (scrollIntoView) {
+        const activeEl = document.querySelector(`.event[data-index="${index}"]`);
+        if (activeEl) {
+          const cardWidth = getCssNumber("--card-width");
+          const left = activeEl.offsetLeft - (scroller.clientWidth / 2) + (cardWidth / 2);
+          scroller.scrollTo({ left, behavior: "smooth" });
+        }
+      }
+    }
+
+    function updateActiveVisuals() {
+      const items = document.querySelectorAll(".event");
+      items.forEach((item, index) => {
+        const isActive = index === activeIndex;
+        item.classList.toggle("active", isActive);
+        const btn = item.querySelector(".event-card");
+        if (btn) btn.setAttribute("aria-pressed", String(isActive));
+      });
+    }
+
+    function updateZoomReadout() {
+      zoomReadout.textContent = zoomLevels[zoomIndex].label;
+    }
+
+    document.getElementById("zoomOutBtn").addEventListener("click", () => {
+      if (zoomIndex > 0) {
+        zoomIndex -= 1;
+        pxPerDay = zoomLevels[zoomIndex].value;
+        updateZoomReadout();
+        layoutTimeline(true);
+      }
+    });
+
+    document.getElementById("zoomInBtn").addEventListener("click", () => {
+      if (zoomIndex < zoomLevels.length - 1) {
+        zoomIndex += 1;
+        pxPerDay = zoomLevels[zoomIndex].value;
+        updateZoomReadout();
+        layoutTimeline(true);
+      }
+    });
+
+    document.addEventListener("keydown", (e) => {
+      const tag = document.activeElement?.tagName;
+      const editable = document.activeElement?.isContentEditable;
+      if (editable || tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
+
+      if (e.key === "ArrowLeft") {
+        if (activeIndex > 0) {
+          e.preventDefault();
+          setActive(activeIndex - 1, true);
+        }
+      } else if (e.key === "ArrowRight") {
+        if (activeIndex < events.length - 1) {
+          e.preventDefault();
+          setActive(activeIndex + 1, true);
+        }
+      }
+    });
+
+    window.addEventListener("resize", () => layoutTimeline(true));
+
+    updateZoomReadout();
+    layoutTimeline(false);
+    setActive(0, false);
+  </script>
+</body>
+</html>

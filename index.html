@@ -1,0 +1,1992 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>DWBR — A Movement, A Map, A Bill</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,400;1,6..72,500&family=Public+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    /* ============================================================
+       DWBR — design tokens
+       Aesthetic: editorial / longform journalism
+       Palette:   warm paper, deep sage ink, single clay accent
+       Type:      Newsreader (serif display), Public Sans (body),
+                  JetBrains Mono (metadata)
+       ============================================================ */
+    :root {
+      /* palette matched to timeline/map — sage & paper ground */
+      --paper:        #f5f7f6;
+      --paper-2:      #fcfdfc;
+      --paper-3:      #f0f4f2;
+      --rule:         #dde8e3;
+      --rule-soft:    #e6efeb;
+
+      /* sage ink — from timeline design system */
+      --ink:          #4a5f58;
+      --ink-2:        #5b7a70;
+      --ink-3:        #7f918a;
+      --sage:         #6f8f85;
+      --sage-deep:    #5b7a70;
+      --sage-tint:    #e6efeb;
+
+      /* expanded green palette — moss, forest, mint */
+      --moss:         #6b8e76;
+      --moss-deep:    #4f6e5d;
+      --forest:       #3d5a4a;
+      --mint:         #8fad99;
+      --mint-light:   #c4d9cb;
+      --seafoam:      #9eb3a8;
+      --evergreen:    #3a5246;
+
+      /* type scale */
+      --serif: 'Newsreader', 'Iowan Old Style', Georgia, serif;
+      --sans:  'Public Sans', -apple-system, system-ui, sans-serif;
+      --mono:  'JetBrains Mono', ui-monospace, Menlo, monospace;
+
+      --shadow-sm: 0 1px 2px rgba(40,55,50,.04);
+      --shadow:    0 12px 40px -16px rgba(40,55,50,.12);
+      --radius:    4px;
+      --nav-h:     68px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--sans);
+      font-size: 17px;
+      line-height: 1.55;
+      background: var(--paper);
+      color: var(--ink);
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    /* paper grain — very subtle */
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      pointer-events: none;
+      background-image:
+        radial-gradient(circle at 20% 30%, rgba(120,100,70,.025), transparent 40%),
+        radial-gradient(circle at 80% 70%, rgba(80,100,90,.025), transparent 40%);
+      z-index: 0;
+    }
+
+    /* ── NAV (sticky, hairline) ────────────────────── */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      height: var(--nav-h);
+      background: color-mix(in oklab, var(--paper) 92%, transparent);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--rule);
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      padding: 0 32px;
+      gap: 32px;
+    }
+    .nav-mark {
+      display: inline-flex; align-items: baseline; gap: 10px;
+      cursor: pointer;
+      font-family: var(--serif);
+      font-weight: 600;
+      font-size: 22px;
+      color: var(--ink);
+      letter-spacing: -0.01em;
+    }
+    .nav-mark .dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--moss);
+      transform: translateY(-2px);
+    }
+    .nav-mark small {
+      font-family: var(--mono);
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+    }
+    .nav-links {
+      display: flex; gap: 2px; list-style: none; justify-content: center;
+    }
+    .nav-links a {
+      font-family: var(--mono);
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+      padding: 8px 14px;
+      border-radius: 999px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: color .15s, background .15s;
+      position: relative;
+    }
+    .nav-links a:hover { color: var(--ink); }
+    .nav-links a.active {
+      color: var(--ink);
+      background: var(--paper-3);
+    }
+    .nav-links a.active::before {
+      content: '';
+      position: absolute; left: 14px; right: 14px; bottom: 2px;
+      height: 1px; background: var(--moss);
+    }
+    .nav-full { display: inline; }
+    .nav-short { display: none; }
+    .nav-meta {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+      display: flex; align-items: center; gap: 8px;
+    }
+    .nav-meta .live-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--mint);
+      animation: pulse 2.4s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50%      { opacity: .35; }
+    }
+
+    /* ── PAGE SYSTEM ──────────────────────────────── */
+    .page { display: none; position: relative; z-index: 1; }
+    .page.visible { display: block; animation: fadein .45s ease; }
+    @keyframes fadein { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+    .container { max-width: 1180px; margin: 0 auto; padding: 0 32px; }
+    .narrow    { max-width: 720px;  margin: 0 auto; padding: 0 32px; }
+
+    /* ── TYPE SCALE ───────────────────────────────── */
+    .eyebrow {
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--moss-deep);
+      display: inline-flex; align-items: center; gap: 10px;
+    }
+    .eyebrow::before {
+      content: '';
+      width: 24px; height: 1px;
+      background: var(--moss);
+    }
+    .display {
+      font-family: var(--serif);
+      font-weight: 500;
+      letter-spacing: -0.022em;
+      line-height: 1.02;
+      color: var(--ink);
+      font-size: clamp(48px, 7.5vw, 96px);
+    }
+    .h1 {
+      font-family: var(--serif);
+      font-weight: 500;
+      letter-spacing: -0.018em;
+      line-height: 1.06;
+      color: var(--ink);
+      font-size: clamp(36px, 5vw, 60px);
+    }
+    .h2 {
+      font-family: var(--serif);
+      font-weight: 500;
+      letter-spacing: -0.014em;
+      line-height: 1.12;
+      color: var(--ink);
+      font-size: clamp(28px, 3.4vw, 40px);
+    }
+    .lede {
+      font-family: var(--serif);
+      font-weight: 400;
+      font-size: clamp(20px, 2vw, 24px);
+      line-height: 1.5;
+      color: var(--ink-2);
+      font-style: italic;
+      max-width: 640px;
+    }
+
+    /* ── HERO ─────────────────────────────────────── */
+    .hero {
+      padding: 120px 32px 80px;
+      border-bottom: 1px solid var(--rule);
+      position: relative;
+    }
+    .hero-meta {
+      display: flex; align-items: center; gap: 16px;
+      margin-bottom: 32px;
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+    }
+    .hero-meta .div {
+      width: 1px; height: 12px; background: var(--rule);
+    }
+    .hero-cta {
+      display: inline-flex; align-items: center; gap: 14px;
+    }
+
+    /* ── BUTTONS ──────────────────────────────────── */
+    .btn {
+      display: inline-flex; align-items: center; gap: 10px;
+      font-family: var(--mono);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      padding: 14px 22px;
+      border: 1px solid var(--ink);
+      background: var(--ink);
+      color: var(--paper);
+      border-radius: 999px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background .18s, color .18s, transform .18s, border-color .18s;
+    }
+    .btn:hover { transform: translateY(-2px); background: var(--forest); border-color: var(--forest); }
+    .btn .arrow { transition: transform .2s; }
+    .btn:hover .arrow { transform: translateX(3px); }
+
+
+    /* ── SECTION SCAFFOLDING ──────────────────────── */
+    .section { padding: 96px 0; position: relative; }
+    .section + .section { border-top: 1px solid var(--rule); }
+    .section-header {
+      display: grid;
+      grid-template-columns: 200px 1fr;
+      gap: 48px;
+      margin-bottom: 56px;
+      align-items: start;
+    }
+    .section-marker {
+      position: sticky; top: calc(var(--nav-h) + 24px);
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+    }
+    .section-marker .num {
+      display: block;
+      font-family: var(--serif);
+      font-size: 56px;
+      line-height: 1;
+      color: var(--mint);
+      font-weight: 400;
+      margin-bottom: 8px;
+      letter-spacing: -0.02em;
+    }
+    .section-body { min-width: 0; }
+
+    /* ── STAT GRID — newspaper figures ────────────── */
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0;
+      border-top: 1px solid var(--ink);
+      border-bottom: 1px solid var(--rule);
+      margin: 48px 0;
+    }
+    .stat {
+      padding: 28px 24px 24px;
+      border-right: 1px solid var(--rule-soft);
+      position: relative;
+    }
+    .stat:last-child { border-right: none; }
+    .stat-num {
+      font-family: var(--serif);
+      font-weight: 500;
+      font-size: clamp(48px, 5.5vw, 72px);
+      line-height: .95;
+      letter-spacing: -0.03em;
+      color: var(--ink);
+      margin-bottom: 14px;
+      display: flex; align-items: baseline; gap: 4px;
+    }
+    .stat-num .unit {
+      font-size: .45em;
+      color: var(--moss-deep);
+      font-weight: 500;
+      letter-spacing: 0;
+    }
+    .stat-label {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+      line-height: 1.5;
+    }
+    .stat-foot {
+      margin-top: 12px;
+      font-size: 13px;
+      color: var(--ink-2);
+      line-height: 1.5;
+      font-style: italic;
+      font-family: var(--serif);
+    }
+
+    /* ── NARRATIVE — drop caps, longform ─────────── */
+    .narrative {
+      font-family: var(--serif);
+      font-size: 19px;
+      line-height: 1.65;
+      color: var(--ink);
+      max-width: 640px;
+    }
+    .narrative p + p { margin-top: 20px; text-indent: 1.5em; }
+    .narrative p:first-of-type::first-letter {
+      font-family: var(--serif);
+      font-weight: 500;
+      font-size: 4.6em;
+      float: left;
+      line-height: .85;
+      margin: 6px 10px -4px 0;
+      color: var(--forest);
+    }
+    .narrative em { color: var(--ink-2); }
+
+    /* ── CHAPTER CARDS — editorial table of contents ── */
+    .chapters {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background: var(--rule);
+      border-top: 1px solid var(--rule);
+      border-bottom: 1px solid var(--rule);
+      margin-top: 48px;
+    }
+    .chapter {
+      background: var(--paper);
+      padding: 40px 32px 36px;
+      cursor: pointer;
+      transition: background .25s;
+      display: flex; flex-direction: column; gap: 16px;
+      min-height: 360px;
+    }
+    .chapter:hover { background: var(--paper-2); }
+    .chapter-num {
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--moss-deep);
+    }
+    .chapter-title {
+      font-family: var(--serif);
+      font-weight: 500;
+      font-size: 28px;
+      line-height: 1.1;
+      letter-spacing: -0.015em;
+      color: var(--ink);
+    }
+    .chapter-title em { font-style: italic; color: var(--moss); }
+    .chapter-desc {
+      font-size: 14px;
+      line-height: 1.55;
+      color: var(--ink-2);
+    }
+    .chapter-foot {
+      display: flex; justify-content: space-between; align-items: center;
+      padding-top: 12px;
+      border-top: 1px solid var(--rule-soft);
+      margin-top: auto;
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+    }
+    .chapter:hover .chapter-foot { color: var(--moss-deep); }
+    .chapter-foot .arr { transition: transform .2s; }
+    .chapter:hover .chapter-foot .arr { transform: translateX(4px); }
+
+    /* ── PULL QUOTE — editorial ───────────────────── */
+    .pullquote {
+      max-width: 800px;
+      margin: 80px auto;
+      padding: 40px 0;
+      border-top: 1px solid var(--ink);
+      border-bottom: 1px solid var(--ink);
+      text-align: center;
+    }
+    .pullquote-mark {
+      font-family: var(--serif);
+      font-size: 64px;
+      line-height: 0;
+      color: var(--mint);
+      display: block;
+      margin: 16px 0 24px;
+    }
+    .pullquote-text {
+      font-family: var(--serif);
+      font-style: italic;
+      font-weight: 400;
+      font-size: clamp(24px, 3vw, 34px);
+      line-height: 1.3;
+      letter-spacing: -0.012em;
+      color: var(--ink);
+      margin-bottom: 24px;
+    }
+    .pullquote-cite {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+    }
+
+    /* ── VIZ FRAME ────────────────────────────────── */
+    .viz {
+      border: 1px solid var(--rule);
+      background: var(--paper-2);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      position: relative;
+    }
+    .viz-header {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--rule);
+      background: var(--paper);
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+    }
+    .viz-header .vid { color: var(--moss-deep); font-weight: 600; }
+    .viz-body { background: #f5f7f6; }
+    .viz-body iframe { display: block; border: 0; width: 100%; }
+    .viz-scroll { overflow-x: auto; }
+    .viz-caption {
+      padding: 16px 20px;
+      border-top: 1px solid var(--rule);
+      background: var(--paper);
+      font-family: var(--serif);
+      font-style: italic;
+      font-size: 14px;
+      color: var(--ink-2);
+      line-height: 1.5;
+    }
+    .viz-caption strong {
+      font-family: var(--mono);
+      font-style: normal;
+      font-size: 10px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--moss-deep);
+      font-weight: 600;
+      margin-right: 8px;
+    }
+
+    /* ── TWO-COL ──────────────────────────────────── */
+    .twocol {
+      display: grid;
+      grid-template-columns: 1.1fr 1fr;
+      gap: 64px;
+      align-items: start;
+    }
+    .twocol.flip > :first-child { order: 2; }
+
+    /* ── DATA CARDS (votes, tallies) ──────────────── */
+    .vote {
+      border: 1px solid var(--rule);
+      background: var(--paper);
+      padding: 24px;
+    }
+    .vote + .vote { margin-top: 16px; }
+    .vote-chamber {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+      margin-bottom: 8px;
+    }
+    .vote-line {
+      font-family: var(--serif);
+      font-size: 32px;
+      font-weight: 500;
+      letter-spacing: -0.015em;
+      margin-bottom: 16px;
+    }
+    .vote-line .yea { color: var(--sage-deep); }
+    .vote-line .nay { color: var(--seafoam); }
+    .vote-line .sep { color: var(--ink-3); margin: 0 8px; font-weight: 300; }
+    .vote-bar {
+      display: flex; height: 8px;
+      border: 1px solid var(--rule);
+      overflow: hidden;
+    }
+    .vote-bar > div { transition: flex .6s ease; }
+    .vote-bar .yea-fill { background: var(--sage); }
+    .vote-bar .nay-fill { background: var(--mint-light); }
+    .vote-meta {
+      display: flex; justify-content: space-between;
+      margin-top: 10px;
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+    }
+
+    /* ── PROCESS STEPS — annotated ────────────────── */
+    .steps { list-style: none; }
+    .step {
+      display: grid;
+      grid-template-columns: 80px 1fr;
+      gap: 20px;
+      padding: 24px 0;
+      border-bottom: 1px solid var(--rule-soft);
+      position: relative;
+    }
+    .step:last-child { border-bottom: none; }
+    .step-num {
+      font-family: var(--serif);
+      font-size: 44px;
+      line-height: 1;
+      letter-spacing: -0.025em;
+      color: var(--mint);
+      font-weight: 500;
+      font-feature-settings: 'lnum';
+    }
+    .step-title {
+      font-family: var(--serif);
+      font-size: 22px;
+      font-weight: 500;
+      letter-spacing: -0.012em;
+      line-height: 1.2;
+      color: var(--ink);
+      margin-bottom: 8px;
+    }
+    .step-meta {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--moss-deep);
+      margin-bottom: 6px;
+    }
+    .step-text {
+      font-size: 15px;
+      line-height: 1.6;
+      color: var(--ink-2);
+    }
+
+    /* ── PROTECTION CHIPS ─────────────────────────── */
+    .protection-list {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-top: 24px;
+    }
+    .protection {
+      border: 1px solid var(--rule);
+      padding: 14px 16px;
+      background: var(--paper);
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 14px;
+      align-items: center;
+    }
+    .protection .marker {
+      width: 8px; height: 8px;
+      background: var(--sage);
+      border-radius: 50%;
+    }
+    .protection .marker.no { background: var(--paper-3); }
+    .protection-name {
+      font-family: var(--serif);
+      font-size: 16px;
+      color: var(--ink);
+      font-weight: 500;
+    }
+    .protection-states {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: .08em;
+      color: var(--ink-3);
+    }
+
+    /* ── PAGE NAV (bottom) ────────────────────────── */
+    .page-nav {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1px;
+      background: var(--rule);
+      border-top: 1px solid var(--rule);
+      border-bottom: 1px solid var(--rule);
+      margin-top: 96px;
+    }
+    .page-nav a {
+      background: var(--paper);
+      padding: 28px 32px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background .2s;
+      display: block;
+    }
+    .page-nav a:hover { background: var(--paper-2); }
+    .page-nav a .label {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+      margin-bottom: 8px;
+    }
+    .page-nav a .ttl {
+      font-family: var(--serif);
+      font-weight: 500;
+      font-size: 24px;
+      letter-spacing: -0.012em;
+      color: var(--ink);
+      display: flex; align-items: center; gap: 12px;
+    }
+    .page-nav a:hover .ttl { color: var(--forest); }
+    .page-nav .next { text-align: right; }
+    .page-nav .next .ttl { justify-content: flex-end; }
+    .page-nav a .arr { color: var(--moss); transition: transform .2s; }
+    .page-nav a:hover .arr { transform: translateX(4px); }
+    .page-nav .prev:hover .arr { transform: translateX(-4px); }
+
+    /* ── FOOTER ───────────────────────────────────── */
+    footer {
+      padding: 56px 32px 40px;
+      background: var(--ink);
+      color: var(--paper-2);
+      border-top: 1px solid var(--ink);
+      margin-top: 0;
+    }
+    .footer-grid {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding-bottom: 40px;
+      border-bottom: 1px solid color-mix(in oklab, var(--paper) 14%, transparent);
+    }
+    .footer-mark {
+      font-family: var(--serif);
+      font-size: 40px;
+      font-weight: 500;
+      letter-spacing: -0.02em;
+      color: var(--paper);
+      margin-bottom: 16px;
+    }
+    .footer-mark em { color: var(--mint); font-style: italic; font-weight: 400; }
+    .footer-tag {
+      font-family: var(--serif);
+      font-style: italic;
+      font-size: 18px;
+      line-height: 1.5;
+      color: var(--ink-3);
+      max-width: 560px;
+    }
+    .footer-fine {
+      max-width: 1180px;
+      margin: 24px auto 0;
+      display: flex;
+      justify-content: space-between;
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+    }
+
+    /* ── RESPONSIVE ───────────────────────────────── */
+    @media (max-width: 980px) {
+      .hero-grid { grid-template-columns: 1fr; gap: 48px; }
+      .hero-aside { border-left: none; padding-left: 0; border-top: 1px solid var(--rule); padding-top: 32px; }
+      .twocol { grid-template-columns: 1fr; gap: 40px; }
+      .twocol.flip > :first-child { order: 0; }
+      .section-header { grid-template-columns: 1fr; gap: 24px; }
+      .section-marker { position: static; }
+      .stats { grid-template-columns: repeat(2, 1fr); }
+      .stat:nth-child(2) { border-right: none; }
+      .stat:nth-child(1), .stat:nth-child(2) { border-bottom: 1px solid var(--rule-soft); }
+      .chapters { grid-template-columns: 1fr; }
+
+      .protection-list { grid-template-columns: 1fr; }
+      /* shorten nav labels to prevent wrap / overflow */
+      .nav-links a { font-size: 11px; padding: 6px 10px; }
+      .nav-links a::before { display: none; }
+      .nav-full { display: none; }
+      .nav-short { display: inline; }
+    }
+    @media (max-width: 640px) {
+      nav { grid-template-columns: auto 1fr; padding: 0 18px; gap: 12px; }
+      .nav-meta { display: none; }
+      .nav-links { display: none; }
+      .hero { padding: 64px 18px 56px; }
+      .container, .narrow { padding: 0 18px; }
+      .section { padding: 64px 0; }
+      .stats { grid-template-columns: 1fr; }
+      .stat { border-right: none; border-bottom: 1px solid var(--rule-soft); }
+      .stat:last-child { border-bottom: none; }
+
+      .page-nav { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════════
+     NAV
+══════════════════════════════════════════════════ -->
+<nav>
+  <div class="nav-mark" data-page="home">
+    <span class="dot"></span>
+    Domestic Workers Bill of Rights
+  </div>
+  <ul class="nav-links">
+    <li><a data-page="home" class="active"><span class="nav-full">Index</span><span class="nav-short">Index</span></a></li>
+    <li><a data-page="us"><span class="nav-full">Ch. I · United States</span><span class="nav-short">I · U.S.</span></a></li>
+    <li><a data-page="seattle"><span class="nav-full">Ch. II · Seattle</span><span class="nav-short">II · Seattle</span></a></li>
+    <li><a data-page="wa"><span class="nav-full">Ch. III · Washington</span><span class="nav-short">III · WA</span></a></li>
+  </ul>
+</nav>
+
+
+<!-- ══════════════════════════════════════════════════
+     PAGE: HOME
+══════════════════════════════════════════════════ -->
+<div class="page visible" id="page-home" data-screen-label="Home · Index">
+
+  <!-- HERO -->
+  <section class="hero" style="padding-bottom:56px;">
+    <div class="container">
+      <div class="hero-meta">
+        <span>An interactive record</span>
+        <span class="div"></span>
+        <span>Three chapters</span>
+        <span class="div"></span>
+        <span>2010 — 2026</span>
+      </div>
+      <h1 class="h1" style="max-width:880px;">
+        The long, slow shape of <em style="font-style:italic;color:var(--forest);">care&nbsp;work</em> becoming&nbsp;rights.
+      </h1>
+      <p class="lede" style="margin-top:28px;">
+        Sixteen years. Sixteen jurisdictions. A visual chronicle of the Domestic Workers Bill of Rights, and the people who carried it across the country.
+      </p>
+      <div class="hero-cta" style="margin-top:40px;">
+        <a class="btn" data-page="us">
+          Begin reading
+          <span class="arrow">→</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- STATS -->
+  <section class="section">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-marker">
+          <span class="num">01</span>
+          At a glance
+        </div>
+        <div class="section-body">
+          <h2 class="h2">By the numbers, by the years.</h2>
+          <p class="lede">
+            Domestic work is the work that makes other work possible, and for most of American labor history, it has gone unprotected on purpose. Here is what changed, and how.
+          </p>
+        </div>
+      </div>
+
+      <div class="stats">
+        <div class="stat">
+          <div class="stat-num">2.5<span class="unit">M</span></div>
+          <div class="stat-label">Domestic workers in the U.S.</div>
+          <div class="stat-foot">Nannies, house cleaners, and home care aides, overwhelmingly women and disproportionately women of color and immigrants.</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num">16</div>
+          <div class="stat-label">Jurisdictions with a DWBR</div>
+          <div class="stat-foot">Thirteen states and three cities, including Seattle, whose 2018 ordinance became the model for Washington's 2026 state law.</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num">16<span class="unit">yrs</span></div>
+          <div class="stat-label">Of organized campaigning</div>
+          <div class="stat-foot">A movement built city by city, kitchen table by kitchen table, from 2010 to 2026.</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num">1935</div>
+          <div class="stat-label">Excluded from federal law</div>
+          <div class="stat-foot">Domestic workers were carved out of the National Labor Relations Act. State Bills of Rights have spent ninety years trying to fill that gap.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CHAPTERS -->
+  <section class="section">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-marker">
+          <span class="num">02</span>
+          The three chapters
+        </div>
+        <div class="section-body">
+          <h2 class="h2">A movement, told three ways.</h2>
+          <p class="lede">
+            One zoom level isn't enough. Read the national arc, then the city campaign that proved it, then the state-level mechanics of how a single bill becomes law.
+          </p>
+        </div>
+      </div>
+
+      <div class="chapters">
+        <article class="chapter" data-page="us">
+          <div class="chapter-num">Chapter I</div>
+          <div class="chapter-title"><em>United States</em>: every state, every city.</div>
+          <div class="chapter-desc">
+            The widest view: all sixteen jurisdictions that enacted domestic worker protections from 2010 to 2026. Start here before zooming in.
+          </div>
+          <div class="chapter-foot">
+            <span>National zoom · US 2010–2026</span>
+            <span class="arr">→</span>
+          </div>
+        </article>
+
+        <article class="chapter" data-page="seattle">
+          <div class="chapter-num">Chapter II</div>
+          <div class="chapter-title"><em>Seattle</em>: one city's proving ground.</div>
+          <div class="chapter-desc">
+            A city-scale portrait of Seattle's 2018 campaign: the coalition, the council, and the organizing model Washington would later follow.
+          </div>
+          <div class="chapter-foot">
+            <span>City zoom · Seattle 2018</span>
+            <span class="arr">→</span>
+          </div>
+        </article>
+
+        <article class="chapter" data-page="wa">
+          <div class="chapter-num">Chapter III</div>
+          <div class="chapter-title"><em>Washington</em>: one bill's path to law.</div>
+          <div class="chapter-desc">
+            A day-by-day record of the 2026 Washington DWBR: eighteen events, two chambers, sixty days, from prefile to the Governor's signature.
+          </div>
+          <div class="chapter-foot">
+            <span>State zoom · Washington 2026</span>
+            <span class="arr">→</span>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-grid">
+      <div class="footer-mark">DWBR<em>.</em></div>
+      <p class="footer-tag">A visual record of sixteen years of organizing for domestic workers' rights, from New York's first law in 2010 to Washington's passage in 2026.</p>
+    </div>
+    <div class="footer-fine">
+      <span>© 2026 · Domestic Workers Bill of Rights</span>
+    </div>
+  </footer>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════
+     PAGE: US OVERVIEW
+══════════════════════════════════════════════════ -->
+<div class="page" id="page-us" data-screen-label="Chapter I · United States">
+
+  <section class="hero" style="padding-bottom:56px;">
+    <div class="container">
+      <div class="hero-meta">
+        <span>Chapter I</span>
+        <span class="div"></span>
+        <span>United States</span>
+        <span class="div"></span>
+        <span>2010 — 2026</span>
+      </div>
+      <h1 class="h1" style="max-width:880px;">
+        Sixteen jurisdictions, sixteen years, and a country slowly <em style="font-style:italic;color:var(--forest);">drawing&nbsp;itself&nbsp;in</em>.
+      </h1>
+      <p class="lede" style="margin-top:28px;">
+        Excluded from federal labor law since 1935, domestic workers have spent nearly a century fighting for protections the rest of the workforce took for granted. What follows is what sixteen years of organizing has put back on the page: who passed, what they guaranteed, and how the map filled in.
+      </p>
+    </div>
+  </section>
+
+  <!-- ANIMATED MAP -->
+  <section class="section" style="padding-top:0;">
+    <div class="container">
+      <div class="viz">
+        <div class="viz-header">
+          <span class="vid">FIG. 01</span>
+          <span>Animated map · DWBR victories, 2010 — 2026</span>
+        </div>
+        <div class="viz-body viz-scroll">
+          <iframe
+            src="DWBR_Timeline_US/index.html"
+            width="980"
+            height="600"
+            title="DWBR victories across the US, 2010–2026"
+            loading="lazy"
+          ></iframe>
+        </div>
+        <div class="viz-caption">
+          <strong>How to read</strong>
+          Each state fills in the year its Bill of Rights took effect. Cities appear as points.
+          Press <em>Play</em> or scrub through the years to watch the map populate.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STATE-BY-STATE DETAIL -->
+  <section class="section">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-marker">
+          <span class="num">01</span>
+          Jurisdiction by jurisdiction
+        </div>
+        <div class="section-body">
+          <h2 class="h2">Every jurisdiction, key provisions, and what changed.</h2>
+          <p class="lede">All 16 jurisdictions that have enacted domestic worker protections, in chronological order.</p>
+        </div>
+      </div>
+
+      <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(420px,1fr)); gap:1px; background:var(--rule); border:1px solid var(--rule);">
+
+        <!-- New York · 2010 -->
+        <details style="background:var(--paper); padding:22px 24px; cursor:pointer;">
+          <summary style="list-style:none; display:flex; justify-content:space-between; align-items:baseline; gap:12px;">
+            <span style="font-family:var(--serif); font-size:20px; font-weight:500; color:var(--ink);">New York <span style="font-family:var(--mono); font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--ink-3); margin-left:12px;">2010</span></span>
+            <span style="font-family:var(--mono); font-size:16px; color:var(--moss); flex-shrink:0;">+</span>
+          </summary>
+          <div style="margin-top:16px; padding-top:16px; border-top:1px solid var(--rule-soft);">
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:14px;">
+              <div>
+                <div style="font-family:var(--mono); font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--moss-deep); margin-bottom:6px;">Coverage</div>
+                <div style="font-size:14px; line-height:1.6; color:var(--ink-2);">Nannies, housecleaners, home attendants working ≥40 hrs/week (≥44 for live-in workers)</div>
+              </div>
+              <div>
+                <div style="font-family:var(--mono); font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--moss-deep); margin-bottom:6px;">Key provisions</div>
+                <div style="font-size:14px; line-height:1.6; color:var(--ink-2);">Overtime (1.5×) after 40 hrs, 1 rest day/week, 3 paid days off after 1 year, harassment protections under Human Rights Law</div>
+              </div>
+            </div>
+            <div style="font-family:var(--serif); font-style:italic; font-size:13px; color:var(--ink-3);">First in the nation. It became the legislative template every state that followed adapted.</div>
+          </div>
+        </details>
+
+        <!-- California · 2013 -->
+        <details style="background:var(--paper); padding:22px 24px; cursor:pointer;">
+          <summary style="list-style:none; display:flex; justify-content:space-between; align-items:baseline; gap:12px;">
+            <span style="font-family:var(--serif); font-size:20px; font-weight:500; color:var(--ink);">California <span style="font-family:var(--mono); font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--ink-3); margin-left:12px;">2013</span></span>
+            <span style="font-family:var(--mono); font-size:16px; color:var(--moss); flex-shrink:0;">+</span>
+          </summary>
+          <div style="margin-top:16px; padding-top:16px; border-top:1px solid var(--rule-soft);">
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:14px;">
+              <div>
+                <div style="font-family:var(--mono); font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--moss-deep); margin-bottom:6px;">Coverage</div>
+                <div style="font-size:14px; line-height:1.6; color:var(--ink-2);">Personal attendants (nannies, caregivers for children or adults with disabilities), live-in and live-out</div>
+              </div>
+              <div>
+                <div style="font-family:var(--mono); font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--moss-deep); margin-bottom:6px;">Key provisions</div>
+                <div style="font-size:14px; line-height:1.6; color:var(--ink-2);">Overtime (1.5×) after 9 hrs/day or 45 hrs/week; made permanent via SB 1015 in 2016 after initial sunset clause</div>
+              </div>
+            </div>
+            <div style="font-family:var(--serif); font-style:italic; font-size:13px; color:var(--ink-3);">First state to extend overtime specifically to personal attendants, a category previously exempted under federal law.</div>
+          </div>
+        </details>
+
+        <!-- Hawaii · 2013 -->
+        <details style="background:var(--paper); padding:22px 24px; cursor:pointer;">
+          <summary style="list-style:none; display:flex; justify-content:space-between; align-items:baseline; gap:12px;">
+            <span style="font-family:var(--serif); font-size:20px; font-weight:500; color:var(--ink);">Hawaii <span style="font-family:var(--mono); font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--ink-3); margin-left:12px;">2013</span></span>
+            <span style="font-family:var(--mono); font-size:16px; color:var(--moss); flex-shrink:0;">+</span>
+          </summary>
+          <div style="margin-top:16px; padding-top:16px; border-top:1px solid var(--rule-soft);">
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:14px;">
+              <div>
+                <div style="font-family:var(--mono); font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--moss-deep); margin-bottom:6px;">Coverage</div>
+                <div style="font-size:14px; line-height:1.6; color:var(--ink-2);">Live-in and live-out domestic service workers; excludes babysitters working fewer than 20 hrs/week</div>
+              </div>
+              <div>
+                <div style="font-family:var(--mono); font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--moss-deep); margin-bottom:6px;">Key provisions</div>
+                <div style="font-size:14px; line-height:1.6; color:var(--ink-2);">Minimum wage, overtime after 40 hrs/week, comprehensive anti-discrimination (race, sex, age, disability, sexual orientation, ancestry)</div>
+              </div>
+            </div>
+            <div style="font-family:var(--serif); font-style:italic; font-size:13px; color:var(--ink-3);">Second state in the nation; brought domestic workers formally under the state's employer–employee framework for the first time.</div>
+          </div>
+        </details>
+
+        <!-- Massachusetts · 2014 -->
+        <details style="background:var(--paper); padding:22px 24px; cursor:pointer;">
+          <summary style="list-style:none; display:flex; justify-content:space-between; align-items:baseline; gap:12px;">
+            <span style="font-family:var(--serif); font-size:20px; font-weight:500; color:var(--ink);">Massachusetts <span style="font-family:var(--mono); font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--ink-3); margin-left:12px;">2014</span></span>
+            <span style="font-family:var(--mono); font-size:16px; color:var(--moss); flex-shrink:0;">+</span>
+          </summary>
+          <div style="margin-top:16px; padding-top:16px; border-top:1px solid var(--rule-soft);">
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:14px;">
+              <div>
+                <div style="font-family:var(--mono); font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--moss-deep); margin-bottom:6px;">Coverage</div>
+                <div style="font-size:14px; line-height:1.6; color:var(--ink-2);">Nannies, housekeepers, caregivers, companions; workers' compensation required at ≥16 hrs/week</div>
+              </div>
+              <div>
+                <div style="font-family:var(--mono); font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--moss-deep); margin-bottom:6px;">Key provisions</div>
+                <div style="font-size:14px; line-height:1.6; color:var(--ink-2);">24 hrs rest/week, 48 hrs rest/month, parental leave protections, anti-harassment and discrimination, retaliation protections</div>
+              </div>
+            </div>
+            <div style="font-family:var(--serif); font-style:italic; font-size:13px; color:var(--ink-3);">Unusually strong rest-period and parental leave provisions, rare among DWBR laws at the time.</div>
+          </div>
+        </details>
+
+        <!-- Connecticut · 2015 -->
+        <details style="background:var(--paper); padding:22px 24px; cursor:pointer;">
+          <summary style="list-style:none; display:flex; justify-content:space-between; align-items:baseline; gap:12px;">
+            <span style="font-family:var(--serif); font-size:20px; font-weight:500; color:var(--ink);">Connecticut <span style="font-family:var(--mono); font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--ink-3); margin-left:12px;">2015</span></span>
+            <span style="font-family:var(--mono); font-size:16px; color:var(--moss); flex-shrink:0;">+</span>
+          </summary>
+          <div style="margin-top:16px; padding-top:16px; border-top:1px solid var(--rule-soft);">
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:14px;">
+              <div>
+                <div style="font-family:var(--mono); font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--moss-deep); margin-bottom:6px;">Coverage</div>
+                <div style="font-size:14px; line-height:1.6; color:var(--ink-2);">Domestic workers in childcare, housekeeping, caregiving, cooking; excludes casual babysitters and state-funded personal care attendants</div>
+              </div>
+              <div>
+                <div style="font-family:var(--mono); font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--moss-deep); margin-bottom:6px;">Key provisions</div>
+                <div style="font-size:14px; line-height:1.6; color:var(--ink-2);">Written employment info required at hire, paid leave (72–120 hrs/year), severance for wrongful termination, advance termination notice</div>
+              </div>
+            </div>
+            <div style="font-family:var(--serif); font-style:italic; font-size:13px; color:var(--ink-3);">Extended anti-discrimination protections to all household employers regardless of size; most state laws exempt small employers.</div>
+          </div>
+        </details>
+
+        <!-- Oregon · 2015 -->
+        <details style="background:var(--paper); padding:22px 24px; cursor:pointer;">
+          <summary style="list-style:none; display:flex; justify-content:space-between; align-items:baseline; gap:12px;">
+            <span style="font-family:var(--serif); font-size:20px; font-weight:500; color:var(--ink);">Oregon <span style="font-family:var(--mono); font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--ink-3); margin-left:12px;">2015</span></span>
+            <span style="font-family:var(--mono); font-size:16px; color:var(--moss); flex-shrink:0;">+</span>
+          </summary>
+          <div style="margin-top:16px; padding-top:16px; border-top:1px solid var(--rule-soft);">
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:14px;">
+              <div>
+                <div style="font-family:var(--mono); font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--moss-deep); margin-bottom:6px;">Coverage</div>
+                <div style="font-size:14px; line-height:1.6; color:var(--ink-2);">Nannies, housecleaners, maids; excludes independent contractors, senior companions, and casual babysitters</div>
+              </div>
+              <div>
+                <div style="font-family:var(--mono); font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--moss-deep); margin-bottom:6px;">Key provisions</div>
+                <div style="font-size:14px; line-height:1.6; color:var(--ink-2);">24 consecutive hrs rest/week, 8 hrs rest per 24-hr period, adequate sleep conditions for live-in workers, 3 paid personal days/year (after 1 yr, ≥30 hrs/week)</div>
+              </div>
+            </div>
+            <div style="font-family:var(--serif); font-style:italic; font-size:13px; color:var(--ink-3);">Unique emphasis on sleep and rest protections, the most specific live-in worker rest provisions of any state law.</div>
+          </div>
+        </details>
+
+        <!-- Illinois · 2016 -->
+        <details style="background:var(--paper); padding:22px 24px; cursor:pointer;">
+          <summary style="list-style:none; display:flex; justify-content:space-between; align-items:baseline; gap:12px;">
+            <span style="font-family:var(--serif); font-size:20px; font-weight:500; color:var(--ink);">Illinois <span style="font-family:var(--mono); font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--ink-3); margin-left:12px;">2016</span></span>
+            <span style="font-family:var(--mono); font-size:16px; color:var(--moss); flex-shrink:0;">+</span>
+          </summary>
+          <div style="margin-top:16px; padding-top:16px; border-top:1px solid var(--rule-soft);">
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:14px;">
+              <div>
+                <div style="font-family:var(--mono); font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--moss-deep); margin-bottom:6px;">Coverage</div>
+                <div style="font-size:14px; line-height:1.6; color:var(--ink-2);">Nannies, housecleaners, caregivers working ≥8 hrs/week for one employer; excludes family members</div>
+              </div>
+              <div>
+                <div style="font-family:var(--mono); font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--moss-deep); margin-bottom:6px;">Key provisions</div>
+                <div style="font-size:14px; line-height:1.6; color:var(--ink-2);">Anti-discrimination under Human Rights Act (including military service status), 24 hrs rest/week for workers ≥20 hrs/week, 20-min break per 7.5-hr shift</div>
+              </div>
+            </div>
+            <div style="font-family:var(--serif); font-style:italic; font-size:13px; color:var(--ink-3);">One of few state DWBRs to list military service as an explicitly protected characteristic.</div>
+          </div>
+        </details>
+
+        <!-- Nevada · 2017 -->
+        <details style="background:var(--paper); padding:22px 24px; cursor:pointer;">
+          <summary style="list-style:none; display:flex; justify-content:space-between; align-items:baseline; gap:12px;">
+            <span style="font-family:var(--serif); font-size:20px; font-weight:500; color:var(--ink);">Nevada <span style="font-family:var(--mono); font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--ink-3); margin-left:12px;">2017</span></span>
+            <span style="font-family:var(--mono); font-size:16px; color:var(--moss); flex-shrink:0;">+</span>
+          </summary>
+          <div style="margin-top:16px; padding-top:16px; border-top:1px solid var(--rule-soft);">
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:14px;">
+              <div>
+                <div style="font-family:var(--mono); font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--moss-deep); margin-bottom:6px;">Coverage</div>
+                <div style="font-size:14px; line-height:1.6; color:var(--ink-2);">Domestic workers in private households; different provisions for live-in vs. live-out workers</div>
+              </div>
+              <div>
+                <div style="font-family:var(--mono); font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--moss-deep); margin-bottom:6px;">Key provisions</div>
+                <div style="font-size:14px; line-height:1.6; color:var(--ink-2);">Written employment agreements, minimum wage, overtime (after 8 hrs/day or 40 hrs/week), 1 full day off/week, privacy protections (no monitoring in bathrooms or bedrooms), lodging deductions capped at 5× minimum wage</div>
+              </div>
+            </div>
+            <div style="font-family:var(--serif); font-style:italic; font-size:13px; color:var(--ink-3);">Strongest privacy provisions in any state DWBR, explicitly prohibiting employer monitoring in workers' private spaces.</div>
+          </div>
+        </details>
+
+        <!-- Seattle · 2018 -->
+        <details style="background:var(--paper); padding:22px 24px; cursor:pointer;">
+          <summary style="list-style:none; display:flex; justify-content:space-between; align-items:baseline; gap:12px;">
+            <span style="font-family:var(--serif); font-size:20px; font-weight:500; color:var(--ink);">Seattle <span style="font-family:var(--mono); font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--ink-3); margin-left:12px;">City · 2018</span></span>
+            <span style="font-family:var(--mono); font-size:16px; color:var(--moss); flex-shrink:0;">+</span>
+          </summary>
+          <div style="margin-top:16px; padding-top:16px; border-top:1px solid var(--rule-soft);">
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:14px;">
+              <div>
+                <div style="font-family:var(--mono); font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--moss-deep); margin-bottom:6px;">Coverage</div>
+                <div style="font-size:14px; line-height:1.6; color:var(--ink-2);">All domestic workers within city limits (including part-time, live-in, and independent contractors), regardless of immigration status</div>
+              </div>
+              <div>
+                <div style="font-family:var(--mono); font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--moss-deep); margin-bottom:6px;">Key provisions</div>
+                <div style="font-size:14px; line-height:1.6; color:var(--ink-2);">Seattle minimum wage, 30-min meal break (5+ hrs), 10-min paid rest break (4+ hrs), document retention prohibited (passports, SSNs), immigration-related retaliation banned</div>
+              </div>
+            </div>
+            <div style="font-family:var(--serif); font-style:italic; font-size:13px; color:var(--ink-3);">First city DWBR in the nation. It became the organizing model Washington would follow eight years later.</div>
+          </div>
+        </details>
+
+        <!-- New Mexico · 2019 -->
+        <details style="background:var(--paper); padding:22px 24px; cursor:pointer;">
+          <summary style="list-style:none; display:flex; justify-content:space-between; align-items:baseline; gap:12px;">
+            <span style="font-family:var(--serif); font-size:20px; font-weight:500; color:var(--ink);">New Mexico <span style="font-family:var(--mono); font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--ink-3); margin-left:12px;">2019</span></span>
+            <span style="font-family:var(--mono); font-size:16px; color:var(--moss); flex-shrink:0;">+</span>
+          </summary>
+          <div style="margin-top:16px; padding-top:16px; border-top:1px solid var(--rule-soft);">
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:14px;">
+              <div>
+                <div style="font-family:var(--mono); font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--moss-deep); margin-bottom:6px;">Coverage</div>
+                <div style="font-size:14px; line-height:1.6; color:var(--ink-2);">Domestic service and home care workers previously excluded from state minimum wage protections</div>
+              </div>
+              <div>
+                <div style="font-family:var(--mono); font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--moss-deep); margin-bottom:6px;">Key provisions</div>
+                <div style="font-size:14px; line-height:1.6; color:var(--ink-2);">Minimum wage, overtime protections, wage enforcement by Dept. of Workforce Solutions, right to recover unpaid wages and damages</div>
+              </div>
+            </div>
+            <div style="font-family:var(--serif); font-style:italic; font-size:13px; color:var(--ink-3);">Closed the historical loophole that had excluded domestic workers from the state's minimum wage law entirely.</div>
+          </div>
+        </details>
+
+        <!-- Philadelphia · 2020 -->
+        <details style="background:var(--paper); padding:22px 24px; cursor:pointer;">
+          <summary style="list-style:none; display:flex; justify-content:space-between; align-items:baseline; gap:12px;">
+            <span style="font-family:var(--serif); font-size:20px; font-weight:500; color:var(--ink);">Philadelphia <span style="font-family:var(--mono); font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--ink-3); margin-left:12px;">City · 2020</span></span>
+            <span style="font-family:var(--mono); font-size:16px; color:var(--moss); flex-shrink:0;">+</span>
+          </summary>
+          <div style="margin-top:16px; padding-top:16px; border-top:1px solid var(--rule-soft);">
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:14px;">
+              <div>
+                <div style="font-family:var(--mono); font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--moss-deep); margin-bottom:6px;">Coverage</div>
+                <div style="font-size:14px; line-height:1.6; color:var(--ink-2);">Domestic workers (nannies, housecleaners, caregivers) working ≥5 hrs/month; covers workers regardless of immigration status</div>
+              </div>
+              <div>
+                <div style="font-family:var(--mono); font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--moss-deep); margin-bottom:6px;">Key provisions</div>
+                <div style="font-size:14px; line-height:1.6; color:var(--ink-2);">Written employment agreements, paid leave accrued across multiple employers, 2-week termination notice (4 weeks for live-in workers)</div>
+              </div>
+            </div>
+            <div style="font-family:var(--serif); font-style:italic; font-size:13px; color:var(--ink-3);">First ordinance to allow paid leave to accrue across multiple employers, addressing how domestic work is actually structured.</div>
+          </div>
+        </details>
+
+        <!-- Virginia · 2021 -->
+        <details style="background:var(--paper); padding:22px 24px; cursor:pointer;">
+          <summary style="list-style:none; display:flex; justify-content:space-between; align-items:baseline; gap:12px;">
+            <span style="font-family:var(--serif); font-size:20px; font-weight:500; color:var(--ink);">Virginia <span style="font-family:var(--mono); font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--ink-3); margin-left:12px;">2021</span></span>
+            <span style="font-family:var(--mono); font-size:16px; color:var(--moss); flex-shrink:0;">+</span>
+          </summary>
+          <div style="margin-top:16px; padding-top:16px; border-top:1px solid var(--rule-soft);">
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:14px;">
+              <div>
+                <div style="font-family:var(--mono); font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--moss-deep); margin-bottom:6px;">Coverage</div>
+                <div style="font-size:14px; line-height:1.6; color:var(--ink-2);">Nannies, housecleaners, home care workers statewide; approx. 60,000 workers previously without any legal protections</div>
+              </div>
+              <div>
+                <div style="font-family:var(--mono); font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--moss-deep); margin-bottom:6px;">Key provisions</div>
+                <div style="font-size:14px; line-height:1.6; color:var(--ink-2);">Minimum wage, anti-discrimination and harassment protections, privacy protections for live-in workers, right to a safe workplace</div>
+              </div>
+            </div>
+            <div style="font-family:var(--serif); font-style:italic; font-size:13px; color:var(--ink-3);">First Southern state to pass a DWBR; workers previously had no legal recourse for sexual harassment or pregnancy discrimination.</div>
+          </div>
+        </details>
+
+        <!-- District of Columbia · 2022 -->
+        <details style="background:var(--paper); padding:22px 24px; cursor:pointer;">
+          <summary style="list-style:none; display:flex; justify-content:space-between; align-items:baseline; gap:12px;">
+            <span style="font-family:var(--serif); font-size:20px; font-weight:500; color:var(--ink);">District of Columbia <span style="font-family:var(--mono); font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--ink-3); margin-left:12px;">City · 2022</span></span>
+            <span style="font-family:var(--mono); font-size:16px; color:var(--moss); flex-shrink:0;">+</span>
+          </summary>
+          <div style="margin-top:16px; padding-top:16px; border-top:1px solid var(--rule-soft);">
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:14px;">
+              <div>
+                <div style="font-family:var(--mono); font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--moss-deep); margin-bottom:6px;">Coverage</div>
+                <div style="font-size:14px; line-height:1.6; color:var(--ink-2);">Housekeepers, nannies, home health aides in the District; approx. 9,000 workers previously excluded from the DC Human Rights Act</div>
+              </div>
+              <div>
+                <div style="font-family:var(--mono); font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--moss-deep); margin-bottom:6px;">Key provisions</div>
+                <div style="font-size:14px; line-height:1.6; color:var(--ink-2);">DC Human Rights Act protections (effective Oct. 2023), written work agreements required, domestic worker outreach and education program established</div>
+              </div>
+            </div>
+            <div style="font-family:var(--serif); font-style:italic; font-size:13px; color:var(--ink-3);">Reversed the DC Human Rights Act's historical exclusion of domestic workers, a direct legacy of the exclusions written into federal law in 1938.</div>
+          </div>
+        </details>
+
+        <!-- Rhode Island · 2024 -->
+        <details style="background:var(--paper); padding:22px 24px; cursor:pointer;">
+          <summary style="list-style:none; display:flex; justify-content:space-between; align-items:baseline; gap:12px;">
+            <span style="font-family:var(--serif); font-size:20px; font-weight:500; color:var(--ink);">Rhode Island <span style="font-family:var(--mono); font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--ink-3); margin-left:12px;">2024</span></span>
+            <span style="font-family:var(--mono); font-size:16px; color:var(--moss); flex-shrink:0;">+</span>
+          </summary>
+          <div style="margin-top:16px; padding-top:16px; border-top:1px solid var(--rule-soft);">
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:14px;">
+              <div>
+                <div style="font-family:var(--mono); font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--moss-deep); margin-bottom:6px;">Coverage</div>
+                <div style="font-size:14px; line-height:1.6; color:var(--ink-2);">Domestic service workers in private homes (nannies, housecleaners, home care aides) previously exempted from the state minimum wage law</div>
+              </div>
+              <div>
+                <div style="font-family:var(--mono); font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--moss-deep); margin-bottom:6px;">Key provisions</div>
+                <div style="font-size:14px; line-height:1.6; color:var(--ink-2);">Minimum wage, overtime (1.5×) after 40 hrs/week, enforcement by state labor department</div>
+              </div>
+            </div>
+            <div style="font-family:var(--serif); font-style:italic; font-size:13px; color:var(--ink-3);">Eliminated the longstanding exemption of domestic workers from Rhode Island's minimum wage statute.</div>
+          </div>
+        </details>
+
+        <!-- New Jersey · 2024 -->
+        <details style="background:var(--paper); padding:22px 24px; cursor:pointer;">
+          <summary style="list-style:none; display:flex; justify-content:space-between; align-items:baseline; gap:12px;">
+            <span style="font-family:var(--serif); font-size:20px; font-weight:500; color:var(--ink);">New Jersey <span style="font-family:var(--mono); font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--ink-3); margin-left:12px;">2024</span></span>
+            <span style="font-family:var(--mono); font-size:16px; color:var(--moss); flex-shrink:0;">+</span>
+          </summary>
+          <div style="margin-top:16px; padding-top:16px; border-top:1px solid var(--rule-soft);">
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:14px;">
+              <div>
+                <div style="font-family:var(--mono); font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--moss-deep); margin-bottom:6px;">Coverage</div>
+                <div style="font-size:14px; line-height:1.6; color:var(--ink-2);">Domestic workers (childcare, housecleaning, elderly and disability care); excludes workers with fewer than 5 hrs/month; covers all workers regardless of immigration status</div>
+              </div>
+              <div>
+                <div style="font-family:var(--mono); font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--moss-deep); margin-bottom:6px;">Key provisions</div>
+                <div style="font-size:14px; line-height:1.6; color:var(--ink-2);">Workers' compensation, unemployment insurance, temporary disability and family leave insurance, NJ Law Against Discrimination protections, minimum wage and overtime</div>
+              </div>
+            </div>
+            <div style="font-family:var(--serif); font-style:italic; font-size:13px; color:var(--ink-3);">Most comprehensive inclusion of domestic workers in state insurance and benefits systems of any DWBR to date.</div>
+          </div>
+        </details>
+
+        <!-- Washington · 2026 -->
+        <details style="background:var(--paper); padding:22px 24px; cursor:pointer;">
+          <summary style="list-style:none; display:flex; justify-content:space-between; align-items:baseline; gap:12px;">
+            <span style="font-family:var(--serif); font-size:20px; font-weight:500; color:var(--ink);">Washington <span style="font-family:var(--mono); font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--ink-3); margin-left:12px;">2026</span></span>
+            <span style="font-family:var(--mono); font-size:16px; color:var(--moss); flex-shrink:0;">+</span>
+          </summary>
+          <div style="margin-top:16px; padding-top:16px; border-top:1px solid var(--rule-soft);">
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:14px;">
+              <div>
+                <div style="font-family:var(--mono); font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--moss-deep); margin-bottom:6px;">Coverage</div>
+                <div style="font-size:14px; line-height:1.6; color:var(--ink-2);">Nannies, housecleaners, home care aides, personal attendants working ≥4 hrs/month, one of the lowest coverage thresholds of any state</div>
+              </div>
+              <div>
+                <div style="font-family:var(--mono); font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--moss-deep); margin-bottom:6px;">Key provisions</div>
+                <div style="font-size:14px; line-height:1.6; color:var(--ink-2);">Minimum wage, overtime (1.5×) after 40 hrs/week, written employment agreements, advance termination notice, privacy protections (no monitoring in bathrooms or bedrooms); effective July 1, 2027</div>
+              </div>
+            </div>
+            <div style="font-family:var(--serif); font-style:italic; font-size:13px; color:var(--ink-3);">The thirteenth state, and the culmination of Seattle's eight-year proving ground. See Chapter III for the full legislative timeline.</div>
+          </div>
+        </details>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- NATIONAL TRENDS -->
+  <section class="section">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-marker">
+          <span class="num">02</span>
+          Trends
+        </div>
+        <div class="section-body">
+          <h2 class="h2">What sixteen years of lawmaking reveals.</h2>
+        </div>
+      </div>
+
+      <div class="twocol">
+        <div class="narrative">
+          <p>
+            Nine of the thirteen states passed their DWBRs in the first decade (2010–2019), averaging nearly one per year. The pace slowed slightly in the years since, with four more states following between 2021 and 2026, but the geographic reach widened: Virginia became the first Southern state in 2021, and Washington completed the Pacific Coast in 2026. Three cities (Seattle, Philadelphia, and the District of Columbia) also enacted their own ordinances; Seattle's preceded and directly shaped Washington's statewide law.
+          </p>
+          <p>
+            Across all sixteen jurisdictions, minimum wage coverage is nearly universal. Overtime, anti-harassment, and rest-break provisions are common at the state level; written employment agreements and paid leave are less consistent, with cities often filling gaps that state laws leave open.
+          </p>
+        </div>
+        <div>
+          <div class="protection-list">
+            <div class="protection"><span class="marker"></span><span class="protection-name">Minimum wage</span><span class="protection-states">14 / 16</span></div>
+            <div class="protection"><span class="marker"></span><span class="protection-name">Overtime pay</span><span class="protection-states">12 / 16</span></div>
+            <div class="protection"><span class="marker"></span><span class="protection-name">Meal & rest breaks</span><span class="protection-states">10 / 16</span></div>
+            <div class="protection"><span class="marker"></span><span class="protection-name">Anti-harassment</span><span class="protection-states">13 / 16</span></div>
+            <div class="protection"><span class="marker"></span><span class="protection-name">Written agreements</span><span class="protection-states">9 / 16</span></div>
+            <div class="protection"><span class="marker"></span><span class="protection-name">Paid leave</span><span class="protection-states">6 / 16</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HISTORICAL CONTEXT -->
+  <section class="section">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-marker">
+          <span class="num">03</span>
+          Why it matters
+        </div>
+        <div class="section-body">
+          <h2 class="h2">Nearly ninety years in the making.</h2>
+        </div>
+      </div>
+
+      <div class="twocol">
+        <div class="narrative">
+          <p>
+            The Fair Labor Standards Act of 1938 created the federal floor for American work: minimum wage, overtime, the forty-hour week. It also, by deliberate compromise, left two groups out: agricultural workers and domestic workers. <em>That carve-out has never been undone at the federal level.</em>
+          </p>
+          <p>
+            What you are looking at, on the map above, is the slow work of putting it back, not in the District of Columbia, but across sixteen jurisdictions, statute by statute, over sixteen years of organizing.
+          </p>
+        </div>
+        <div>
+          <div class="stats" style="grid-template-columns:1fr 1fr; margin:0;">
+            <div class="stat">
+              <div class="stat-num">1938</div>
+              <div class="stat-label">FLSA exclusion</div>
+              <div class="stat-foot">Domestic workers explicitly carved out of federal labor protections. That gap remains today.</div>
+            </div>
+            <div class="stat">
+              <div class="stat-num">2010</div>
+              <div class="stat-label">First state law</div>
+              <div class="stat-foot">New York's DWBR, the model the rest of the country would adapt.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="narrow">
+      <div class="pullquote">
+        <span class="pullquote-mark">"</span>
+        <p class="pullquote-text">
+          We didn't ask for new rights. We asked to be added to the rights the country had already written for everyone else.
+        </p>
+        <div class="pullquote-cite">— Ai-jen Poo, NDWA, 2013</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="page-nav">
+    <a class="prev" data-page="home">
+      <div class="label">← Index</div>
+      <div class="ttl"><span class="arr">←</span> Return to home</div>
+    </a>
+    <a class="next" data-page="seattle">
+      <div class="label">Chapter II →</div>
+      <div class="ttl">City campaigns <span class="arr">→</span></div>
+    </a>
+  </div>
+
+  <footer>
+    <div class="footer-fine" style="margin:0;">
+      <span>DWBR · Chapter I · United States</span>
+      <span>Source · National Domestic Workers Alliance</span>
+    </div>
+  </footer>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════
+     PAGE: SEATTLE
+══════════════════════════════════════════════════ -->
+<div class="page" id="page-seattle" data-screen-label="Chapter II · Seattle">
+
+  <section class="hero" style="padding-bottom:56px;">
+    <div class="container">
+      <div class="hero-meta">
+        <span>Chapter II</span>
+        <span class="div"></span>
+        <span>2017 — 2019</span>
+        <span class="div"></span>
+        <span>Seattle · City ordinance</span>
+      </div>
+      <h1 class="h1" style="max-width:920px;">
+        One city. One campaign.<br>
+        The <em style="color:var(--forest);">playbook</em> that changed a state.
+      </h1>
+      <p class="lede" style="margin-top:28px;">
+        Before Washington passed its Domestic Workers Bill of Rights in 2026, Seattle wrote the model.
+        Eighteen months of organizing, sixty-three house meetings, and one unanimous council vote: a blueprint
+        that proved a city could do what a state had not yet found the will to.
+      </p>
+    </div>
+  </section>
+
+  <!-- CITY TIMELINE -->
+  <section class="section" style="padding-top:0;">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-marker">
+          <span class="num">01</span>
+          Timeline
+        </div>
+        <div class="section-body">
+          <h2 class="h2">Seattle's organizing arc, 2017–2019.</h2>
+        </div>
+      </div>
+
+      <ol class="steps">
+        <li class="step">
+          <div class="step-num">01</div>
+          <div>
+            <div class="step-meta">Spring 2017</div>
+            <div class="step-title">Coalition forms.</div>
+            <div class="step-text">
+              Casa Latina, SEIU Local 775, and Working Washington pull together a worker-led steering committee.
+              The group begins organizing house meetings across the city.
+            </div>
+          </div>
+        </li>
+        <li class="step">
+          <div class="step-num">02</div>
+          <div>
+            <div class="step-meta">2017–2018</div>
+            <div class="step-title">House meetings and bill drafting.</div>
+            <div class="step-text">
+              Organizers run sessions in Spanish, Tagalog, Amharic, and English, cataloguing wage theft, isolation,
+              and the contracts no one had ever been offered. The final bill goes back to workers four times before it is filed.
+            </div>
+          </div>
+        </li>
+        <li class="step">
+          <div class="step-num">03</div>
+          <div>
+            <div class="step-meta">July 2018</div>
+            <div class="step-title">City Council votes 9–0.</div>
+            <div class="step-text">
+              Seattle passes the first city-level Domestic Workers Bill of Rights in the United States. It covers minimum wage,
+              rest breaks, written agreements, document protections, and establishes the nation's first Domestic Worker Standards Board.
+            </div>
+          </div>
+        </li>
+        <li class="step">
+          <div class="step-num">04</div>
+          <div>
+            <div class="step-meta">2019</div>
+            <div class="step-title">Standards Board holds its first session.</div>
+            <div class="step-text">
+              The Seattle Domestic Worker Standards Board, seated half with workers, half with employers, begins meeting.
+              It is empowered to recommend wage floors and working conditions directly to the City Council.
+            </div>
+          </div>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- SEATTLE DEEP DIVE -->
+  <section class="section">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-marker">
+          <span class="num">02</span>
+          Seattle case study
+        </div>
+        <div class="section-body">
+          <h2 class="h2">How it happened: the anatomy of a city campaign.</h2>
+          <p class="lede">Eighteen months, sixty-three house meetings, one unanimous vote.</p>
+        </div>
+      </div>
+
+      <div class="twocol">
+        <div class="narrative">
+          <p>
+            Domestic work is invisible by design: it happens behind closed doors, in private homes, on schedules no
+            employer publishes. The Seattle campaign began by making that geography visible: mapping the council
+            districts where workers actually lived, the neighborhoods they cleaned, and the commute lines connecting them.
+          </p>
+          <p>
+            House meetings replaced public hearings. Organizers ran sessions in Spanish, Tagalog, Amharic and English,
+            cataloguing wage theft, isolation, and the contracts no one had ever been offered. The final bill went back to
+            workers four times before it was filed.
+          </p>
+        </div>
+        <div class="viz">
+          <div class="viz-header">
+            <span class="vid">FIG. 02</span>
+            <span>Seattle · organizing density by district</span>
+          </div>
+          <div style="aspect-ratio: 4/5; background:
+            repeating-linear-gradient(135deg, var(--paper-2) 0 10px, var(--paper-3) 10px 11px);
+            display:flex; align-items:center; justify-content:center;">
+            <div style="background:var(--paper); padding:10px 16px; border:1px solid var(--rule); font-family:var(--mono); font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--ink-3);">
+              [ Seattle district map placeholder ]
+            </div>
+          </div>
+          <div class="viz-caption">
+            <strong>Drop in</strong>
+            A choropleth of organizing meetings per district, 2017–18, would replace the placeholder above.
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SEATTLE ORDINANCE DETAIL -->
+  <section class="section">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-marker">
+          <span class="num">03</span>
+          The ordinance
+        </div>
+        <div class="section-body">
+          <h2 class="h2">What Seattle's 2018 ordinance guarantees.</h2>
+          <p class="lede">Six protections, two of which no other jurisdiction had written before.</p>
+        </div>
+      </div>
+
+      <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:1px; background:var(--rule); border:1px solid var(--rule);">
+        <div style="background:var(--paper); padding:24px;">
+          <div style="font-family:var(--mono); font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--moss-deep); margin-bottom:8px;">Minimum wage</div>
+          <div style="font-size:15px; line-height:1.6; color:var(--ink-2);">Seattle minimum wage applies in full, with no subminimum rates, no tip credits, regardless of employment status or immigration status.</div>
+        </div>
+        <div style="background:var(--paper); padding:24px;">
+          <div style="font-family:var(--mono); font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--moss-deep); margin-bottom:8px;">Rest & meal breaks</div>
+          <div style="font-size:15px; line-height:1.6; color:var(--ink-2);">30-minute unpaid meal break after 5 consecutive hours; 10-minute paid rest break for every 4 hours worked. Live-in workers get 24 unpaid hours off if required to work 6+ days straight.</div>
+        </div>
+        <div style="background:var(--paper); padding:24px;">
+          <div style="font-family:var(--mono); font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--moss-deep); margin-bottom:8px;">Written agreements</div>
+          <div style="font-size:15px; line-height:1.6; color:var(--ink-2);">Employers must provide a written work agreement before work begins, stating pay, schedule, duties, and conditions. Available in the worker's language.</div>
+        </div>
+        <div style="background:var(--paper); padding:24px;">
+          <div style="font-family:var(--mono); font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--moss-deep); margin-bottom:8px;">Document protections</div>
+          <div style="font-size:15px; line-height:1.6; color:var(--ink-2);">Employers are prohibited from retaining workers' passports, Social Security cards, or immigration documents, a practice used to trap live-in workers. <em>First ordinance in the country to codify this.</em></div>
+        </div>
+        <div style="background:var(--paper); padding:24px;">
+          <div style="font-family:var(--mono); font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--moss-deep); margin-bottom:8px;">Anti-retaliation</div>
+          <div style="font-size:15px; line-height:1.6; color:var(--ink-2);">Employers may not threaten, report, or penalize workers for asserting their rights, including threatening to contact immigration authorities. Retaliation is a civil violation enforceable by the city.</div>
+        </div>
+        <div style="background:var(--paper); padding:24px;">
+          <div style="font-family:var(--mono); font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--moss-deep); margin-bottom:8px;">Standards Board</div>
+          <div style="font-size:15px; line-height:1.6; color:var(--ink-2);">A first-of-its-kind body, seated half with workers, half with employers, empowered to recommend minimum standards on wages and working conditions to the City Council. Washington's 2026 law created the same model at state scale.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="narrow">
+      <div class="pullquote">
+        <span class="pullquote-mark">"</span>
+        <p class="pullquote-text">
+          They didn't write a bill and bring it to us. They sat in our living rooms until we wrote the bill ourselves.
+        </p>
+        <div class="pullquote-cite">— Casa Latina member, on the 2018 Seattle ordinance</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="page-nav">
+    <a class="prev" data-page="us">
+      <div class="label">← Chapter I</div>
+      <div class="ttl"><span class="arr">←</span> United States</div>
+    </a>
+    <a class="next" data-page="wa">
+      <div class="label">Chapter III →</div>
+      <div class="ttl">Washington <span class="arr">→</span></div>
+    </a>
+  </div>
+
+  <footer>
+    <div class="footer-fine" style="margin:0;">
+      <span>DWBR · Chapter II · Seattle</span>
+      <span>Source · Seattle Office of Labor Standards · SMC 14.23</span>
+    </div>
+  </footer>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════
+     PAGE: WASHINGTON
+══════════════════════════════════════════════════ -->
+<div class="page" id="page-wa" data-screen-label="Chapter III · Washington">
+
+  <section class="hero" style="padding-bottom:56px;">
+    <div class="container">
+      <div class="hero-meta">
+        <span class="live-dot" style="display:inline-block; width:6px; height:6px; border-radius:50%; background:var(--mint); margin-right:6px;"></span>
+        <span>Chapter III · Enacted</span>
+        <span class="div"></span>
+        <span>Jan — Mar 2026</span>
+        <span class="div"></span>
+        <span>Complete timeline</span>
+      </div>
+      <h1 class="h1" style="max-width:980px;">
+        The bill <em style="color:var(--forest);">passed</em>.<br>
+        Eighteen events, two chambers, sixty days. Signed into law March 9, 2026.
+      </h1>
+      <p class="lede" style="margin-top:28px;">
+        From a January prefile to the Governor's signature in March. Washington's Domestic Workers Bill of Rights cleared the House (57–39),
+        the Senate (28–20), and was signed into law on March 9, 2026. Protections take effect July 1, 2027.
+      </p>
+    </div>
+  </section>
+
+  <!-- BILL TIMELINE -->
+  <section class="section" style="padding-top:0;">
+    <div class="container">
+      <div class="viz">
+        <div class="viz-header">
+          <span class="vid">FIG. 03</span>
+          <span>Washington 2025–26 · bill timeline</span>
+        </div>
+        <div class="viz-body">
+          <iframe
+            src="DWBR_Timeline_WA/index.html"
+            width="100%"
+            height="720"
+            title="Washington DWBR bill timeline, 2025–2026"
+            loading="lazy"
+          ></iframe>
+        </div>
+        <div class="viz-caption">
+          <strong>How to read</strong>
+          Click any card or use ← / → to step through events. The detail panel above the line shows the official record for the selected day.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CHRONOLOGICAL HISTORY -->
+  <section class="section">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-marker">
+          <span class="num">01</span>
+          History
+        </div>
+        <div class="section-body">
+          <h2 class="h2">Washington's DWBR didn't start in 2025.</h2>
+          <p class="lede">The 2026 victory is the culmination of six years of organizing, two prior attempts, and Seattle's municipal groundwork.</p>
+        </div>
+      </div>
+
+      <ol class="steps">
+        <li class="step">
+          <div class="step-num">01</div>
+          <div>
+            <div class="step-meta">2018 · City ordinance</div>
+            <div class="step-title">Seattle passes the country's first municipal DWBR.</div>
+            <div class="step-text">
+              The Seattle ordinance covers minimum wage, rest breaks, written agreements, and establishes a Standards Board.
+              It becomes the proof-of-concept for statewide legislation.
+            </div>
+          </div>
+        </li>
+        <li class="step">
+          <div class="step-num">02</div>
+          <div>
+            <div class="step-meta">2020 · First state attempt</div>
+            <div class="step-title">A statewide bill is introduced, and dies in committee.</div>
+            <div class="step-text">
+              HB 1565 clears the House Labor committee but stalls in Appropriations. Opposition focuses on cost to households
+              and concerns about enforcement in private homes.
+            </div>
+          </div>
+        </li>
+        <li class="step">
+          <div class="step-num">03</div>
+          <div>
+            <div class="step-meta">2021–2024 · Coalition building</div>
+            <div class="step-title">Organizers regroup and expand the base.</div>
+            <div class="step-text">
+              The coalition runs 200+ listening sessions statewide, recruits employer advocates, and drafts a revised bill
+              with phased implementation and household cost caps.
+            </div>
+          </div>
+        </li>
+        <li class="step">
+          <div class="step-num">04</div>
+          <div>
+            <div class="step-meta">2025–2026 · Second attempt</div>
+            <div class="step-title">The bill is refiled, and this time, it passes.</div>
+            <div class="step-text">
+              HB 1399 / SB 5205 moves through both chambers in 60 days. The House passes 57–39 on Feb 12; the Senate follows
+              28–20 on Feb 26. Both chambers exceed simple-majority thresholds.
+            </div>
+          </div>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- VOTE BREAKDOWN -->
+  <section class="section">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-marker">
+          <span class="num">02</span>
+          The vote
+        </div>
+        <div class="section-body">
+          <h2 class="h2">How the chambers landed, and what the margins mean.</h2>
+        </div>
+      </div>
+
+      <div class="twocol">
+        <div>
+          <div class="vote">
+            <div class="vote-chamber">House · Third reading · Feb 12, 2026</div>
+            <div class="vote-line">
+              <span class="yea">57 yea</span><span class="sep">/</span><span class="nay">39 nay</span>
+            </div>
+            <div class="vote-bar">
+              <div class="yea-fill" style="flex: 57;"></div>
+              <div class="nay-fill" style="flex: 39;"></div>
+            </div>
+            <div class="vote-meta">
+              <span>Absent · 0</span>
+              <span>Excused · 2</span>
+              <span>Margin · +18</span>
+            </div>
+          </div>
+
+          <div class="vote">
+            <div class="vote-chamber">Senate · Third reading · Feb 26, 2026</div>
+            <div class="vote-line">
+              <span class="yea">28 yea</span><span class="sep">/</span><span class="nay">20 nay</span>
+            </div>
+            <div class="vote-bar">
+              <div class="yea-fill" style="flex: 28;"></div>
+              <div class="nay-fill" style="flex: 20;"></div>
+            </div>
+            <div class="vote-meta">
+              <span>Absent · 0</span>
+              <span>Excused · 1</span>
+              <span>Margin · +8</span>
+            </div>
+          </div>
+
+          <div class="vote" style="background:var(--sage-tint); border-color:var(--sage);">
+            <div class="vote-chamber" style="color:var(--sage-deep);">Governor · Signed March 9, 2026</div>
+            <div class="vote-line" style="font-size:20px;">
+              <span class="yea">Chapter 15, 2026 Laws of Washington</span>
+            </div>
+            <div class="vote-meta">
+              <span>Effective date · 7/1/2027</span>
+              <span style="color:var(--sage-deep); font-weight:600;">✓ Enacted</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="narrative">
+          <p>
+            The 2026 floor margins represent a strong mandate for domestic worker protections. The House passed
+            the substitute bill <em>57 to 39</em>, an 18-vote margin. The Senate followed two weeks later, <em>28 to 20</em>,
+            with an 8-vote margin. Both exceeded simple-majority thresholds.
+          </p>
+          <p>
+            The bill landed on the Governor's desk on March 3, 2026. Governor Inslee signed it into law on March 9 as Chapter 15
+            of the 2026 Laws of Washington. Protections take effect July 1, 2027, giving employers and the state a fifteen-month
+            window to implement standards and train enforcement staff.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2020 vs 2026 COMPARISON -->
+  <section class="section">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-marker">
+          <span class="num">03</span>
+          What changed
+        </div>
+        <div class="section-body">
+          <h2 class="h2">2020 vs. 2026, side by side.</h2>
+          <p class="lede">Same goal, very different bills. Here's what the coalition learned between attempts.</p>
+        </div>
+      </div>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:1px; background:var(--rule); border:1px solid var(--rule);">
+        <div style="background:var(--paper); padding:28px;">
+          <div style="font-family:var(--mono); font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--seafoam); margin-bottom:12px;">2020 attempt · HB 1565</div>
+          <h3 style="font-family:var(--serif); font-size:24px; font-weight:500; color:var(--ink); margin-bottom:20px;">Died in committee</h3>
+          
+          <div style="margin-bottom:20px;">
+            <div style="font-family:var(--mono); font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--moss-deep); margin-bottom:8px;">Coverage</div>
+            <div style="font-size:15px; line-height:1.6; color:var(--ink-2);">Immediate statewide coverage: all domestic workers, no phase-in period</div>
+          </div>
+
+          <div style="margin-bottom:20px;">
+            <div style="font-family:var(--mono); font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--moss-deep); margin-bottom:8px;">Cost provisions</div>
+            <div style="font-size:15px; line-height:1.6; color:var(--ink-2);">No household cost caps or exemptions for low-income employers</div>
+          </div>
+
+          <div style="margin-bottom:20px;">
+            <div style="font-family:var(--mono); font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--moss-deep); margin-bottom:8px;">Support coalition</div>
+            <div style="font-size:15px; line-height:1.6; color:var(--ink-2);">Worker organizations + labor unions, with limited employer advocates</div>
+          </div>
+
+          <div>
+            <div style="font-family:var(--mono); font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--moss-deep); margin-bottom:8px;">Outcome</div>
+            <div style="font-size:15px; line-height:1.6; color:var(--ink-2);">Cleared House Labor, stalled in Appropriations. Never reached the floor.</div>
+          </div>
+        </div>
+
+        <div style="background:var(--sage-tint); padding:28px;">
+          <div style="font-family:var(--mono); font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--sage-deep); margin-bottom:12px;">2025–26 attempt · HB 1399</div>
+          <h3 style="font-family:var(--serif); font-size:24px; font-weight:500; color:var(--ink); margin-bottom:20px;">Passed both chambers</h3>
+          
+          <div style="margin-bottom:20px;">
+            <div style="font-family:var(--mono); font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--moss-deep); margin-bottom:8px;">Coverage</div>
+            <div style="font-size:15px; line-height:1.6; color:var(--ink-2);">Phased implementation: core protections 7/1/27, live-in worker provisions deferred to 2028 study</div>
+          </div>
+
+          <div style="margin-bottom:20px;">
+            <div style="font-family:var(--mono); font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--moss-deep); margin-bottom:8px;">Cost provisions</div>
+            <div style="font-size:15px; line-height:1.6; color:var(--ink-2);">Sliding-scale subsidies for low-income households; exemptions for households below 200% FPL</div>
+          </div>
+
+          <div style="margin-bottom:20px;">
+            <div style="font-family:var(--mono); font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--moss-deep); margin-bottom:8px;">Support coalition</div>
+            <div style="font-size:15px; line-height:1.6; color:var(--ink-2);">Worker orgs + labor + employer advocates (Hand in Hand, Care.com employers) + disability rights groups</div>
+          </div>
+
+          <div>
+            <div style="font-family:var(--mono); font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--moss-deep); margin-bottom:8px;">Outcome</div>
+            <div style="font-size:15px; line-height:1.6; color:var(--ink-2);">Passed House 57–39, Senate 28–20. Delivered to Governor 3/3/26. Awaiting signature.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WHAT'S COVERED -->
+  <section class="section">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-marker">
+          <span class="num">04</span>
+          Implementation
+        </div>
+        <div class="section-body">
+          <h2 class="h2">Six protections, effective July 1, 2027.</h2>
+        </div>
+      </div>
+
+      <div class="protection-list">
+        <div class="protection"><span class="marker"></span><span class="protection-name">Minimum wage parity</span><span class="protection-states">Effective 7/1/27</span></div>
+        <div class="protection"><span class="marker"></span><span class="protection-name">Overtime &amp; rest breaks</span><span class="protection-states">Effective 7/1/27</span></div>
+        <div class="protection"><span class="marker"></span><span class="protection-name">Written employment terms</span><span class="protection-states">Effective 7/1/27</span></div>
+        <div class="protection"><span class="marker"></span><span class="protection-name">Anti-harassment coverage</span><span class="protection-states">Effective 7/1/27</span></div>
+        <div class="protection"><span class="marker"></span><span class="protection-name">Standards Board with worker seats</span><span class="protection-states">Convenes 2027</span></div>
+        <div class="protection"><span class="marker no"></span><span class="protection-name">Live-in worker protections</span><span class="protection-states">Phase 2 · 2028 study</span></div>
+      </div>
+
+      <div style="margin-top:32px; padding:24px; border:1px solid var(--rule); background:var(--paper-2);">
+        <div style="font-family:var(--mono); font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--moss-deep); margin-bottom:12px;">Implementation timeline</div>
+        <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:20px;">
+          <div>
+            <div style="font-family:var(--serif); font-size:20px; font-weight:500; color:var(--sage-deep); margin-bottom:6px;">7/1/2027</div>
+            <div style="font-size:14px; color:var(--ink-2);">Core protections take effect statewide</div>
+          </div>
+          <div>
+            <div style="font-family:var(--serif); font-size:20px; font-weight:500; color:var(--sage-deep); margin-bottom:6px;">Fall 2027</div>
+            <div style="font-size:14px; color:var(--ink-2);">Standards Board convenes; worker & employer seats appointed</div>
+          </div>
+          <div>
+            <div style="font-family:var(--serif); font-size:20px; font-weight:500; color:var(--sage-deep); margin-bottom:6px;">2028</div>
+            <div style="font-size:14px; color:var(--ink-2);">State study on live-in worker provisions; recommendations due to legislature</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="narrow">
+      <div class="pullquote">
+        <span class="pullquote-mark">"</span>
+        <p class="pullquote-text">
+          Seventeen years ago, our work was invisible to the law. Today the Governor of Washington has signed our names into it.
+        </p>
+        <div class="pullquote-cite">— Statement from the WA DWBR coalition, March 9 2026</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="page-nav">
+    <a class="prev" data-page="seattle">
+      <div class="label">← Chapter II</div>
+      <div class="ttl"><span class="arr">←</span> Cities</div>
+    </a>
+    <a class="next" data-page="home">
+      <div class="label">↑ Index</div>
+      <div class="ttl">Return to home <span class="arr">↑</span></div>
+    </a>
+  </div>
+
+  <footer>
+    <div class="footer-fine" style="margin:0;">
+      <span>DWBR · Chapter III · Washington 2025–26</span>
+      <span>Source · WA State Legislature</span>
+    </div>
+  </footer>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════
+     SCRIPTS — routing
+══════════════════════════════════════════════════ -->
+<script>
+  const pages    = document.querySelectorAll('.page');
+  const navLinks = document.querySelectorAll('.nav-links a');
+  const validPages = ['home', 'us', 'seattle', 'wa'];
+
+  function showPage(id) {
+    if (!validPages.includes(id)) return;
+    pages.forEach(p => p.classList.remove('visible'));
+    navLinks.forEach(a => a.classList.remove('active'));
+    const target = document.getElementById('page-' + id);
+    if (target) target.classList.add('visible');
+    navLinks.forEach(a => { if (a.dataset.page === id) a.classList.add('active'); });
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }
+
+  document.addEventListener('click', e => {
+    const el = e.target.closest('[data-page]');
+    if (!el) return;
+    e.preventDefault();
+    showPage(el.dataset.page);
+  });
+
+  // last-updated footer timestamp
+  const ts = document.getElementById('ts');
+  if (ts) {
+    const d = new Date();
+    ts.textContent = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  }
+</script>
+
+</body>
+</html>
