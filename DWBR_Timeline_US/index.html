@@ -8,6 +8,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 <script src="https://d3js.org/d3.v7.min.js"></script>
 <style>
+*, *::before, *::after { box-sizing: border-box; }
+
 body {
     margin: 0;
     font-family: 'Public Sans', -apple-system, system-ui, sans-serif;
@@ -19,6 +21,24 @@ body {
 svg {
     display: block;
     margin: 16px auto 0 auto;
+}
+
+path.active {
+    cursor: pointer;
+}
+
+path.active:hover {
+    stroke: #fff;
+    stroke-width: 1.8px;
+}
+
+circle.active-point {
+    cursor: pointer;
+}
+
+circle.active-point:hover {
+    stroke: #3d5a4a;
+    stroke-width: 3px;
 }
 
 .bottom-bar {
@@ -33,11 +53,11 @@ svg {
 .controls-row {
     display: inline-flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
     flex-wrap: nowrap;
     justify-content: center;
-    background: rgba(245, 247, 246, 0.96);
-    padding: 8px 16px;
+    background: rgba(245, 247, 246, 0.97);
+    padding: 7px 14px;
     border-radius: 999px;
     border: 1px solid #dde8e3;
     max-width: calc(100vw - 24px);
@@ -46,21 +66,42 @@ svg {
 }
 
 button {
-    padding: 5px 14px;
+    padding: 4px 14px;
     border: none;
     background: #6f8f85;
     color: white;
     cursor: pointer;
     border-radius: 999px;
-    font-family: 'Public Sans', system-ui, sans-serif;
-    font-size: 12px;
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 11px;
     font-weight: 700;
-    letter-spacing: 0.4px;
+    letter-spacing: .1em;
+    text-transform: uppercase;
     flex-shrink: 0;
 }
 
 button:hover {
     background: #5b7a70;
+}
+
+.counter {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 11px;
+    color: #4f6e64;
+    font-weight: 700;
+    flex-shrink: 0;
+    padding: 3px 8px;
+    background: #dde8e3;
+    border-radius: 999px;
+    white-space: nowrap;
+    letter-spacing: .04em;
+}
+
+.bar-sep {
+    width: 1px;
+    height: 16px;
+    background: #dde8e3;
+    flex-shrink: 0;
 }
 
 .years {
@@ -69,7 +110,7 @@ button:hover {
     gap: 4px;
     color: #7f918a;
     font-family: 'JetBrains Mono', ui-monospace, monospace;
-    font-size: 12px;
+    font-size: 11px;
 }
 
 .year {
@@ -106,6 +147,38 @@ button:hover {
     opacity: 0.9;
     pointer-events: none;
 }
+
+/* Tooltip — matched to Fig. 04 */
+#tooltip {
+    position: fixed;
+    pointer-events: none;
+    background: #fff;
+    border: 1px solid #dde8e3;
+    border-radius: 8px;
+    padding: 10px 13px;
+    box-shadow: 0 4px 18px rgba(74,95,88,.13);
+    opacity: 0;
+    transition: opacity 0.1s;
+    z-index: 100;
+    min-width: 130px;
+}
+
+.tt-name {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: #7f918a;
+    margin-bottom: 5px;
+}
+
+.tt-year {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .08em;
+    color: #4a7c6e;
+}
 </style>
 </head>
 <body>
@@ -115,8 +188,15 @@ button:hover {
 <div class="bottom-bar">
   <div class="controls-row">
     <button id="play-btn" onclick="togglePlay()">Play</button>
+    <div class="bar-sep"></div>
+    <span class="counter" id="counter">0</span>
     <div class="years" id="years"></div>
   </div>
+</div>
+
+<div id="tooltip">
+  <div class="tt-name" id="tt-name"></div>
+  <div class="tt-year" id="tt-year"></div>
 </div>
 
 <script>
@@ -185,21 +265,44 @@ window.togglePlay = function() {
     }
 };
 
+function getYearValue(d) {
+    const y = +d.properties.DWBR_Timeline_US_States_year;
+    return (!isNaN(y) && y > 0) ? y : null;
+}
+
+function getName(d) {
+    return d.properties.NAME || d.properties.name || "";
+}
+
+function isPoint(d) {
+    return d.geometry && d.geometry.type === "Point";
+}
+
+const tooltipEl = document.getElementById("tooltip");
+
+function showTooltip(event, d) {
+    document.getElementById("tt-name").textContent = getName(d);
+    document.getElementById("tt-year").textContent = "Passed " + getYearValue(d);
+    tooltipEl.style.opacity = "1";
+    moveTooltip(event);
+}
+
+function moveTooltip(event) {
+    let x = event.clientX + 14;
+    let y = event.clientY - 10;
+    if (x + 170 > window.innerWidth) x = event.clientX - 170 - 6;
+    if (y + 56 > window.innerHeight) y = event.clientY - 56;
+    tooltipEl.style.left = x + "px";
+    tooltipEl.style.top = y + "px";
+}
+
+function hideTooltip() {
+    tooltipEl.style.opacity = "0";
+}
+
 d3.json("DWBR_Timeline_US_States_with_Cities.geojson").then(data => {
     const allFeatures = data.features;
-
-    function getYearValue(d) {
-        const y = +d.properties.DWBR_Timeline_US_States_year;
-        return (!isNaN(y) && y > 0) ? y : null;
-    }
-
-    function getName(d) {
-        return d.properties.NAME || d.properties.name || "";
-    }
-
-    function isPoint(d) {
-        return d.geometry && d.geometry.type === "Point";
-    }
+    const total = allFeatures.filter(d => getYearValue(d) !== null).length;
 
     function pointCoords(d) {
         if (!isPoint(d)) return null;
@@ -261,7 +364,7 @@ d3.json("DWBR_Timeline_US_States_with_Cities.geojson").then(data => {
         .attr("class", "base")
         .attr("d", path)
         .attr("fill", "#dde8e3")
-        .attr("stroke", "#c5d5ce")
+        .attr("stroke", "#f5f7f6")
         .attr("stroke-width", 0.8);
 
     const activePolygonLayer = svg.append("g");
@@ -282,21 +385,27 @@ d3.json("DWBR_Timeline_US_States_with_Cities.geojson").then(data => {
             return y !== null && y === year;
         });
 
+        d3.select("#counter").text(activeFeatures.length + " / " + total);
+
         const activePolygons = activeFeatures.filter(d => !isPoint(d));
         const activePoints = activeFeatures.filter(d => isPoint(d));
 
         const polygonJoin = activePolygonLayer.selectAll("path.active")
             .data(activePolygons, d => getName(d));
 
-        polygonJoin.enter()
+        const enteredPolygons = polygonJoin.enter()
             .append("path")
             .attr("class", "active")
             .attr("d", path)
             .attr("fill", "#6f8f85")
-            .attr("stroke", "#5b7a70")
+            .attr("stroke", "#f5f7f6")
             .attr("stroke-width", 0.8)
             .attr("opacity", 0)
-            .transition()
+            .on("mouseover", showTooltip)
+            .on("mousemove", moveTooltip)
+            .on("mouseout", hideTooltip);
+
+        enteredPolygons.transition()
             .duration(1400)
             .ease(d3.easeCubicInOut)
             .attr("opacity", 1);
@@ -307,7 +416,7 @@ d3.json("DWBR_Timeline_US_States_with_Cities.geojson").then(data => {
             .ease(d3.easeCubicInOut)
             .attr("d", path)
             .attr("fill", "#6f8f85")
-            .attr("stroke", "#5b7a70")
+            .attr("stroke", "#f5f7f6")
             .attr("stroke-width", 0.8)
             .attr("opacity", 1);
 
@@ -321,7 +430,7 @@ d3.json("DWBR_Timeline_US_States_with_Cities.geojson").then(data => {
         const pointJoin = activePointLayer.selectAll("circle.active-point")
             .data(activePoints, d => getName(d));
 
-        pointJoin.enter()
+        const enteredPoints = pointJoin.enter()
             .append("circle")
             .attr("class", "active-point")
             .attr("cx", d => pointCoords(d)?.x ?? -999)
@@ -331,7 +440,11 @@ d3.json("DWBR_Timeline_US_States_with_Cities.geojson").then(data => {
             .attr("stroke", "#3d5a4a")
             .attr("stroke-width", 2)
             .attr("opacity", 0)
-            .transition()
+            .on("mouseover", showTooltip)
+            .on("mousemove", moveTooltip)
+            .on("mouseout", hideTooltip);
+
+        enteredPoints.transition()
             .duration(1400)
             .ease(d3.easeCubicInOut)
             .attr("r", 6)

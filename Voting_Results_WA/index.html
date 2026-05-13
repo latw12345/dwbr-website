@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WA DWBR Vote Map · 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Public Sans', -apple-system, system-ui, sans-serif;
+  background: #f5f7f6;
+  color: #4a5f58;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+#map-wrap {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+}
+
+svg#map {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.district {
+  stroke: #f5f7f6;
+  stroke-width: 0.6px;
+  cursor: pointer;
+  transition: stroke-width 0.1s;
+}
+
+.district:hover {
+  stroke: #fff;
+  stroke-width: 1.8px;
+}
+
+/* Tooltip */
+#tooltip {
+  position: absolute;
+  pointer-events: none;
+  background: #fff;
+  border: 1px solid #dde8e3;
+  border-radius: 8px;
+  padding: 10px 13px;
+  box-shadow: 0 4px 18px rgba(74,95,88,.13);
+  font-size: 13px;
+  min-width: 180px;
+  max-width: 240px;
+  opacity: 0;
+  transition: opacity 0.1s;
+  z-index: 10;
+}
+
+.tt-dist {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: #7f918a;
+  margin-bottom: 7px;
+}
+
+.tt-agg {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  margin-bottom: 8px;
+  padding-bottom: 7px;
+  border-bottom: 1px solid #eef3f1;
+}
+.tt-agg { color: #4a5f58; }
+
+.tt-row {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 2px 0;
+}
+
+.tt-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1a2820;
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tt-party {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: .06em;
+  padding: 1px 5px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+.tt-party.D { background: #dbe8f5; color: #1d5fa8; }
+.tt-party.R { background: #f5dbe0; color: #b02020; }
+
+.tt-vote {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .06em;
+  flex-shrink: 0;
+}
+.tt-vote.Yea     { color: #3d6b5e; }
+.tt-vote.Nay     { color: #8b3a3a; }
+.tt-vote.Excused { color: #7f918a; }
+.tt-vote.No-Vote { color: #7f918a; }
+
+/* Bottom bar */
+.bottom-bar {
+  padding: 8px 0 10px;
+  text-align: center;
+  background: #f5f7f6;
+}
+
+.controls-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: nowrap;
+  background: rgba(245,247,246,.97);
+  padding: 7px 14px;
+  border-radius: 999px;
+  border: 1px solid #dde8e3;
+  box-shadow: 0 2px 12px rgba(74,95,88,.07);
+}
+
+.chamber-btn {
+  padding: 4px 14px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: #7f918a;
+  cursor: pointer;
+  border-radius: 999px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  transition: all .18s;
+  flex-shrink: 0;
+}
+
+.chamber-btn.active {
+  background: #6f8f85;
+  color: #fff;
+  border-color: #5b7a70;
+}
+
+.chamber-btn:not(.active):hover {
+  background: #e6efeb;
+  color: #4a5f58;
+}
+
+.bar-sep {
+  width: 1px;
+  height: 16px;
+  background: #dde8e3;
+  flex-shrink: 0;
+}
+
+.legend {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: nowrap;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: #7f918a;
+  white-space: nowrap;
+}
+
+.legend-swatch {
+  width: 11px;
+  height: 11px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+</style>
+</head>
+<body>
+
+<div id="map-wrap">
+  <svg id="map"></svg>
+  <div id="tooltip"></div>
+</div>
+
+<div class="bottom-bar">
+  <div class="controls-row">
+    <button class="chamber-btn active" id="btn-house">House</button>
+    <button class="chamber-btn"        id="btn-senate">Senate</button>
+    <div class="bar-sep"></div>
+    <div class="legend" id="legend"></div>
+  </div>
+</div>
+
+<script>
+// ── Colors ──────────────────────────────────────────────────────────
+const HOUSE_COLORS = {
+  "2 Yea":           "#4a7c6e",
+  "2 Nay":           "#a04040",
+  "1 Yea 1 Nay":     "#c49a3a",
+  "1 Yea 1 No Vote": "#7aaa9a",
+  "1 Nay 1 No Vote": "#c07a7a",
+};
+const SENATE_COLORS = {
+  "Yea":     "#4a7c6e",
+  "Nay":     "#a04040",
+  "Excused": "#b0b0b0",
+};
+const BASE_COLOR = "#dde8e3";
+
+const HOUSE_AGG_LABEL = {
+  "2 Yea":           "Both Yea",
+  "2 Nay":           "Both Nay",
+  "1 Yea 1 Nay":     "Split",
+  "1 Yea 1 No Vote": "Yea + Excused",
+  "1 Nay 1 No Vote": "Nay + Excused",
+};
+
+const HOUSE_LEGEND = [
+  { color:"#4a7c6e", label:"Both Yea" },
+  { color:"#a04040", label:"Both Nay" },
+  { color:"#c49a3a", label:"Split" },
+  { color:"#7aaa9a", label:"Yea + Excused" },
+  { color:"#c07a7a", label:"Nay + Excused" },
+];
+const SENATE_LEGEND = [
+  { color:"#4a7c6e", label:"Yea" },
+  { color:"#a04040", label:"Nay" },
+  { color:"#b0b0b0", label:"Excused" },
+];
+
+// ── House member detail (for tooltip) ───────────────────────────────
+const HM = {
+   1: [{f:"Davina",   l:"Duerr",       p:"D",v:"Yea"},    {f:"Shelley",   l:"Kloba",      p:"D",v:"Yea"}],
+   2: [{f:"Andrew",   l:"Barkis",      p:"R",v:"Nay"},    {f:"Matt",      l:"Marshall",   p:"R",v:"Nay"}],
+   3: [{f:"Natasha",  l:"Hill",        p:"D",v:"Yea"},    {f:"Timm",      l:"Ormsby",     p:"D",v:"Yea"}],
+   4: [{f:"Rob",      l:"Chase",       p:"R",v:"Nay"},    {f:"Suzanne",   l:"Schmidt",    p:"R",v:"Nay"}],
+   5: [{f:"Lisa",     l:"Callan",      p:"D",v:"Yea"},    {f:"Zach",      l:"Hall",       p:"D",v:"Yea"}],
+   6: [{f:"Jenny",    l:"Graham",      p:"R",v:"Nay"},    {f:"Mike",      l:"Volz",       p:"R",v:"Nay"}],
+   7: [{f:"Hunter",   l:"Abell",       p:"R",v:"Nay"},    {f:"Andrew",    l:"Engell",     p:"R",v:"Nay"}],
+   8: [{f:"Stephanie",l:"Barnard",     p:"R",v:"Nay"},    {f:"April",     l:"Connors",    p:"R",v:"Nay"}],
+   9: [{f:"Mary",     l:"Dye",         p:"R",v:"Nay"},    {f:"Joe",       l:"Schmick",    p:"R",v:"Nay"}],
+  10: [{f:"Dave",     l:"Paul",        p:"D",v:"Yea"},    {f:"Clyde",     l:"Shavers",    p:"D",v:"Yea"}],
+  11: [{f:"Steve",    l:"Bergquist",   p:"D",v:"Yea"},    {f:"David",     l:"Hackney",    p:"D",v:"Yea"}],
+  12: [{f:"Brian",    l:"Burnett",     p:"R",v:"Nay"},    {f:"Mike",      l:"Steele",     p:"R",v:"Nay"}],
+  13: [{f:"Alex",     l:"Ybarra",      p:"R",v:"Nay"},    {f:"Tom",       l:"Dent",       p:"R",v:"Excused"}],
+  14: [{f:"Deb",      l:"Manjarrez",   p:"R",v:"Nay"},    {f:"Gloria",    l:"Mendoza",    p:"R",v:"Nay"}],
+  15: [{f:"Chris",    l:"Corry",       p:"R",v:"Nay"},    {f:"Jeremie",   l:"Dufault",    p:"R",v:"Nay"}],
+  16: [{f:"Mark",     l:"Klicker",     p:"R",v:"Nay"},    {f:"Skyler",    l:"Rude",       p:"R",v:"Nay"}],
+  17: [{f:"David",    l:"Stuebe",      p:"R",v:"Nay"},    {f:"Kevin",     l:"Waters",     p:"R",v:"Nay"}],
+  18: [{f:"John",     l:"Ley",         p:"R",v:"Nay"},    {f:"Stephanie", l:"McClintock", p:"R",v:"Nay"}],
+  19: [{f:"Joel",     l:"McEntire",    p:"R",v:"Nay"},    {f:"Jim",       l:"Walsh",       p:"R",v:"Nay"}],
+  20: [{f:"Peter",    l:"Abbarno",     p:"R",v:"Nay"},    {f:"Ed",        l:"Orcutt",     p:"R",v:"Nay"}],
+  21: [{f:"Lillian",  l:"Ortiz-Self",  p:"D",v:"Yea"},    {f:"Strom",     l:"Peterson",   p:"D",v:"Yea"}],
+  22: [{f:"Beth",     l:"Doglio",      p:"D",v:"Yea"},    {f:"Lisa",      l:"Parshley",   p:"D",v:"Yea"}],
+  23: [{f:"Greg",     l:"Nance",       p:"D",v:"Yea"},    {f:"Tarra",     l:"Simmons",    p:"D",v:"Yea"}],
+  24: [{f:"Adam",     l:"Bernbaum",    p:"D",v:"Yea"},    {f:"Steve",     l:"Tharinger",  p:"D",v:"Excused"}],
+  25: [{f:"Cyndy",    l:"Jacobsen",    p:"R",v:"Nay"},    {f:"Michael",   l:"Keaton",     p:"R",v:"Nay"}],
+  26: [{f:"Adison",   l:"Richards",    p:"D",v:"Nay"},    {f:"Michelle",  l:"Valdez",     p:"R",v:"Nay"}],
+  27: [{f:"Jake",     l:"Fey",         p:"D",v:"Yea"},    {f:"Laurie",    l:"Jinkins",    p:"D",v:"Yea"}],
+  28: [{f:"Dan",      l:"Bronoske",    p:"D",v:"Yea"},    {f:"Mari",      l:"Leavitt",    p:"D",v:"Yea"}],
+  29: [{f:"Sharlett", l:"Mena",        p:"D",v:"Yea"},    {f:"Melanie",   l:"Morgan",     p:"D",v:"Yea"}],
+  30: [{f:"Kristine", l:"Reeves",      p:"D",v:"Yea"},    {f:"Jamila",    l:"Taylor",     p:"D",v:"Yea"}],
+  31: [{f:"Joshua",   l:"Penner",      p:"R",v:"Nay"},    {f:"Drew",      l:"Stokesbary", p:"R",v:"Nay"}],
+  32: [{f:"Lauren",   l:"Davis",       p:"D",v:"Yea"},    {f:"Cindy",     l:"Ryu",        p:"D",v:"Yea"}],
+  33: [{f:"Mia",      l:"Gregerson",   p:"D",v:"Yea"},    {f:"Edwin",     l:"Obras",      p:"D",v:"Yea"}],
+  34: [{f:"Joe",      l:"Fitzgibbon",  p:"D",v:"Yea"},    {f:"Brianna",   l:"Thomas",     p:"D",v:"Yea"}],
+  35: [{f:"Travis",   l:"Couture",     p:"R",v:"Nay"},    {f:"Dan",       l:"Griffey",    p:"R",v:"Nay"}],
+  36: [{f:"Liz",      l:"Berry",       p:"D",v:"Yea"},    {f:"Julia",     l:"Reed",       p:"D",v:"Yea"}],
+  37: [{f:"Sharon",   l:"Santos",      p:"D",v:"Yea"},    {f:"Chipalo",   l:"Street",     p:"D",v:"Yea"}],
+  38: [{f:"Julio",    l:"Cortes",      p:"D",v:"Yea"},    {f:"Mary",      l:"Fosse",      p:"D",v:"Yea"}],
+  39: [{f:"Carolyn",  l:"Eslick",      p:"R",v:"Yea"},    {f:"Sam",       l:"Low",        p:"R",v:"Yea"}],
+  40: [{f:"Debra",    l:"Lekanoff",    p:"D",v:"Yea"},    {f:"Alex",      l:"Ramel",      p:"D",v:"Yea"}],
+  41: [{f:"My-Linh",  l:"Thai",        p:"D",v:"Yea"},    {f:"Janice",    l:"Zahn",       p:"D",v:"Yea"}],
+  42: [{f:"Joe",      l:"Timmons",     p:"D",v:"Yea"},    {f:"Alicia",    l:"Rule",       p:"D",v:"Nay"}],
+  43: [{f:"Nicole",   l:"Macri",       p:"D",v:"Yea"},    {f:"Shaun",     l:"Scott",      p:"D",v:"Yea"}],
+  44: [{f:"April",    l:"Berg",        p:"D",v:"Yea"},    {f:"Brandy",    l:"Donaghy",    p:"D",v:"Yea"}],
+  45: [{f:"Roger",    l:"Goodman",     p:"D",v:"Yea"},    {f:"Larry",     l:"Springer",   p:"D",v:"Yea"}],
+  46: [{f:"Darya",    l:"Farivar",     p:"D",v:"Yea"},    {f:"Gerry",     l:"Pollet",     p:"D",v:"Yea"}],
+  47: [{f:"Debra",    l:"Entenman",    p:"D",v:"Yea"},    {f:"Chris",     l:"Stearns",    p:"D",v:"Yea"}],
+  48: [{f:"Osman",    l:"Salahuddin",  p:"D",v:"Yea"},    {f:"Amy",       l:"Walen",      p:"D",v:"Nay"}],
+  49: [{f:"Monica",   l:"Stonier",     p:"D",v:"Yea"},    {f:"Sharon",    l:"Wylie",      p:"D",v:"Yea"}],
+};
+
+// ── State ────────────────────────────────────────────────────────────
+let current = "house";
+let houseGeo = null, senateGeo = null;
+const tooltip = document.getElementById("tooltip");
+const mapWrap = document.getElementById("map-wrap");
+
+// ── SVG / projection setup ───────────────────────────────────────────
+const svg = d3.select("#map");
+const g   = svg.append("g");
+
+function dims() {
+  return { W: mapWrap.clientWidth, H: mapWrap.clientHeight };
+}
+
+function buildProjection(geo) {
+  const { W, H } = dims();
+  return d3.geoMercator().fitExtent([[16, 16], [W - 16, H - 16]], geo);
+}
+
+// ── Color helpers ────────────────────────────────────────────────────
+function houseColor(d) {
+  const v = d.properties["House Aggregate 2026_Vote"];
+  return HOUSE_COLORS[v] || BASE_COLOR;
+}
+
+function senateColor(d) {
+  const v = d.properties["Senate 2026_Vote"];
+  return SENATE_COLORS[v] || BASE_COLOR;
+}
+
+// ── Tooltip ──────────────────────────────────────────────────────────
+function showTooltip(event, d) {
+  const dist   = d.properties.District;
+  const wrapR  = mapWrap.getBoundingClientRect();
+
+  let aggColor, aggLabel, rows;
+
+  if (current === "house") {
+    const agg = d.properties["House Aggregate 2026_Vote"] || "";
+    aggColor  = HOUSE_COLORS[agg] || "#7f918a";
+    aggLabel  = HOUSE_AGG_LABEL[agg] || agg;
+    const members = HM[dist] || [];
+    rows = members.map(m =>
+      `<div class="tt-row">
+        <span class="tt-name">${m.f} ${m.l}</span>
+        <span class="tt-party ${m.p}">${m.p}</span>
+        <span class="tt-vote ${m.v}">${m.v}</span>
+      </div>`
+    ).join("");
+  } else {
+    const vote  = d.properties["Senate 2026_Vote"]  || "";
+    const first = d.properties["Senate 2026_First"] || "";
+    const last  = d.properties["Senate 2026_Last"]  || "";
+    const party = d.properties["Senate 2026_Party"] || "";
+    aggColor  = SENATE_COLORS[vote] || "#7f918a";
+    aggLabel  = vote;
+    rows = `<div class="tt-row">
+      <span class="tt-name">${first} ${last}</span>
+      <span class="tt-party ${party}">${party}</span>
+      <span class="tt-vote ${vote}">${vote}</span>
+    </div>`;
+  }
+
+  tooltip.innerHTML =
+    `<div class="tt-dist">District ${dist}</div>` +
+    `<div class="tt-agg" style="color:${aggColor}">${aggLabel}</div>` +
+    rows;
+
+  tooltip.style.opacity = "1";
+
+  const tx = event.clientX - wrapR.left;
+  const ty = event.clientY - wrapR.top;
+  const tw = tooltip.offsetWidth  || 220;
+  const th = tooltip.offsetHeight || 80;
+  const { W, H } = dims();
+
+  tooltip.style.left = (tx + 14 + tw > W ? tx - tw - 10 : tx + 14) + "px";
+  tooltip.style.top  = (ty - 10 + th > H ? ty - th - 4  : ty - 10) + "px";
+}
+
+function hideTooltip() {
+  tooltip.style.opacity = "0";
+}
+
+// ── Legend ───────────────────────────────────────────────────────────
+function renderLegend(chamber) {
+  const items = chamber === "house" ? HOUSE_LEGEND : SENATE_LEGEND;
+  document.getElementById("legend").innerHTML = items.map(i =>
+    `<span class="legend-item">
+      <span class="legend-swatch" style="background:${i.color}"></span>${i.label}
+    </span>`
+  ).join("");
+}
+
+// ── Draw / update ────────────────────────────────────────────────────
+function draw(chamber) {
+  const geo = chamber === "house" ? houseGeo : senateGeo;
+  const colorFn = chamber === "house" ? houseColor : senateColor;
+  const proj = buildProjection(geo);
+  const pathFn = d3.geoPath().projection(proj);
+
+  g.selectAll("path.district")
+    .data(geo.features, d => d.properties.GEOID)
+    .join(
+      enter => enter.append("path")
+        .attr("class", "district")
+        .attr("d", pathFn)
+        .attr("fill", colorFn)
+        .on("mousemove", (evt, d) => showTooltip(evt, d))
+        .on("mouseleave", hideTooltip),
+      update => update
+        .transition().duration(380).ease(d3.easeCubicOut)
+        .attr("fill", colorFn)
+    );
+
+  renderLegend(chamber);
+}
+
+// ── Controls ─────────────────────────────────────────────────────────
+document.getElementById("btn-house").addEventListener("click", () => {
+  if (current === "house") return;
+  current = "house";
+  document.getElementById("btn-house").classList.add("active");
+  document.getElementById("btn-senate").classList.remove("active");
+  draw("house");
+});
+
+document.getElementById("btn-senate").addEventListener("click", () => {
+  if (current === "senate") return;
+  current = "senate";
+  document.getElementById("btn-senate").classList.add("active");
+  document.getElementById("btn-house").classList.remove("active");
+  draw("senate");
+});
+
+// ── Load & init ───────────────────────────────────────────────────────
+Promise.all([
+  d3.json("house_aggregate.geojson"),
+  d3.json("senate_aggregate.geojson"),
+]).then(([house, senate]) => {
+  houseGeo  = house;
+  senateGeo = senate;
+  draw("house");
+}).catch(() => {
+  mapWrap.innerHTML =
+    `<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#7f918a;font-size:14px;font-family:'Public Sans',sans-serif;">
+      Could not load district data.
+    </div>`;
+});
+</script>
+</body>
+</html>
