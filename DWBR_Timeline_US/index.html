@@ -84,17 +84,13 @@ button:hover {
     background: #5b7a70;
 }
 
-.counter {
+.counter-label {
     font-family: 'JetBrains Mono', ui-monospace, monospace;
     font-size: 11px;
-    color: #4f6e64;
     font-weight: 700;
-    flex-shrink: 0;
-    padding: 3px 8px;
-    background: #dde8e3;
-    border-radius: 999px;
-    white-space: nowrap;
-    letter-spacing: .04em;
+    letter-spacing: .1em;
+    fill: #4f6e64;
+    pointer-events: none;
 }
 
 .bar-sep {
@@ -183,13 +179,14 @@ button:hover {
 </head>
 <body>
 
-<svg width="960" height="520"></svg>
+<svg width="960" height="520">
+  <text id="counter" class="counter-label" x="18" y="22">LAW 0 OF 16</text>
+</svg>
 
 <div class="bottom-bar">
   <div class="controls-row">
     <button id="play-btn" onclick="togglePlay()">Play</button>
     <div class="bar-sep"></div>
-    <span class="counter" id="counter">0</span>
     <div class="years" id="years"></div>
   </div>
 </div>
@@ -385,7 +382,7 @@ d3.json("DWBR_Timeline_US_States_with_Cities.geojson").then(data => {
             return y !== null && y === year;
         });
 
-        d3.select("#counter").text(activeFeatures.length + " / " + total);
+        d3.select("#counter").text("LAW " + activeFeatures.length + " OF " + total);
 
         const activePolygons = activeFeatures.filter(d => !isPoint(d));
         const activePoints = activeFeatures.filter(d => isPoint(d));

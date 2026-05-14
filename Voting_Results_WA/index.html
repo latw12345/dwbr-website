@@ -45,6 +45,20 @@ svg#map {
   stroke-width: 1.8px;
 }
 
+.slider-group {
+  cursor: ew-resize;
+}
+
+.side-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  fill: rgba(74, 95, 88, 0.4);
+  dominant-baseline: middle;
+}
+
 /* Tooltip */
 #tooltip {
   position: absolute;
@@ -56,7 +70,7 @@ svg#map {
   box-shadow: 0 4px 18px rgba(74,95,88,.13);
   font-size: 13px;
   min-width: 180px;
-  max-width: 240px;
+  max-width: 260px;
   opacity: 0;
   transition: opacity 0.1s;
   z-index: 10;
@@ -79,8 +93,23 @@ svg#map {
   margin-bottom: 8px;
   padding-bottom: 7px;
   border-bottom: 1px solid #eef3f1;
+  color: #4a5f58;
 }
-.tt-agg { color: #4a5f58; }
+
+.tt-compare-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: #b0b8b4;
+  margin-bottom: 4px;
+}
+
+.tt-sep {
+  border-top: 1px solid #eef3f1;
+  margin: 5px 0 6px;
+}
 
 .tt-row {
   display: flex;
@@ -215,6 +244,8 @@ svg#map {
     <button class="chamber-btn active" id="btn-house">House</button>
     <button class="chamber-btn"        id="btn-senate">Senate</button>
     <div class="bar-sep"></div>
+    <button class="chamber-btn"        id="btn-compare">Compare 2020</button>
+    <div class="bar-sep"></div>
     <div class="legend" id="legend"></div>
   </div>
 </div>
@@ -309,16 +340,107 @@ const HM = {
   49: [{f:"Monica",   l:"Stonier",     p:"D",v:"Yea"},    {f:"Sharon",    l:"Wylie",      p:"D",v:"Yea"}],
 };
 
+// ── House member detail · 2020 ──────────────────────────────────────
+const HM2020 = {
+   1: [{f:"Davina",    l:"Duerr",        p:"D",v:"Yea"}, {f:"Shelley",   l:"Kloba",       p:"D",v:"Yea"}],
+   2: [{f:"Andrew",    l:"Barkis",       p:"R",v:"Nay"}, {f:"J.T.",      l:"Wilcox",      p:"R",v:"Nay"}],
+   3: [{f:"Timm",      l:"Ormsby",       p:"D",v:"Yea"}, {f:"Marcus",    l:"Riccelli",    p:"D",v:"Yea"}],
+   4: [{f:"Bob",       l:"McCaslin",     p:"R",v:"Nay"}, {f:"Matt",      l:"Shea",        p:"R",v:"Nay"}],
+   5: [{f:"Lisa",      l:"Callan",       p:"D",v:"Yea"}, {f:"Bill",      l:"Ramos",       p:"D",v:"Yea"}],
+   6: [{f:"Jenny",     l:"Graham",       p:"R",v:"Nay"}, {f:"Mike",      l:"Volz",        p:"R",v:"Nay"}],
+   7: [{f:"Joel",      l:"Kretz",        p:"R",v:"Nay"}, {f:"Jacquelin", l:"Maycumber",   p:"R",v:"Nay"}],
+   8: [{f:"Matt",      l:"Boehnke",      p:"R",v:"Nay"}, {f:"Brad",      l:"Klippert",    p:"R",v:"Nay"}],
+   9: [{f:"Mary",      l:"Dye",          p:"R",v:"Nay"}, {f:"Joe",       l:"Schmick",     p:"R",v:"Nay"}],
+  10: [{f:"Dave",      l:"Paul",         p:"D",v:"Yea"}, {f:"Norma",     l:"Smith",       p:"R",v:"Nay"}],
+  11: [{f:"Steve",     l:"Bergquist",    p:"D",v:"Yea"}, {f:"Zack",      l:"Hudgins",     p:"D",v:"Yea"}],
+  12: [{f:"Keith",     l:"Goehner",      p:"R",v:"Nay"}, {f:"Mike",      l:"Steele",      p:"R",v:"Nay"}],
+  13: [{f:"Tom",       l:"Dent",         p:"R",v:"Nay"}, {f:"Alex",      l:"Ybarra",      p:"R",v:"Yea"}],
+  14: [{f:"Chris",     l:"Corry",        p:"R",v:"Nay"}, {f:"Gina",      l:"Mosbrucker",  p:"R",v:"Nay"}],
+  15: [{f:"Bruce",     l:"Chandler",     p:"R",v:"Yea"}, {f:"Jeremie",   l:"Dufault",     p:"R",v:"Nay"}],
+  16: [{f:"Bill",      l:"Jenkin",       p:"R",v:"Nay"}, {f:"Skyler",    l:"Rude",        p:"R",v:"Nay"}],
+  17: [{f:"Paul",      l:"Harris",       p:"R",v:"Nay"}, {f:"Vicki",     l:"Kraft",       p:"R",v:"Nay"}],
+  18: [{f:"Larry",     l:"Hoff",         p:"R",v:"Nay"}, {f:"Brandon",   l:"Vick",        p:"R",v:"Nay"}],
+  19: [{f:"Brian",     l:"Blake",        p:"D",v:"Yea"}, {f:"Jim",       l:"Walsh",       p:"R",v:"Nay"}],
+  20: [{f:"Richard",   l:"Debolt",       p:"R",v:"Nay"}, {f:"Ed",        l:"Orcutt",      p:"R",v:"Nay"}],
+  21: [{f:"Lillian",   l:"Ortiz-Self",   p:"D",v:"Yea"}, {f:"Strom",     l:"Peterson",    p:"D",v:"Yea"}],
+  22: [{f:"Beth",      l:"Doglio",       p:"D",v:"Yea"}, {f:"Laurie",    l:"Dolan",       p:"D",v:"Yea"}],
+  23: [{f:"Sherry",    l:"Appleton",     p:"D",v:"Yea"}, {f:"Drew",      l:"Hansen",      p:"D",v:"Yea"}],
+  24: [{f:"Mike",      l:"Chapman",      p:"D",v:"Yea"}, {f:"Steve",     l:"Tharinger",   p:"D",v:"Yea"}],
+  25: [{f:"Kelly",     l:"Chambers",     p:"R",v:"Nay"}, {f:"Chris",     l:"Gildon",      p:"R",v:"Nay"}],
+  26: [{f:"Michelle",  l:"Caldier",      p:"R",v:"Nay"}, {f:"Jesse",     l:"Young",       p:"R",v:"Nay"}],
+  27: [{f:"Jake",      l:"Fey",          p:"D",v:"Yea"}, {f:"Laurie",    l:"Jinkins",     p:"D",v:"Yea"}],
+  28: [{f:"Christine", l:"Kilduff",      p:"D",v:"Yea"}, {f:"Mari",      l:"Leavitt",     p:"D",v:"Yea"}],
+  29: [{f:"Steve",     l:"Kirby",        p:"D",v:"Yea"}, {f:"Melanie",   l:"Morgan",      p:"D",v:"Yea"}],
+  30: [{f:"Jesse",     l:"Johnson",      p:"D",v:"Yea"}, {f:"Mike",      l:"Pellicciotti",p:"D",v:"Yea"}],
+  31: [{f:"Morgan",    l:"Irwin",        p:"R",v:"Nay"}, {f:"Drew",      l:"Stokesbary",  p:"R",v:"Nay"}],
+  32: [{f:"Lauren",    l:"Davis",        p:"D",v:"Yea"}, {f:"Cindy",     l:"Ryu",         p:"D",v:"Yea"}],
+  33: [{f:"Mia",       l:"Gregerson",    p:"D",v:"Yea"}, {f:"Tina",      l:"Orwall",      p:"D",v:"Yea"}],
+  34: [{f:"Eileen",    l:"Cody",         p:"D",v:"Yea"}, {f:"Joe",       l:"Fitzgibbon",  p:"D",v:"Yea"}],
+  35: [{f:"Dan",       l:"Griffey",      p:"R",v:"Nay"}, {f:"Drew",      l:"MacEwen",     p:"R",v:"Nay"}],
+  36: [{f:"Noel",      l:"Frame",        p:"D",v:"Yea"}, {f:"Gael",      l:"Tarleton",    p:"D",v:"Yea"}],
+  37: [{f:"Eric",      l:"Pettigrew",    p:"D",v:"Yea"}, {f:"Sharon",    l:"Santos",      p:"D",v:"Yea"}],
+  38: [{f:"June",      l:"Robinson",     p:"D",v:"Yea"}, {f:"Mike",      l:"Sells",       p:"D",v:"Yea"}],
+  39: [{f:"Carolyn",   l:"Eslick",       p:"R",v:"Nay"}, {f:"Robert",    l:"Sutherland",  p:"R",v:"Nay"}],
+  40: [{f:"Debra",     l:"Lekanoff",     p:"D",v:"Yea"}, {f:"Alex",      l:"Ramel",       p:"D",v:"Yea"}],
+  41: [{f:"Tana",      l:"Senn",         p:"D",v:"Yea"}, {f:"My-Linh",   l:"Thai",        p:"D",v:"Yea"}],
+  42: [{f:"Sharon",    l:"Shewmake",     p:"D",v:"Yea"}, {f:"Luanne",    l:"Van Werven",  p:"R",v:"Nay"}],
+  43: [{f:"Frank",     l:"Chopp",        p:"D",v:"Yea"}, {f:"Nicole",    l:"Macri",       p:"D",v:"Yea"}],
+  44: [{f:"John",      l:"Lovick",       p:"D",v:"Yea"}, {f:"Jared",     l:"Mead",        p:"D",v:"Yea"}],
+  45: [{f:"Roger",     l:"Goodman",      p:"D",v:"Yea"}, {f:"Larry",     l:"Springer",    p:"D",v:"Yea"}],
+  46: [{f:"Gerry",     l:"Pollet",       p:"D",v:"Yea"}, {f:"Javier",    l:"Valdez",      p:"D",v:"Yea"}],
+  47: [{f:"Debra",     l:"Entenman",     p:"D",v:"Yea"}, {f:"Pat",       l:"Sullivan",    p:"D",v:"Yea"}],
+  48: [{f:"Vandana",   l:"Slatter",      p:"D",v:"Yea"}, {f:"Amy",       l:"Walen",       p:"D",v:"Yea"}],
+  49: [{f:"Monica",    l:"Stonier",      p:"D",v:"Yea"}, {f:"Sharon",    l:"Wylie",       p:"D",v:"Yea"}],
+};
+
 // ── State ────────────────────────────────────────────────────────────
 let current = "house";
+let compareMode = false;
+let sliderX = null;
 let houseGeo = null, senateGeo = null;
+let houseGeo2020 = null, senateGeo2020 = null;
+let lookup2020 = null, lookup2026 = null;
+
 const tooltip = document.getElementById("tooltip");
 const mapWrap = document.getElementById("map-wrap");
 
-// ── SVG / projection setup ───────────────────────────────────────────
+// ── SVG setup ────────────────────────────────────────────────────────
 const svg = d3.select("#map");
-const g   = svg.append("g");
 
+const defs = svg.append("defs");
+const clipRect = defs.append("clipPath").attr("id", "clip-2026").append("rect");
+
+const g2020 = svg.append("g");
+const g2026 = svg.append("g").attr("clip-path", "url(#clip-2026)");
+
+// Side labels (compare mode only)
+const labelGroup = svg.append("g").attr("pointer-events", "none").style("display", "none");
+const leftLabel  = labelGroup.append("text").attr("class", "side-label").attr("y", 28).attr("text-anchor", "middle");
+const rightLabel = labelGroup.append("text").attr("class", "side-label").attr("y", 28).attr("text-anchor", "middle");
+
+// Slider (compare mode only)
+const sliderGroup = svg.append("g").attr("class", "slider-group").style("display", "none");
+
+const sliderHit = sliderGroup.append("rect")
+    .attr("fill", "transparent").attr("y", 0).attr("width", 32);
+
+const sliderLine = sliderGroup.append("line")
+    .attr("stroke", "#fff").attr("stroke-width", 2).attr("pointer-events", "none");
+
+const sliderHandle = sliderGroup.append("circle")
+    .attr("r", 18).attr("fill", "#fff")
+    .attr("stroke", "#dde8e3").attr("stroke-width", 1.5)
+    .attr("filter", "drop-shadow(0 2px 6px rgba(74,95,88,.18))")
+    .attr("pointer-events", "none");
+
+sliderGroup.append("text")
+    .attr("class", "slider-arrows")
+    .attr("text-anchor", "middle").attr("dominant-baseline", "central")
+    .attr("font-family", "system-ui, sans-serif").attr("font-size", 10)
+    .attr("fill", "#7f918a").attr("pointer-events", "none")
+    .text("◀ ▶");
+
+// ── Helpers ──────────────────────────────────────────────────────────
 function dims() {
   return { W: mapWrap.clientWidth, H: mapWrap.clientHeight };
 }
@@ -328,55 +450,132 @@ function buildProjection(geo) {
   return d3.geoMercator().fitExtent([[16, 16], [W - 16, H - 16]], geo);
 }
 
-// ── Color helpers ────────────────────────────────────────────────────
-function houseColor(d) {
-  const v = d.properties["House Aggregate 2026_Vote"];
-  return HOUSE_COLORS[v] || BASE_COLOR;
+function updateSlider() {
+  const { W, H } = dims();
+  const x = sliderX;
+  clipRect.attr("x", x).attr("y", 0).attr("width", W - x).attr("height", H);
+  sliderHit.attr("x", x - 16).attr("height", H);
+  sliderLine.attr("x1", x).attr("y1", 0).attr("x2", x).attr("y2", H);
+  sliderHandle.attr("cx", x).attr("cy", H / 2);
+  svg.select(".slider-arrows").attr("x", x).attr("y", H / 2);
+  leftLabel.attr("x", x / 2);
+  rightLabel.attr("x", x + (W - x) / 2);
 }
 
+sliderGroup.call(
+  d3.drag().on("start drag", function(event) {
+    const { W } = dims();
+    sliderX = Math.max(40, Math.min(W - 40, event.x));
+    updateSlider();
+  })
+);
+
+window.addEventListener("resize", () => { if (compareMode) updateSlider(); });
+
+// ── Color helpers ────────────────────────────────────────────────────
+function houseColor(d) {
+  return HOUSE_COLORS[d.properties["House Aggregate 2026_Vote"]] || BASE_COLOR;
+}
 function senateColor(d) {
-  const v = d.properties["Senate 2026_Vote"];
-  return SENATE_COLORS[v] || BASE_COLOR;
+  return SENATE_COLORS[d.properties["Senate 2026_Vote"]] || BASE_COLOR;
+}
+function houseColor2020(d) {
+  return HOUSE_COLORS[d.properties["House Aggregate 2020_Vote"]] || BASE_COLOR;
+}
+function senateColor2020(d) {
+  return SENATE_COLORS[d.properties["Senate 2020_Vote"]] || BASE_COLOR;
 }
 
 // ── Tooltip ──────────────────────────────────────────────────────────
 function showTooltip(event, d) {
-  const dist   = d.properties.District;
-  const wrapR  = mapWrap.getBoundingClientRect();
+  const dist  = d.properties.District;
+  const wrapR = mapWrap.getBoundingClientRect();
+  let html;
 
-  let aggColor, aggLabel, rows;
+  if (compareMode) {
+    const f20 = lookup2020.get(dist);
+    const f26 = lookup2026.get(dist);
+    // Remove built-in border from tt-agg in compare mode; tt-sep handles year separation
+    const AS = "border-bottom:none;margin-bottom:3px;padding-bottom:0";
 
-  if (current === "house") {
-    const agg = d.properties["House Aggregate 2026_Vote"] || "";
-    aggColor  = HOUSE_COLORS[agg] || "#7f918a";
-    aggLabel  = HOUSE_AGG_LABEL[agg] || agg;
-    const members = HM[dist] || [];
-    rows = members.map(m =>
-      `<div class="tt-row">
-        <span class="tt-name">${m.f} ${m.l}</span>
-        <span class="tt-party ${m.p}">${m.p}</span>
-        <span class="tt-vote ${m.v}">${m.v}</span>
-      </div>`
-    ).join("");
+    if (current === "house") {
+      const agg20 = f20?.properties["House Aggregate 2020_Vote"] || "";
+      const agg26 = f26?.properties["House Aggregate 2026_Vote"] || "";
+      const c20   = HOUSE_COLORS[agg20] || "#7f918a";
+      const c26   = HOUSE_COLORS[agg26] || "#7f918a";
+      const memberRow = m =>
+        `<div class="tt-row">
+          <span class="tt-name">${m.f} ${m.l}</span>
+          <span class="tt-party ${m.p}">${m.p}</span>
+          <span class="tt-vote ${m.v}">${m.v}</span>
+        </div>`;
+      const members20 = (HM2020[dist] || []).map(memberRow).join("");
+      const members26 = (HM[dist]    || []).map(memberRow).join("");
+      html =
+        `<div class="tt-dist">District ${dist}</div>` +
+        `<div class="tt-compare-label">2020</div>` +
+        `<div class="tt-agg" style="color:${c20};${AS}">${HOUSE_AGG_LABEL[agg20] || agg20}</div>` +
+        members20 +
+        `<div class="tt-sep"></div>` +
+        `<div class="tt-compare-label">2026</div>` +
+        `<div class="tt-agg" style="color:${c26};${AS}">${HOUSE_AGG_LABEL[agg26] || agg26}</div>` +
+        members26;
+    } else {
+      const v20 = f20?.properties["Senate 2020_Vote"]  || "";
+      const v26 = f26?.properties["Senate 2026_Vote"]  || "";
+      const c20 = SENATE_COLORS[v20] || "#7f918a";
+      const c26 = SENATE_COLORS[v26] || "#7f918a";
+      html =
+        `<div class="tt-dist">District ${dist}</div>` +
+        `<div class="tt-compare-label">2020</div>` +
+        `<div class="tt-agg" style="color:${c20};${AS}">${v20}</div>` +
+        `<div class="tt-row">
+          <span class="tt-name">${f20?.properties["Senate 2020_First"] || ""} ${f20?.properties["Senate 2020_Last"] || ""}</span>
+          <span class="tt-party ${f20?.properties["Senate 2020_Party"] || ""}">${f20?.properties["Senate 2020_Party"] || ""}</span>
+          <span class="tt-vote ${v20}">${v20}</span>
+        </div>` +
+        `<div class="tt-sep"></div>` +
+        `<div class="tt-compare-label">2026</div>` +
+        `<div class="tt-agg" style="color:${c26};${AS}">${v26}</div>` +
+        `<div class="tt-row">
+          <span class="tt-name">${f26?.properties["Senate 2026_First"] || ""} ${f26?.properties["Senate 2026_Last"] || ""}</span>
+          <span class="tt-party ${f26?.properties["Senate 2026_Party"] || ""}">${f26?.properties["Senate 2026_Party"] || ""}</span>
+          <span class="tt-vote ${v26}">${v26}</span>
+        </div>`;
+    }
   } else {
-    const vote  = d.properties["Senate 2026_Vote"]  || "";
-    const first = d.properties["Senate 2026_First"] || "";
-    const last  = d.properties["Senate 2026_Last"]  || "";
-    const party = d.properties["Senate 2026_Party"] || "";
-    aggColor  = SENATE_COLORS[vote] || "#7f918a";
-    aggLabel  = vote;
-    rows = `<div class="tt-row">
-      <span class="tt-name">${first} ${last}</span>
-      <span class="tt-party ${party}">${party}</span>
-      <span class="tt-vote ${vote}">${vote}</span>
-    </div>`;
+    let aggColor, aggLabel, rows;
+    if (current === "house") {
+      const agg = d.properties["House Aggregate 2026_Vote"] || "";
+      aggColor   = HOUSE_COLORS[agg] || "#7f918a";
+      aggLabel   = HOUSE_AGG_LABEL[agg] || agg;
+      rows = (HM[dist] || []).map(m =>
+        `<div class="tt-row">
+          <span class="tt-name">${m.f} ${m.l}</span>
+          <span class="tt-party ${m.p}">${m.p}</span>
+          <span class="tt-vote ${m.v}">${m.v}</span>
+        </div>`
+      ).join("");
+    } else {
+      const vote  = d.properties["Senate 2026_Vote"]  || "";
+      const first = d.properties["Senate 2026_First"] || "";
+      const last  = d.properties["Senate 2026_Last"]  || "";
+      const party = d.properties["Senate 2026_Party"] || "";
+      aggColor = SENATE_COLORS[vote] || "#7f918a";
+      aggLabel = vote;
+      rows = `<div class="tt-row">
+        <span class="tt-name">${first} ${last}</span>
+        <span class="tt-party ${party}">${party}</span>
+        <span class="tt-vote ${vote}">${vote}</span>
+      </div>`;
+    }
+    html =
+      `<div class="tt-dist">District ${dist}</div>` +
+      `<div class="tt-agg" style="color:${aggColor}">${aggLabel}</div>` +
+      rows;
   }
 
-  tooltip.innerHTML =
-    `<div class="tt-dist">District ${dist}</div>` +
-    `<div class="tt-agg" style="color:${aggColor}">${aggLabel}</div>` +
-    rows;
-
+  tooltip.innerHTML = html;
   tooltip.style.opacity = "1";
 
   const tx = event.clientX - wrapR.left;
@@ -384,7 +583,6 @@ function showTooltip(event, d) {
   const tw = tooltip.offsetWidth  || 220;
   const th = tooltip.offsetHeight || 80;
   const { W, H } = dims();
-
   tooltip.style.left = (tx + 14 + tw > W ? tx - tw - 10 : tx + 14) + "px";
   tooltip.style.top  = (ty - 10 + th > H ? ty - th - 4  : ty - 10) + "px";
 }
@@ -405,23 +603,61 @@ function renderLegend(chamber) {
 
 // ── Draw / update ────────────────────────────────────────────────────
 function draw(chamber) {
-  const geo = chamber === "house" ? houseGeo : senateGeo;
-  const colorFn = chamber === "house" ? houseColor : senateColor;
-  const proj = buildProjection(geo);
+  const geo26   = chamber === "house" ? houseGeo      : senateGeo;
+  const geo20   = chamber === "house" ? houseGeo2020  : senateGeo2020;
+  const color26 = chamber === "house" ? houseColor    : senateColor;
+  const color20 = chamber === "house" ? houseColor2020 : senateColor2020;
+
+  lookup2026 = new Map(geo26.features.map(f => [f.properties.District, f]));
+  lookup2020 = new Map(geo20.features.map(f => [f.properties.District, f]));
+
+  const proj   = buildProjection(geo26);
   const pathFn = d3.geoPath().projection(proj);
 
-  g.selectAll("path.district")
-    .data(geo.features, d => d.properties.GEOID)
+  // Clip: full width in normal mode, sliderX-based in compare mode
+  if (compareMode) {
+    if (sliderX === null) sliderX = dims().W / 2;
+    sliderGroup.style("display", null);
+    labelGroup.style("display", null);
+    updateSlider();
+    leftLabel.text("2020");
+    rightLabel.text("2026");
+  } else {
+    const { W, H } = dims();
+    clipRect.attr("x", 0).attr("y", 0).attr("width", W).attr("height", H);
+    sliderGroup.style("display", "none");
+    labelGroup.style("display", "none");
+  }
+
+  // 2020 layer — only populated in compare mode
+  g2020.selectAll("path.district")
+    .data(compareMode ? geo20.features : [], d => d.properties.GEOID)
     .join(
       enter => enter.append("path")
         .attr("class", "district")
         .attr("d", pathFn)
-        .attr("fill", colorFn)
+        .attr("fill", color20)
         .on("mousemove", (evt, d) => showTooltip(evt, d))
         .on("mouseleave", hideTooltip),
       update => update
         .transition().duration(380).ease(d3.easeCubicOut)
-        .attr("fill", colorFn)
+        .attr("fill", color20),
+      exit => exit.remove()
+    );
+
+  // 2026 layer — always shown (clipped right in compare mode, full in normal)
+  g2026.selectAll("path.district")
+    .data(geo26.features, d => d.properties.GEOID)
+    .join(
+      enter => enter.append("path")
+        .attr("class", "district")
+        .attr("d", pathFn)
+        .attr("fill", color26)
+        .on("mousemove", (evt, d) => showTooltip(evt, d))
+        .on("mouseleave", hideTooltip),
+      update => update
+        .transition().duration(380).ease(d3.easeCubicOut)
+        .attr("fill", color26)
     );
 
   renderLegend(chamber);
@@ -444,13 +680,24 @@ document.getElementById("btn-senate").addEventListener("click", () => {
   draw("senate");
 });
 
+document.getElementById("btn-compare").addEventListener("click", () => {
+  compareMode = !compareMode;
+  document.getElementById("btn-compare").classList.toggle("active", compareMode);
+  hideTooltip();
+  draw(current);
+});
+
 // ── Load & init ───────────────────────────────────────────────────────
 Promise.all([
   d3.json("house_aggregate.geojson"),
   d3.json("senate_aggregate.geojson"),
-]).then(([house, senate]) => {
-  houseGeo  = house;
-  senateGeo = senate;
+  d3.json("2020_house_aggregate.geojson"),
+  d3.json("2020_senate_aggregate.geojson"),
+]).then(([house, senate, house20, senate20]) => {
+  houseGeo      = house;
+  senateGeo     = senate;
+  houseGeo2020  = house20;
+  senateGeo2020 = senate20;
   draw("house");
 }).catch(() => {
   mapWrap.innerHTML =
