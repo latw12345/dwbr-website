@@ -586,6 +586,100 @@
       color: var(--ink-2);
     }
 
+    /* ── ROAD GRID (ch3 §02) ─────────────────────── */
+    .road-grid {
+      display: grid;
+      grid-template-columns: 5fr 3fr 5fr;
+      border: 1px solid var(--rule);
+    }
+    .road-card {
+      padding: 28px;
+    }
+    .road-card--fail { background: var(--paper); }
+    .road-card--pass { background: var(--sage-tint); }
+    .road-delta {
+      padding: 28px 22px;
+      border-left: 1px solid var(--rule);
+      border-right: 1px solid var(--rule);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .road-callout {
+      font-size: 13px;
+      line-height: 1.55;
+      color: var(--ink-3);
+      margin-bottom: 20px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--rule-soft);
+    }
+    .road-callout-year {
+      display: block;
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--moss-deep);
+      margin-bottom: 5px;
+    }
+    .road-bill-label {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--seafoam);
+      margin-bottom: 8px;
+    }
+    .road-card--pass .road-bill-label { color: var(--sage-deep); }
+    .road-bill-outcome {
+      font-family: var(--serif);
+      font-size: 22px;
+      font-weight: 500;
+      color: var(--ink);
+      margin-bottom: 22px;
+    }
+    .road-row { margin-bottom: 14px; }
+    .road-row-label {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--moss-deep);
+      margin-bottom: 4px;
+    }
+    .road-row-val {
+      font-size: 14px;
+      line-height: 1.5;
+      color: var(--ink-2);
+    }
+    .road-delta-head {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--moss-deep);
+      margin-bottom: 20px;
+    }
+    .road-delta-item { margin-bottom: 18px; }
+    .road-delta-item:last-child { margin-bottom: 0; }
+    .road-delta-label {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+      margin-bottom: 4px;
+    }
+    .road-delta-text {
+      font-size: 13px;
+      line-height: 1.5;
+      color: var(--ink-2);
+    }
+    @media (max-width: 720px) {
+      .road-grid { grid-template-columns: 1fr; }
+      .road-delta { border-left: none; border-right: none; border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); }
+    }
+
     /* ── PROTECTION CHIPS ─────────────────────────── */
     .protection-list {
       display: grid;
@@ -773,7 +867,7 @@
         <span class="div"></span>
         <span>Three chapters</span>
         <span class="div"></span>
-        <span>2010 — 2026</span>
+        <span>2010–2026</span>
       </div>
       <h1 class="h1" style="max-width:880px;">
         The long, slow shape of <em style="font-style:italic;color:var(--forest);">care&nbsp;work</em> becoming&nbsp;rights.
@@ -912,7 +1006,7 @@
         <span class="div"></span>
         <span>United States</span>
         <span class="div"></span>
-        <span>2010 — 2026</span>
+        <span>2010–2026</span>
       </div>
       <h1 class="h1" style="max-width:880px;">
         Sixteen jurisdictions, sixteen years, and a country slowly <em style="font-style:italic;color:var(--forest);">drawing&nbsp;itself&nbsp;in</em>.
@@ -939,7 +1033,7 @@
       <div class="viz">
         <div class="viz-header">
           <span class="vid">FIG. 01</span>
-          <span>Animated map · DWBR victories, 2010 — 2026</span>
+          <span>National 2010–26 DWBR Timeline</span>
         </div>
         <div class="viz-body viz-scroll">
           <iframe
@@ -985,7 +1079,7 @@
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:14px;">
               <div>
                 <div style="font-family:var(--mono); font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--moss-deep); margin-bottom:6px;">Coverage</div>
-                <div style="font-size:14px; line-height:1.6; color:var(--ink-2);">Nannies, housecleaners, home attendants working ≥40 hrs/week (≥44 for live-in workers)</div>
+                <div style="font-size:14px; line-height:1.6; color:var(--ink-2);">Non-casual domestic workers: nannies, housecleaners, companions, home attendants. Excludes casual babysitters and family members.</div>
               </div>
               <div>
                 <div style="font-family:var(--mono); font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--moss-deep); margin-bottom:6px;">Key provisions</div>
@@ -1136,10 +1230,10 @@
               </div>
               <div>
                 <div style="font-family:var(--mono); font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--moss-deep); margin-bottom:6px;">Key provisions</div>
-                <div style="font-size:14px; line-height:1.6; color:var(--ink-2);">Written employment agreements, minimum wage, overtime (after 8 hrs/day or 40 hrs/week), 1 full day off/week, privacy protections (no monitoring in bathrooms or bedrooms), lodging deductions capped at 5× minimum wage</div>
+                <div style="font-size:14px; line-height:1.6; color:var(--ink-2);">Written employment agreements, minimum wage, overtime (after 8 hrs/day or 40 hrs/week), 1 full day off/week, prohibition on monitoring private communications or confiscating personal documents, lodging deductions capped at 5× minimum wage</div>
               </div>
             </div>
-            <div style="font-family:var(--serif); font-style:italic; font-size:13px; color:var(--ink-3);">Strongest privacy provisions in any state DWBR, explicitly prohibiting employer monitoring in workers' private spaces.</div>
+            <div style="font-family:var(--serif); font-style:italic; font-size:13px; color:var(--ink-3);">Among the strongest privacy provisions in any state DWBR, prohibiting employer monitoring of private communications and confiscation of personal documents.</div>
           </div>
         </details>
 
@@ -1304,7 +1398,7 @@
               </div>
               <div>
                 <div style="font-family:var(--mono); font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--moss-deep); margin-bottom:6px;">Key provisions</div>
-                <div style="font-size:14px; line-height:1.6; color:var(--ink-2);">Minimum wage, overtime (1.5×) after 40 hrs/week, written employment agreements, advance termination notice, privacy protections (no monitoring in bathrooms or bedrooms); effective July 1, 2027</div>
+                <div style="font-size:14px; line-height:1.6; color:var(--ink-2);">Minimum wage, overtime (1.5×) after 40 hrs/week, written employment agreements, advance termination notice (2 weeks; 4 weeks for live-in workers), privacy protections for live-in workers; effective July 1, 2027</div>
               </div>
             </div>
             <div style="font-family:var(--serif); font-style:italic; font-size:13px; color:var(--ink-3);">The thirteenth state, and the culmination of Seattle's eight-year proving ground. See Chapter III for the full legislative timeline.</div>
@@ -1372,7 +1466,7 @@
             The Fair Labor Standards Act of 1938 created the federal floor for American work: minimum wage, overtime, the forty-hour week. It also, by deliberate compromise, left two groups out: agricultural workers and domestic workers. <em>That carve-out has never been undone at the federal level.</em>
           </p>
           <p>
-            What you are looking at, on the map above, is the slow work of putting it back, not in the District of Columbia, but across sixteen jurisdictions, statute by statute, over sixteen years of organizing.
+            What you are looking at, on the map above, is the slow work of putting it back, not in the capitol, but across sixteen jurisdictions, statute by statute, over sixteen years of organizing.
           </p>
         </div>
         <div>
@@ -1400,7 +1494,7 @@
         <p class="pullquote-text">
           We didn't ask for new rights. We asked to be added to the rights the country had already written for everyone else.
         </p>
-        <div class="pullquote-cite">— Ai-jen Poo, NDWA, 2013</div>
+        <div class="pullquote-cite">Ai-jen Poo, NDWA, 2013</div>
       </div>
     </div>
   </section>
@@ -1419,7 +1513,6 @@
   <footer>
     <div class="footer-fine" style="margin:0;">
       <span>DWBR · Chapter I · United States</span>
-      <span>Source · National Domestic Workers Alliance</span>
     </div>
   </footer>
 </div>
@@ -1443,7 +1536,7 @@
         One city, one campaign, and the <em style="font-style:italic;color:var(--forest);">blueprint&nbsp;that&nbsp;held</em>.
       </h1>
       <p class="lede" style="margin-top:28px;">
-        Eight years before Washington passed a statewide law, Seattle had to prove one was possible. Eighteen months of coalition-building, sixty-three house meetings, and one unanimous council vote turned a city ordinance into the organizing model a state would spend six years trying to replicate.
+        Eight years before Washington passed a statewide law, Seattle had to prove one was possible. Eighteen months of coalition-building, house meetings across the city, and one unanimous council vote turned a city ordinance into the organizing model a state would spend six years trying to replicate.
       </p>
     </div>
   </section>
@@ -1541,7 +1634,7 @@
         <div class="viz">
           <div class="viz-header">
             <span class="vid">FIG. 02</span>
-            <span>Seattle · organizing density by district</span>
+            <span>Seattle Organizing Density by District</span>
           </div>
           <div style="aspect-ratio: 4/5; background:
             repeating-linear-gradient(135deg, var(--paper-2) 0 10px, var(--paper-3) 10px 11px);
@@ -1609,7 +1702,7 @@
         <p class="pullquote-text">
           They didn't write a bill and bring it to us. They sat in our living rooms until we wrote the bill ourselves.
         </p>
-        <div class="pullquote-cite">— Casa Latina member, on the 2018 Seattle ordinance</div>
+        <div class="pullquote-cite">Casa Latina member, on the 2018 Seattle ordinance</div>
       </div>
     </div>
   </section>
@@ -1628,7 +1721,6 @@
   <footer>
     <div class="footer-fine" style="margin:0;">
       <span>DWBR · Chapter II · Seattle</span>
-      <span>Source · Seattle Office of Labor Standards · SMC 14.23</span>
     </div>
   </footer>
 </div>
@@ -1673,7 +1765,7 @@
       <div class="viz">
         <div class="viz-header">
           <span class="vid">FIG. 03</span>
-          <span>Washington 2025–26 · bill timeline</span>
+          <span>Washington 2025–26 DWBR Timeline</span>
         </div>
         <div class="viz-body">
           <iframe
@@ -1692,7 +1784,7 @@
     </div>
   </section>
 
-  <!-- CHRONOLOGICAL HISTORY -->
+  <!-- ROAD HERE + WHAT CHANGED -->
   <section class="section">
     <div class="container">
       <div class="section-header">
@@ -1701,57 +1793,87 @@
           The road here
         </div>
         <div class="section-body">
-          <h2 class="h2">Washington's DWBR didn't start in 2025.</h2>
-          <p class="lede">The 2026 victory is the culmination of six years of organizing, two prior attempts, and Seattle's municipal groundwork.</p>
+          <h2 class="h2">Six years, two bills, one win.</h2>
+          <p class="lede">The bill failed in 2020 and passed in 2026. The difference was not what the coalition wanted; it was what they were willing to change to get there.</p>
         </div>
       </div>
 
-      <ol class="steps">
-        <li class="step">
-          <div class="step-num">01</div>
-          <div>
-            <div class="step-meta">2018 · City ordinance</div>
-            <div class="step-title">Seattle passes the country's first municipal DWBR.</div>
-            <div class="step-text">
-              The Seattle ordinance covers minimum wage, rest breaks, written agreements, and establishes a Standards Board.
-              It becomes the proof-of-concept for statewide legislation.
-            </div>
+      <div class="road-grid">
+
+        <!-- Left: 2020 attempt -->
+        <div class="road-card road-card--fail">
+          <div class="road-callout">
+            <span class="road-callout-year">2018 · City ordinance</span>
+            Seattle passes the country's first municipal DWBR, covering minimum wage, rest breaks, written agreements, and establishing a Standards Board. It becomes the proof-of-concept for statewide legislation.
           </div>
-        </li>
-        <li class="step">
-          <div class="step-num">02</div>
-          <div>
-            <div class="step-meta">2020 · First state attempt</div>
-            <div class="step-title">A statewide bill is introduced, and dies in committee.</div>
-            <div class="step-text">
-              HB 2511 clears the House Labor committee but stalls in Appropriations. Opposition focuses on cost to households
-              and concerns about enforcement in private homes.
-            </div>
+          <div class="road-bill-label">2020 · HB 2511</div>
+          <div class="road-bill-outcome">Passed House; died in Senate</div>
+          <div class="road-row">
+            <div class="road-row-label">Coverage</div>
+            <div class="road-row-val">Immediate statewide; no phase-in period</div>
           </div>
-        </li>
-        <li class="step">
-          <div class="step-num">03</div>
-          <div>
-            <div class="step-meta">2021–2024 · Coalition building</div>
-            <div class="step-title">Organizers regroup and expand the base.</div>
-            <div class="step-text">
-              The coalition runs 200+ listening sessions statewide, recruits employer advocates, and drafts a revised bill
-              with phased implementation and household cost caps.
-            </div>
+          <div class="road-row">
+            <div class="road-row-label">Cost provisions</div>
+            <div class="road-row-val">No household cost caps or low-income exemptions</div>
           </div>
-        </li>
-        <li class="step">
-          <div class="step-num">04</div>
-          <div>
-            <div class="step-meta">2025–2026 · Second attempt</div>
-            <div class="step-title">The bill is refiled, and this time, it passes.</div>
-            <div class="step-text">
-              HB 2355 moves through both chambers in 60 days. The House passes 57–39 on Feb 12; the Senate follows
-              28–20 on Feb 26. Both chambers exceed simple-majority thresholds.
-            </div>
+          <div class="road-row">
+            <div class="road-row-label">Coalition</div>
+            <div class="road-row-val">Worker organizations + labor unions</div>
           </div>
-        </li>
-      </ol>
+          <div class="road-row">
+            <div class="road-row-label">Outcome</div>
+            <div class="road-row-val">Passed House 59–39; stalled in Senate Ways &amp; Means. Never reached the Senate floor.</div>
+          </div>
+        </div>
+
+        <!-- Center: delta -->
+        <div class="road-delta">
+          <div class="road-delta-head">What changed</div>
+          <div class="road-delta-item">
+            <div class="road-delta-label">Coverage</div>
+            <div class="road-delta-text">Phased implementation added; live-in worker provisions deferred to a 2028 study</div>
+          </div>
+          <div class="road-delta-item">
+            <div class="road-delta-label">Cost provisions</div>
+            <div class="road-delta-text">Sliding-scale subsidies added; households below 200% FPL exempted</div>
+          </div>
+          <div class="road-delta-item">
+            <div class="road-delta-label">Coalition</div>
+            <div class="road-delta-text">Employer advocates and disability rights groups joined the campaign</div>
+          </div>
+          <div class="road-delta-item">
+            <div class="road-delta-label">Organizing</div>
+            <div class="road-delta-text">200+ listening sessions over four years rebuilt and broadened the base</div>
+          </div>
+        </div>
+
+        <!-- Right: 2026 pass -->
+        <div class="road-card road-card--pass">
+          <div class="road-callout">
+            <span class="road-callout-year">2021–2024 · Coalition rebuilds</span>
+            Organizers run 200+ statewide listening sessions, recruit employer advocates, and draft a revised bill with phased implementation and household cost caps.
+          </div>
+          <div class="road-bill-label">2025–26 · HB 2355</div>
+          <div class="road-bill-outcome">Passed both chambers</div>
+          <div class="road-row">
+            <div class="road-row-label">Coverage</div>
+            <div class="road-row-val">Phased: core protections 7/1/27; live-in worker provisions deferred to 2028</div>
+          </div>
+          <div class="road-row">
+            <div class="road-row-label">Cost provisions</div>
+            <div class="road-row-val">Sliding-scale subsidies for low-income households; exemptions below 200% FPL</div>
+          </div>
+          <div class="road-row">
+            <div class="road-row-label">Coalition</div>
+            <div class="road-row-val">Worker organizations + labor unions + employer advocates + disability rights groups</div>
+          </div>
+          <div class="road-row">
+            <div class="road-row-label">Outcome</div>
+            <div class="road-row-val">House 57–39 · Senate 28–20 · Signed March 9, 2026</div>
+          </div>
+        </div>
+
+      </div>
     </div>
   </section>
 
@@ -1772,7 +1894,7 @@
       <div class="viz">
         <div class="viz-header">
           <span class="vid">FIG. 04</span>
-          <span>Washington legislative districts · HB 2355 · Feb 2026</span>
+          <span>Washington DWBR Vote by Legislative Districts</span>
         </div>
         <div class="viz-body">
           <iframe
@@ -1789,74 +1911,6 @@
         </div>
       </div>
 
-    </div>
-  </section>
-
-  <!-- 2020 vs 2026 COMPARISON -->
-  <section class="section">
-    <div class="container">
-      <div class="section-header">
-        <div class="section-marker">
-          <span class="num">04</span>
-          What changed
-        </div>
-        <div class="section-body">
-          <h2 class="h2">The same goal, six years apart.</h2>
-          <p class="lede">The bill failed in 2020 and passed in 2026. The difference was not what the coalition wanted but what it was willing to change to get there.</p>
-        </div>
-      </div>
-
-      <div style="display:grid; grid-template-columns:1fr 1fr; gap:1px; background:var(--rule); border:1px solid var(--rule);">
-        <div style="background:var(--paper); padding:28px;">
-          <div style="font-family:var(--mono); font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--seafoam); margin-bottom:12px;">2020 attempt · HB 2511</div>
-          <h3 style="font-family:var(--serif); font-size:24px; font-weight:500; color:var(--ink); margin-bottom:20px;">Died in committee</h3>
-          
-          <div style="margin-bottom:20px;">
-            <div style="font-family:var(--mono); font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--moss-deep); margin-bottom:8px;">Coverage</div>
-            <div style="font-size:15px; line-height:1.6; color:var(--ink-2);">Immediate statewide coverage: all domestic workers, no phase-in period</div>
-          </div>
-
-          <div style="margin-bottom:20px;">
-            <div style="font-family:var(--mono); font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--moss-deep); margin-bottom:8px;">Cost provisions</div>
-            <div style="font-size:15px; line-height:1.6; color:var(--ink-2);">No household cost caps or exemptions for low-income employers</div>
-          </div>
-
-          <div style="margin-bottom:20px;">
-            <div style="font-family:var(--mono); font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--moss-deep); margin-bottom:8px;">Support coalition</div>
-            <div style="font-size:15px; line-height:1.6; color:var(--ink-2);">Worker organizations + labor unions, with limited employer advocates</div>
-          </div>
-
-          <div>
-            <div style="font-family:var(--mono); font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--moss-deep); margin-bottom:8px;">Outcome</div>
-            <div style="font-size:15px; line-height:1.6; color:var(--ink-2);">Cleared House Labor, stalled in Appropriations. Never reached the floor.</div>
-          </div>
-        </div>
-
-        <div style="background:var(--sage-tint); padding:28px;">
-          <div style="font-family:var(--mono); font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--sage-deep); margin-bottom:12px;">2025–26 attempt · HB 2355</div>
-          <h3 style="font-family:var(--serif); font-size:24px; font-weight:500; color:var(--ink); margin-bottom:20px;">Passed both chambers</h3>
-          
-          <div style="margin-bottom:20px;">
-            <div style="font-family:var(--mono); font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--moss-deep); margin-bottom:8px;">Coverage</div>
-            <div style="font-size:15px; line-height:1.6; color:var(--ink-2);">Phased implementation: core protections 7/1/27, live-in worker provisions deferred to 2028 study</div>
-          </div>
-
-          <div style="margin-bottom:20px;">
-            <div style="font-family:var(--mono); font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--moss-deep); margin-bottom:8px;">Cost provisions</div>
-            <div style="font-size:15px; line-height:1.6; color:var(--ink-2);">Sliding-scale subsidies for low-income households; exemptions for households below 200% FPL</div>
-          </div>
-
-          <div style="margin-bottom:20px;">
-            <div style="font-family:var(--mono); font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--moss-deep); margin-bottom:8px;">Support coalition</div>
-            <div style="font-size:15px; line-height:1.6; color:var(--ink-2);">Worker orgs + labor + employer advocates (Hand in Hand, Care.com employers) + disability rights groups</div>
-          </div>
-
-          <div>
-            <div style="font-family:var(--mono); font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--moss-deep); margin-bottom:8px;">Outcome</div>
-            <div style="font-size:15px; line-height:1.6; color:var(--ink-2);">Passed House 57–39, Senate 28–20. Delivered to Governor 3/3/26. Awaiting signature.</div>
-          </div>
-        </div>
-      </div>
     </div>
   </section>
 
@@ -1910,7 +1964,7 @@
         <p class="pullquote-text">
           Seventeen years ago, our work was invisible to the law. Today the Governor of Washington has signed our names into it.
         </p>
-        <div class="pullquote-cite">— Statement from the WA DWBR coalition, March 9 2026</div>
+        <div class="pullquote-cite">Statement from the WA DWBR coalition, March 9, 2026</div>
       </div>
     </div>
   </section>
@@ -1928,8 +1982,7 @@
 
   <footer>
     <div class="footer-fine" style="margin:0;">
-      <span>DWBR · Chapter III · Washington 2025–26</span>
-      <span>Source · WA State Legislature</span>
+      <span>DWBR · Chapter III · Washington</span>
     </div>
   </footer>
 </div>

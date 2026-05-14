@@ -49,15 +49,23 @@ svg#map {
   cursor: ew-resize;
 }
 
-.side-label {
+.compare-label {
+  position: absolute;
+  top: 14px;
+  width: 80px;
+  text-align: center;
   font-family: 'JetBrains Mono', monospace;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 700;
-  letter-spacing: .1em;
+  letter-spacing: .12em;
   text-transform: uppercase;
-  fill: rgba(74, 95, 88, 0.4);
-  dominant-baseline: middle;
+  color: rgba(74, 95, 88, 0.45);
+  pointer-events: none;
+  z-index: 5;
+  display: none;
 }
+#compare-label-left  { left: 0; }
+#compare-label-right { right: 0; }
 
 /* Tooltip */
 #tooltip {
@@ -236,6 +244,8 @@ svg#map {
 
 <div id="map-wrap">
   <svg id="map"></svg>
+  <div id="compare-label-left"  class="compare-label">2020</div>
+  <div id="compare-label-right" class="compare-label">2026</div>
   <div id="tooltip"></div>
 </div>
 
@@ -413,11 +423,6 @@ const clipRect = defs.append("clipPath").attr("id", "clip-2026").append("rect");
 const g2020 = svg.append("g");
 const g2026 = svg.append("g").attr("clip-path", "url(#clip-2026)");
 
-// Side labels (compare mode only)
-const labelGroup = svg.append("g").attr("pointer-events", "none").style("display", "none");
-const leftLabel  = labelGroup.append("text").attr("class", "side-label").attr("y", 28).attr("text-anchor", "middle");
-const rightLabel = labelGroup.append("text").attr("class", "side-label").attr("y", 28).attr("text-anchor", "middle");
-
 // Slider (compare mode only)
 const sliderGroup = svg.append("g").attr("class", "slider-group").style("display", "none");
 
@@ -458,14 +463,12 @@ function updateSlider() {
   sliderLine.attr("x1", x).attr("y1", 0).attr("x2", x).attr("y2", H);
   sliderHandle.attr("cx", x).attr("cy", H / 2);
   svg.select(".slider-arrows").attr("x", x).attr("y", H / 2);
-  leftLabel.attr("x", x / 2);
-  rightLabel.attr("x", x + (W - x) / 2);
 }
 
 sliderGroup.call(
   d3.drag().on("start drag", function(event) {
     const { W } = dims();
-    sliderX = Math.max(40, Math.min(W - 40, event.x));
+    sliderX = Math.max(80, Math.min(W - 80, event.x));
     updateSlider();
   })
 );
@@ -618,15 +621,15 @@ function draw(chamber) {
   if (compareMode) {
     if (sliderX === null) sliderX = dims().W / 2;
     sliderGroup.style("display", null);
-    labelGroup.style("display", null);
+    d3.select("#compare-label-left").style("display", "block");
+    d3.select("#compare-label-right").style("display", "block");
     updateSlider();
-    leftLabel.text("2020");
-    rightLabel.text("2026");
   } else {
     const { W, H } = dims();
     clipRect.attr("x", 0).attr("y", 0).attr("width", W).attr("height", H);
     sliderGroup.style("display", "none");
-    labelGroup.style("display", "none");
+    d3.select("#compare-label-left").style("display", "none");
+    d3.select("#compare-label-right").style("display", "none");
   }
 
   // 2020 layer — only populated in compare mode
