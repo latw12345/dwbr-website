@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Seattle DWO Timeline</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,400;1,6..72,500&family=Epilogue:wght@400;500;600;700&family=Roboto+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/tokens.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <style>
+    :root {
+      /* aliases → tokens.css */
+      --bg:        var(--paper);
+      --panel-2:   var(--paper-3);
+      --text:      var(--ink);
+      --muted:     var(--ink-3);
+      --sage-dark: var(--sage-deep);
+      --line: #b9c9c2;
+
+      --shadow:      0 8px 24px rgba(74, 95, 88, 0.08);
+      --card-shadow: 0 6px 18px rgba(74, 95, 88, 0.05);
+      --radius: 16px;
+
+      --card-width:     180px;
+      --card-height:    78px;
+      --axis-pad:       140px;
+      --lane-gap:       14px;
+      --line-thickness: 4px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: var(--sans);
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    .page {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 28px 22px 40px;
+    }
+
+    .timeline-shell {
+      background: rgba(252, 253, 252, 0.78);
+      border: 1px solid #e3ebe7;
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      backdrop-filter: blur(4px);
+    }
+
+    .detail-panel {
+      min-height: 220px;
+      padding: 22px 24px;
+      background: linear-gradient(to bottom, #fbfcfb, #f7faf8);
+      border-bottom: 1px solid #e2ebe6;
+      display: grid;
+      grid-template-columns: 160px 1fr;
+      gap: 22px;
+      align-items: start;
+    }
+
+    .detail-date {
+      background: var(--panel-2);
+      border: 1px solid #dde8e3;
+      border-radius: var(--radius);
+      padding: 16px 14px;
+      color: var(--sage-dark);
+    }
+
+    .detail-date .monthday {
+      font-family: var(--serif);
+      font-size: 28px;
+      font-weight: 600;
+      font-style: italic;
+      line-height: 1.05;
+      margin-bottom: 6px;
+    }
+
+    .detail-date .year {
+      font-family: var(--mono);
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .detail-main { min-width: 0; }
+
+    .detail-topline {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .group-badge {
+      display: inline-block;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.2px;
+      color: var(--sage-dark);
+      background: #e6efeb;
+      border: 1px solid #d3e1da;
+    }
+
+    .detail-headline {
+      font-family: var(--serif);
+      font-size: 24px;
+      line-height: 1.3;
+      margin: 0 0 14px;
+      color: #456258;
+      font-weight: 500;
+    }
+
+    .detail-media {
+      float: right;
+      margin: 2px 0 12px 20px;
+      width: 240px;
+    }
+
+    .detail-main::after {
+      content: '';
+      display: table;
+      clear: both;
+    }
+
+    .detail-img {
+      display: block;
+      width: 100%;
+      height: auto;
+      border-radius: 8px;
+      border: 1px solid var(--rule);
+    }
+
+    .detail-media-link {
+      display: block;
+      width: 100%;
+      padding: 8px 10px;
+      color: var(--sage-deep);
+      font-size: 13px;
+      font-weight: 500;
+      text-decoration: none;
+      border: 1px solid var(--sage-tint);
+      border-radius: 8px;
+      text-align: center;
+      transition: border-color 0.15s, background 0.15s;
+    }
+
+    .detail-media-link:hover {
+      border-color: var(--sage);
+      background: var(--sage-tint);
+    }
+
+    .detail-caption {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.4;
+      font-style: italic;
+      margin-top: 6px;
+    }
+
+    .detail-credit {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--muted);
+      margin-top: 3px;
+    }
+
+    .detail-text {
+      font-size: 15px;
+      line-height: 1.65;
+      color: var(--text);
+      max-width: 820px;
+    }
+
+    .detail-text p { margin: 0 0 10px; }
+    .detail-text p:last-child { margin-bottom: 0; }
+
+    .timeline-wrap {
+      position: relative;
+      padding: 18px 18px 16px;
+      background: linear-gradient(to bottom, #f8fbf9, #f4f7f6);
+    }
+
+    .toolbar {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .zoom-group {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #eef4f1;
+      border: 1px solid #d8e5df;
+      padding: 6px;
+      border-radius: 999px;
+    }
+
+    .zoom-readout {
+      min-width: 56px;
+      text-align: center;
+      font-family: var(--mono);
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--sage-dark);
+      letter-spacing: 0.2px;
+    }
+
+    .zoom-btn {
+      width: 30px;
+      height: 30px;
+      border: none;
+      border-radius: 999px;
+      background: #dfe9e4;
+      color: var(--sage-dark);
+      cursor: pointer;
+      font-family: var(--sans);
+      font-size: 18px;
+      line-height: 1;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.18s ease, transform 0.18s ease;
+    }
+
+    .zoom-btn:hover { background: #d0ddd7; transform: translateY(-1px); }
+
+    .scroller {
+      overflow-x: auto;
+      overflow-y: hidden;
+      padding-bottom: 10px;
+      scroll-behavior: smooth;
+      outline: none;
+    }
+
+    .scroller::-webkit-scrollbar { height: 10px; }
+    .scroller::-webkit-scrollbar-track { background: #e7efeb; border-radius: 999px; }
+    .scroller::-webkit-scrollbar-thumb { background: #b6c7c0; border-radius: 999px; }
+
+    .timeline {
+      position: relative;
+      min-width: 1200px;
+    }
+
+    .timeline-line {
+      position: absolute;
+      left: 0;
+      right: 0;
+      height: var(--line-thickness);
+      background: linear-gradient(to right, #cad8d2, #b8c8c1, #cad8d2);
+      border-radius: 999px;
+      z-index: 1;
+    }
+
+    .event {
+      position: absolute;
+      width: var(--card-width);
+      height: var(--card-height);
+      transform: translateX(-50%);
+      z-index: 2;
+    }
+
+    .event-card {
+      width: 100%;
+      height: 100%;
+      background-color: rgba(252, 253, 252, 0.98);
+      border: 1px solid #dbe7e1;
+      border-radius: 16px;
+      padding: 10px 12px 9px;
+      box-shadow: var(--card-shadow);
+      cursor: pointer;
+      transition: border-color 0.18s ease, box-shadow 0.18s ease, background-color 0.18s ease;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      row-gap: 6px;
+      min-width: 0;
+      overflow: hidden;
+    }
+
+    .event-card:hover {
+      background-color: #ffffff;
+      border-color: #bfd0c8;
+      box-shadow: 0 10px 22px rgba(74, 95, 88, 0.08);
+    }
+
+    .event.active .event-card {
+      background-color: #ffffff;
+      border-color: var(--sage);
+      box-shadow: 0 12px 24px rgba(91, 122, 112, 0.14);
+    }
+
+    .event-date {
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--sage-dark);
+      letter-spacing: 0.2px;
+      white-space: nowrap;
+      min-width: 0;
+    }
+
+    .event-title {
+      font-family: var(--sans);
+      font-size: 13px;
+      line-height: 1.3;
+      color: var(--text);
+      overflow: hidden;
+      min-width: 0;
+      min-height: 0;
+      word-break: break-word;
+    }
+
+    .event-group {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.35px;
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: clip;
+      min-width: 0;
+    }
+
+    .event-card.has-image {
+      background-size: cover;
+      background-position: center;
+    }
+
+    .event-card.has-image .event-date  { color: rgba(255, 255, 255, 0.78); }
+    .event-card.has-image .event-title { color: #ffffff; text-shadow: 0 1px 3px rgba(0,0,0,0.35); }
+    .event-card.has-image .event-group { color: rgba(255, 255, 255, 0.55); }
+
+    .progress {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--muted);
+      padding: 0 18px 18px;
+      text-align: right;
+    }
+
+    @media (max-width: 880px) {
+      .detail-panel { grid-template-columns: 1fr; }
+      .detail-date { max-width: 220px; }
+      .detail-media { float: none; width: 100%; margin: 0 0 14px; }
+    }
+
+    @media (max-width: 640px) {
+      .page { padding: 16px 12px 28px; }
+      .detail-headline { font-size: 20px; }
+      :root {
+        --card-width: 164px;
+        --card-height: 74px;
+        --axis-pad: 110px;
+      }
+    }
+    .lightbox {
+      position: fixed;
+      inset: 0;
+      background: rgba(12, 22, 18, 0.90);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      cursor: zoom-out;
+      backdrop-filter: blur(6px);
+      animation: lb-in 0.18s ease;
+    }
+
+    @keyframes lb-in {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+
+    .lightbox[hidden] { display: none; }
+
+    .lightbox-img {
+      max-width: 90vw;
+      max-height: 88vh;
+      width: auto;
+      height: auto;
+      border-radius: 6px;
+      box-shadow: 0 32px 96px rgba(0, 0, 0, 0.55);
+      cursor: default;
+    }
+
+    .lightbox-close {
+      position: absolute;
+      top: 18px;
+      right: 22px;
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 999px;
+      color: rgba(255, 255, 255, 0.85);
+      font-size: 20px;
+      line-height: 1;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .lightbox-close:hover { background: rgba(255, 255, 255, 0.22); }
+
+    .detail-img { cursor: zoom-in; }
+  </style>
+</head>
+<body>
+  <div id="lightbox" class="lightbox" hidden>
+    <button class="lightbox-close" aria-label="Close">×</button>
+    <img class="lightbox-img" id="lightboxImg" src="" alt="">
+  </div>
+
+  <div class="page">
+    <section class="timeline-shell">
+      <div class="detail-panel">
+        <div class="detail-date">
+          <div class="monthday" id="detailMonthDay">—</div>
+          <div class="year" id="detailYear">—</div>
+        </div>
+
+        <div class="detail-main">
+          <div class="detail-topline">
+            <span class="group-badge" id="detailGroup">Loading</span>
+          </div>
+          <div class="detail-media" id="detailMedia">
+            <div class="detail-caption" id="detailCaption" hidden></div>
+            <div class="detail-credit" id="detailCredit" hidden></div>
+          </div>
+          <h2 class="detail-headline" id="detailHeadline">Loading timeline…</h2>
+          <div class="detail-text" id="detailText"></div>
+        </div>
+      </div>
+
+      <div class="timeline-wrap">
+        <div class="toolbar">
+          <div class="zoom-group">
+            <button class="zoom-btn" id="zoomOutBtn" aria-label="Zoom out">−</button>
+            <div class="zoom-readout" id="zoomReadout">Medium</div>
+            <button class="zoom-btn" id="zoomInBtn" aria-label="Zoom in">+</button>
+          </div>
+        </div>
+
+        <div class="scroller" id="scroller" tabindex="0" aria-label="Timeline">
+          <div class="timeline" id="timeline">
+            <div class="timeline-line" id="timelineLine"></div>
+            <div id="eventsLayer"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="progress" id="progressText">Loading…</div>
+    </section>
+  </div>
+
+  <script>
+    const MONTH_NAMES = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const XLSX_FILE   = 'TimelineJS3 Template_Seattle DWO_May 2026.xlsx';
+
+    const zoomLevels = [
+      { label: 'Far',    value: 6  },
+      { label: 'Near',   value: 12 },
+      { label: 'Close',  value: 20 },
+      { label: 'Detail', value: 36 }
+    ];
+
+    let events      = [];
+    let zoomIndex   = 0;
+    let pxPerDay    = zoomLevels[0].value;
+    let activeIndex = 0;
+
+    const eventsLayer    = document.getElementById('eventsLayer');
+    const timeline       = document.getElementById('timeline');
+    const timelineLine   = document.getElementById('timelineLine');
+    const progressText   = document.getElementById('progressText');
+    const scroller       = document.getElementById('scroller');
+    const detailMonthDay = document.getElementById('detailMonthDay');
+    const detailYear     = document.getElementById('detailYear');
+    const detailGroup    = document.getElementById('detailGroup');
+    const detailHeadline = document.getElementById('detailHeadline');
+    const detailMedia    = document.getElementById('detailMedia');
+    const detailCaption  = document.getElementById('detailCaption');
+    const detailCredit   = document.getElementById('detailCredit');
+    const detailText     = document.getElementById('detailText');
+    const zoomReadout    = document.getElementById('zoomReadout');
+    const lightbox       = document.getElementById('lightbox');
+    const lightboxImg    = document.getElementById('lightboxImg');
+
+    function openLightbox(src, alt) {
+      lightboxImg.src = src;
+      lightboxImg.alt = alt;
+      lightbox.hidden = false;
+    }
+
+    function closeLightbox() {
+      lightbox.hidden = true;
+      lightboxImg.src = '';
+    }
+
+    lightbox.addEventListener('click', e => {
+      if (e.target !== lightboxImg) closeLightbox();
+    });
+
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape' && !lightbox.hidden) closeLightbox();
+    });
+
+    function isDirectImage(url) {
+      return Boolean(url) && /\.(jpe?g|png|gif|webp|svg)(\?.*)?$/i.test(url);
+    }
+
+    function stripCreditPrefix(s) {
+      return String(s || '').replace(/^Media Credit:\s*/i, '').trim();
+    }
+
+    function parseRows(rows) {
+      const parsed = [];
+      for (let i = 0; i < rows.length; i++) {
+        const row = rows[i];
+        if (String(row.Type || '').trim().toLowerCase() === 'title') continue;
+
+        const year  = parseInt(row.Year)  || 0;
+        const month = parseInt(row.Month) || 0;
+        const day   = parseInt(row.Day)   || 0;
+        if (!year || !month) continue;
+
+        const dateObj   = new Date(year, month - 1, Math.max(1, day));
+        const monthName = MONTH_NAMES[month - 1] || '';
+        const monthDay  = day > 1 ? `${monthName} ${day}` : monthName;
+
+        const rawDisplay = String(row['Display Date'] || '').trim();
+        const displayDate = rawDisplay
+          || (day > 1 ? `${monthName} ${day}, ${year}` : `${monthName} ${year}`);
+
+        parsed.push({
+          dateObj,
+          year:           String(year),
+          monthDay,
+          displayDate,
+          group:          String(row.Group             || '').trim(),
+          headline:       String(row.Headline          || '').trim(),
+          text:           String(row.Text              || '').trim(),
+          mediaUrl:       String(row.Media             || '').trim(),
+          mediaThumbnail: String(row['Media Thumbnail']|| '').trim(),
+          mediaCredit:    stripCreditPrefix(row['Media Credit']),
+          mediaCaption:   String(row['Media Caption']  || '').trim(),
+          altText:        String(row['Alt Text']       || '').trim(),
+          background:     String(row.Background        || '').trim(),
+          localImg:       `img/photo_${i + 1}.jpg`,
+          resolvedImg:    null,
+        });
+      }
+      parsed.sort((a, b) => a.dateObj - b.dateObj);
+      return parsed;
+    }
+
+    function resolveLocalImages(evs) {
+      return Promise.all(evs.map(ev => new Promise(resolve => {
+        const img = new Image();
+        img.onload  = () => { ev.resolvedImg = ev.localImg; resolve(); };
+        img.onerror = () => resolve();
+        img.src = ev.localImg;
+      })));
+    }
+
+    function getCssNumber(varName) {
+      return parseFloat(getComputedStyle(document.documentElement).getPropertyValue(varName));
+    }
+
+    function daysBetween(a, b) {
+      return Math.round((b - a) / (1000 * 60 * 60 * 24));
+    }
+
+    function selectInitialZoom(totalDays) {
+      const axisPad   = getCssNumber('--axis-pad');
+      const cardWidth = getCssNumber('--card-width');
+      const usable    = (scroller.clientWidth || 900) - 2 * axisPad - cardWidth;
+      const target    = Math.max(1, usable / Math.max(1, totalDays));
+      let best = 0, bestDist = Infinity;
+      zoomLevels.forEach((z, i) => {
+        const d = Math.abs(z.value - target);
+        if (d < bestDist) { bestDist = d; best = i; }
+      });
+      return best;
+    }
+
+    function getEventXPositions() {
+      const cardWidth = getCssNumber('--card-width');
+      const axisPad   = getCssNumber('--axis-pad');
+
+      const dates     = events.map(e => e.dateObj);
+      const minDate   = new Date(Math.min(...dates));
+      const maxDate   = new Date(Math.max(...dates));
+      const totalDays = Math.max(1, daysBetween(minDate, maxDate));
+      const timelineWidth = axisPad * 2 + totalDays * pxPerDay + cardWidth;
+
+      const dateCounts = {};
+      const dateSeen   = {};
+      events.forEach(e => {
+        const k = e.dateObj.getTime();
+        dateCounts[k] = (dateCounts[k] || 0) + 1;
+      });
+
+      const positioned = events.map((event, index) => {
+        const k         = event.dateObj.getTime();
+        const dayOffset = daysBetween(minDate, event.dateObj);
+        dateSeen[k] = dateSeen[k] || 0;
+        const sameDayCount = dateCounts[k];
+        const sameDayIndex = dateSeen[k]++;
+        const duplicateOffset = sameDayCount > 1
+          ? (sameDayIndex - (sameDayCount - 1) / 2) * 30
+          : 0;
+        const centerX = axisPad + dayOffset * pxPerDay + duplicateOffset;
+        return { ...event, index, centerX, leftX: centerX - cardWidth / 2, rightX: centerX + cardWidth / 2 };
+      });
+
+      return { positioned, timelineWidth };
+    }
+
+    function assignLanes(positioned) {
+      const laneLastRight = [-Infinity, -Infinity, -Infinity, -Infinity];
+      return positioned.map(item => {
+        let lane = null;
+        for (let i = 0; i < laneLastRight.length; i++) {
+          if (item.leftX > laneLastRight[i]) { lane = i; break; }
+        }
+        if (lane === null) lane = laneLastRight.indexOf(Math.min(...laneLastRight));
+        laneLastRight[lane] = item.rightX;
+        return { ...item, lane };
+      });
+    }
+
+    function computeLayoutMetrics(laidOut) {
+      const cardHeight    = getCssNumber('--card-height');
+      const laneGap       = getCssNumber('--lane-gap');
+      const lineThickness = getCssNumber('--line-thickness');
+      const nearOffset    = 10;
+      const farOffset     = cardHeight + laneGap + 10;
+      const laneTops = { 0: -cardHeight - nearOffset, 1: nearOffset, 2: -cardHeight - farOffset, 3: farOffset };
+      let minTop = 0, maxBottom = lineThickness;
+      for (const e of laidOut) {
+        const top = laneTops[e.lane];
+        if (top < minTop) minTop = top;
+        if (top + cardHeight > maxBottom) maxBottom = top + cardHeight;
+      }
+      const lineY          = 14 + Math.abs(minTop);
+      const timelineHeight = lineY + maxBottom + 14;
+      return { laneTops, lineY, timelineHeight };
+    }
+
+    function fitTitleWithEllipsis(el, fullText) {
+      el.textContent = fullText;
+      if (el.clientHeight <= 0 || el.scrollHeight <= el.clientHeight + 1) return;
+      let lo = 0, hi = fullText.length, best = '…';
+      while (lo <= hi) {
+        const mid = Math.floor((lo + hi) / 2);
+        const candidate = fullText.slice(0, mid).trimEnd() + '…';
+        el.textContent = candidate;
+        if (el.scrollHeight <= el.clientHeight + 1) { best = candidate; lo = mid + 1; }
+        else { hi = mid - 1; }
+      }
+      el.textContent = best;
+    }
+
+    function applyTitleEllipses() {
+      document.querySelectorAll('.event-title').forEach(el =>
+        fitTitleWithEllipsis(el, el.dataset.fulltext || el.textContent)
+      );
+    }
+
+    function updateActiveVisuals() {
+      document.querySelectorAll('.event').forEach((item, i) => {
+        const active = i === activeIndex;
+        item.classList.toggle('active', active);
+        const btn = item.querySelector('.event-card');
+        if (btn) btn.setAttribute('aria-pressed', String(active));
+      });
+    }
+
+    function layoutTimeline(keepCenteredOnActive = false) {
+      const cardWidth = getCssNumber('--card-width');
+      const { positioned, timelineWidth } = getEventXPositions();
+      const laidOut = assignLanes(positioned);
+      const { laneTops, lineY, timelineHeight } = computeLayoutMetrics(laidOut);
+
+      timeline.style.width   = `${timelineWidth}px`;
+      timeline.style.height  = `${timelineHeight}px`;
+      timelineLine.style.top = `${lineY}px`;
+      eventsLayer.innerHTML  = '';
+
+      laidOut.forEach(event => {
+        const item = document.createElement('article');
+        item.className     = 'event';
+        item.dataset.index = event.index;
+        item.style.left    = `${event.centerX}px`;
+        item.style.top     = `${lineY + laneTops[event.lane]}px`;
+
+        const card = document.createElement('div');
+        card.className = 'event-card';
+        card.setAttribute('role', 'button');
+        card.setAttribute('tabindex', '0');
+        card.setAttribute('aria-pressed', String(event.index === activeIndex));
+
+        const cardImg = event.resolvedImg
+                      || (isDirectImage(event.mediaUrl)       ? event.mediaUrl       : null)
+                      || (isDirectImage(event.mediaThumbnail) ? event.mediaThumbnail : null)
+                      || (isDirectImage(event.background)     ? event.background     : null);
+        if (cardImg) {
+          card.classList.add('has-image');
+          card.style.backgroundImage =
+            `linear-gradient(rgba(20,38,32,.56), rgba(20,38,32,.74)), url('${cardImg}')`;
+        }
+
+        const dateEl = document.createElement('div');
+        dateEl.className   = 'event-date';
+        dateEl.textContent = event.displayDate;
+
+        const titleEl = document.createElement('div');
+        titleEl.className        = 'event-title';
+        titleEl.dataset.fulltext = event.headline;
+        titleEl.title            = event.headline;
+        titleEl.textContent      = event.headline;
+
+        const groupEl = document.createElement('div');
+        groupEl.className   = 'event-group';
+        groupEl.textContent = event.group;
+        groupEl.title       = event.group;
+
+        card.appendChild(dateEl);
+        card.appendChild(titleEl);
+        card.appendChild(groupEl);
+        item.appendChild(card);
+
+        item.addEventListener('click', () => setActive(event.index, true));
+        item.addEventListener('keydown', e => {
+          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setActive(event.index, true); }
+        });
+
+        eventsLayer.appendChild(item);
+      });
+
+      requestAnimationFrame(() => {
+        applyTitleEllipses();
+        updateActiveVisuals();
+        if (keepCenteredOnActive) {
+          const activeEl = document.querySelector(`.event[data-index="${activeIndex}"]`);
+          if (activeEl) {
+            const left = activeEl.offsetLeft - scroller.clientWidth / 2 + cardWidth / 2;
+            scroller.scrollTo({ left, behavior: 'auto' });
+          }
+        }
+      });
+    }
+
+    function setActive(index, scrollIntoView = false) {
+      activeIndex = index;
+      const ev = events[index];
+
+      detailMonthDay.textContent = ev.monthDay;
+      detailYear.textContent     = ev.year;
+      detailGroup.textContent    = ev.group || 'Seattle';
+      detailHeadline.textContent = ev.headline;
+      detailText.innerHTML       = ev.text ? `<p>${ev.text}</p>` : '';
+
+      detailMedia.innerHTML = '';
+      const imgUrl = ev.resolvedImg
+                   || (isDirectImage(ev.mediaUrl)       ? ev.mediaUrl       : null)
+                   || (isDirectImage(ev.mediaThumbnail) ? ev.mediaThumbnail : null)
+                   || (isDirectImage(ev.background)     ? ev.background     : null);
+      const linkUrl = !imgUrl && ev.mediaUrl ? ev.mediaUrl : null;
+
+      if (imgUrl) {
+        const img = document.createElement('img');
+        img.src       = imgUrl;
+        img.alt       = ev.altText || ev.headline;
+        img.className = 'detail-img';
+        img.addEventListener('click', () => openLightbox(imgUrl, img.alt));
+        detailMedia.appendChild(img);
+      } else if (linkUrl) {
+        const a = document.createElement('a');
+        a.href        = linkUrl;
+        a.target      = '_blank';
+        a.rel         = 'noopener noreferrer';
+        a.textContent = 'View photo →';
+        a.className   = 'detail-media-link';
+        detailMedia.appendChild(a);
+      }
+
+      detailCaption.hidden      = !ev.mediaCaption;
+      detailCaption.textContent = ev.mediaCaption;
+      detailCredit.hidden       = !ev.mediaCredit;
+      detailCredit.textContent  = ev.mediaCredit;
+
+      progressText.textContent = `${index + 1} of ${events.length}`;
+      updateActiveVisuals();
+
+      if (scrollIntoView) {
+        const activeEl = document.querySelector(`.event[data-index="${index}"]`);
+        if (activeEl) {
+          const cardWidth = getCssNumber('--card-width');
+          const left = activeEl.offsetLeft - scroller.clientWidth / 2 + cardWidth / 2;
+          scroller.scrollTo({ left, behavior: 'smooth' });
+        }
+      }
+    }
+
+    function updateZoomReadout() {
+      zoomReadout.textContent = zoomLevels[zoomIndex].label;
+    }
+
+    document.getElementById('zoomOutBtn').addEventListener('click', () => {
+      if (zoomIndex > 0) {
+        zoomIndex--;
+        pxPerDay = zoomLevels[zoomIndex].value;
+        updateZoomReadout();
+        layoutTimeline(true);
+      }
+    });
+
+    document.getElementById('zoomInBtn').addEventListener('click', () => {
+      if (zoomIndex < zoomLevels.length - 1) {
+        zoomIndex++;
+        pxPerDay = zoomLevels[zoomIndex].value;
+        updateZoomReadout();
+        layoutTimeline(true);
+      }
+    });
+
+    document.addEventListener('keydown', e => {
+      const tag = document.activeElement?.tagName;
+      if (document.activeElement?.isContentEditable || tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+      if (e.key === 'ArrowLeft'  && activeIndex > 0)                    { e.preventDefault(); setActive(activeIndex - 1, true); }
+      if (e.key === 'ArrowRight' && activeIndex < events.length - 1)    { e.preventDefault(); setActive(activeIndex + 1, true); }
+    });
+
+    window.addEventListener('resize', () => layoutTimeline(true));
+
+    async function init() {
+      try {
+        const res = await fetch(XLSX_FILE);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const buf  = await res.arrayBuffer();
+        const wb   = XLSX.read(new Uint8Array(buf), { type: 'array' });
+        const ws   = wb.Sheets[wb.SheetNames[0]];
+        const rows = XLSX.utils.sheet_to_json(ws, { defval: '' });
+
+        events = parseRows(rows);
+        await resolveLocalImages(events);
+
+        if (!events.length) {
+          detailHeadline.textContent = 'No events found in spreadsheet.';
+          progressText.textContent   = '';
+          return;
+        }
+
+        const totalDays = daysBetween(events[0].dateObj, events[events.length - 1].dateObj);
+        zoomIndex = selectInitialZoom(totalDays);
+        pxPerDay  = zoomLevels[zoomIndex].value;
+        updateZoomReadout();
+        layoutTimeline(false);
+        setActive(0, false);
+      } catch (err) {
+        detailHeadline.textContent = 'Could not load timeline data.';
+        progressText.textContent   = err.message;
+        console.error(err);
+      }
+    }
+
+    init();
+  </script>
+<script>
+  new ResizeObserver(() => {
+    const h = document.documentElement.scrollHeight;
+    if (h > 0) window.parent.postMessage({ type: 'iframe-resize', height: h }, '*');
+  }).observe(document.documentElement);
+</script>
+</body>
+</html>

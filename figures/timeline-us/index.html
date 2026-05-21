@@ -542,5 +542,11 @@ d3.json("DWBR_Timeline_US_States_with_Cities.geojson").then(data => {
     updateMap(currentYear);
 });
 </script>
+<script>
+  new ResizeObserver(() => {
+    const h = document.documentElement.scrollHeight;
+    if (h > 0) window.parent.postMessage({ type: 'iframe-resize', height: h }, '*');
+  }).observe(document.documentElement);
+</script>
 </body>
 </html>

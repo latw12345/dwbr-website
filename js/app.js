@@ -18,3 +18,10 @@ document.addEventListener('click', e => {
   e.preventDefault();
   showPage(el.dataset.page);
 });
+
+window.addEventListener('message', e => {
+  if (e.data?.type !== 'iframe-resize') return;
+  const frame = Array.from(document.querySelectorAll('iframe'))
+    .find(f => f.contentWindow === e.source);
+  if (frame && e.data.height > 0) frame.style.height = e.data.height + 'px';
+});

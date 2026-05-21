@@ -710,5 +710,11 @@ Promise.all([
     </div>`;
 });
 </script>
+<script>
+  new ResizeObserver(() => {
+    const h = document.documentElement.scrollHeight;
+    if (h > 0) window.parent.postMessage({ type: 'iframe-resize', height: h }, '*');
+  }).observe(document.documentElement);
+</script>
 </body>
 </html>
