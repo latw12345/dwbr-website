@@ -1,0 +1,42 @@
+/* ============================================================
+   DWBR — design tokens
+   Aesthetic: editorial / longform journalism
+   Palette:   warm paper, deep sage ink, single clay accent
+   Type:      Newsreader (serif display), Epilogue (body),
+              Roboto Mono (metadata)
+   ============================================================ */
+:root {
+  /* palette matched to timeline/map — sage & paper ground */
+  --paper:        #f5f7f6;
+  --paper-2:      #fcfdfc;
+  --paper-3:      #f0f4f2;
+  --rule:         #dde8e3;
+  --rule-soft:    #e6efeb;
+
+  /* sage ink — from timeline design system */
+  --ink:          #4a5f58;
+  --ink-2:        #5b7a70;
+  --ink-3:        #7f918a;
+  --sage:         #6f8f85;
+  --sage-deep:    #5b7a70;
+  --sage-tint:    #e6efeb;
+
+  /* expanded green palette — moss, forest, mint */
+  --moss:         #6b8e76;
+  --moss-deep:    #4f6e5d;
+  --forest:       #3d5a4a;
+  --mint:         #8fad99;
+  --mint-light:   #c4d9cb;
+  --seafoam:      #9eb3a8;
+  --evergreen:    #3a5246;
+
+  /* type scale */
+  --serif: 'Newsreader', 'Iowan Old Style', Georgia, serif;
+  --sans:  'Epilogue', -apple-system, system-ui, sans-serif;
+  --mono:  'Roboto Mono', ui-monospace, Menlo, monospace;
+
+  --shadow-sm: 0 1px 2px rgba(40,55,50,.04);
+  --shadow:    0 12px 40px -16px rgba(40,55,50,.12);
+  --radius:    4px;
+  --nav-h:     68px;
+}

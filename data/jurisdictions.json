@@ -1,0 +1,114 @@
+[
+  {
+    "name": "New York",
+    "year": "2010",
+    "coverage": "Non-casual domestic workers: nannies, housecleaners, companions, home attendants. Excludes casual babysitters and family members.",
+    "provisions": "Overtime (1.5×) after 40 hrs, 1 rest day/week, 3 paid days off after 1 year, harassment protections under Human Rights Law",
+    "note": "First in the nation. It became the legislative template every state that followed adapted."
+  },
+  {
+    "name": "California",
+    "year": "2013",
+    "coverage": "Personal attendants (nannies, caregivers for children or adults with disabilities), live-in and live-out",
+    "provisions": "Overtime (1.5×) after 9 hrs/day or 45 hrs/week; made permanent via SB 1015 in 2016 after initial sunset clause",
+    "note": "First state to extend overtime specifically to personal attendants, a category previously exempted under federal law."
+  },
+  {
+    "name": "Hawaii",
+    "year": "2013",
+    "coverage": "Live-in and live-out domestic service workers; excludes babysitters working fewer than 20 hrs/week",
+    "provisions": "Minimum wage, overtime after 40 hrs/week, comprehensive anti-discrimination (race, sex, age, disability, sexual orientation, ancestry)",
+    "note": "Second state in the nation; brought domestic workers formally under the state’s employer–employee framework for the first time."
+  },
+  {
+    "name": "Massachusetts",
+    "year": "2014",
+    "coverage": "Nannies, housekeepers, caregivers, companions; workers’ compensation required at ≥16 hrs/week",
+    "provisions": "24 hrs rest/week, 48 hrs rest/month, parental leave protections, anti-harassment and discrimination, retaliation protections",
+    "note": "Unusually strong rest-period and parental leave provisions, rare among DWBR laws at the time."
+  },
+  {
+    "name": "Connecticut",
+    "year": "2015",
+    "coverage": "Domestic workers in childcare, housekeeping, caregiving, cooking; excludes casual babysitters and state-funded personal care attendants",
+    "provisions": "Written employment info required at hire, paid leave (72–120 hrs/year), severance for wrongful termination, advance termination notice",
+    "note": "Extended anti-discrimination protections to all household employers regardless of size; most state laws exempt small employers."
+  },
+  {
+    "name": "Oregon",
+    "year": "2015",
+    "coverage": "Nannies, housecleaners, maids; excludes independent contractors, senior companions, and casual babysitters",
+    "provisions": "24 consecutive hrs rest/week, 8 hrs rest per 24-hr period, adequate sleep conditions for live-in workers, 3 paid personal days/year (after 1 yr, ≥30 hrs/week)",
+    "note": "Unique emphasis on sleep and rest protections, the most specific live-in worker rest provisions of any state law."
+  },
+  {
+    "name": "Illinois",
+    "year": "2016",
+    "coverage": "Nannies, housecleaners, caregivers working ≥8 hrs/week for one employer; excludes family members",
+    "provisions": "Anti-discrimination under Human Rights Act (including military service status), 24 hrs rest/week for workers ≥20 hrs/week, 20-min break per 7.5-hr shift",
+    "note": "One of few state DWBRs to list military service as an explicitly protected characteristic."
+  },
+  {
+    "name": "Nevada",
+    "year": "2017",
+    "coverage": "Domestic workers in private households; different provisions for live-in vs. live-out workers",
+    "provisions": "Written employment agreements, minimum wage, overtime (after 8 hrs/day or 40 hrs/week), 1 full day off/week, prohibition on monitoring private communications or confiscating personal documents, lodging deductions capped at 5× minimum wage",
+    "note": "Among the strongest privacy provisions in any state DWBR, prohibiting employer monitoring of private communications and confiscation of personal documents."
+  },
+  {
+    "name": "Seattle",
+    "year": "City · 2018",
+    "coverage": "All domestic workers within city limits (including part-time, live-in, and independent contractors), regardless of immigration status",
+    "provisions": "Seattle minimum wage, 30-min meal break (5+ hrs), 10-min paid rest break (4+ hrs), document retention prohibited (passports, SSNs), immigration-related retaliation banned",
+    "note": "First city DWBR in the nation. It became the organizing model Washington would follow eight years later."
+  },
+  {
+    "name": "New Mexico",
+    "year": "2019",
+    "coverage": "Domestic service and home care workers previously excluded from state minimum wage protections",
+    "provisions": "Minimum wage, overtime protections, wage enforcement by Dept. of Workforce Solutions, right to recover unpaid wages and damages",
+    "note": "Closed the historical loophole that had excluded domestic workers from the state’s minimum wage law entirely."
+  },
+  {
+    "name": "Philadelphia",
+    "year": "City · 2020",
+    "coverage": "Domestic workers (nannies, housecleaners, caregivers) working ≥5 hrs/month; covers workers regardless of immigration status",
+    "provisions": "Written employment agreements, paid leave accrued across multiple employers, 2-week termination notice (4 weeks for live-in workers)",
+    "note": "First ordinance to allow paid leave to accrue across multiple employers, addressing how domestic work is actually structured."
+  },
+  {
+    "name": "Virginia",
+    "year": "2021",
+    "coverage": "Nannies, housecleaners, home care workers statewide; approx. 60,000 workers previously without any legal protections",
+    "provisions": "Minimum wage, anti-discrimination and harassment protections, privacy protections for live-in workers, right to a safe workplace",
+    "note": "First Southern state to pass a DWBR; workers previously had no legal recourse for sexual harassment or pregnancy discrimination."
+  },
+  {
+    "name": "District of Columbia",
+    "year": "City · 2022",
+    "coverage": "Housekeepers, nannies, home health aides in the District; approx. 9,000 workers previously excluded from the DC Human Rights Act",
+    "provisions": "DC Human Rights Act protections (effective Oct. 2023), written work agreements required, domestic worker outreach and education program established",
+    "note": "Reversed the DC Human Rights Act’s historical exclusion of domestic workers, a direct legacy of the exclusions written into federal law in 1938."
+  },
+  {
+    "name": "Rhode Island",
+    "year": "2024",
+    "coverage": "Domestic service workers in private homes (nannies, housecleaners, home care aides) previously exempted from the state minimum wage law",
+    "provisions": "Minimum wage, overtime (1.5×) after 40 hrs/week, enforcement by state labor department",
+    "note": "Eliminated the longstanding exemption of domestic workers from Rhode Island’s minimum wage statute."
+  },
+  {
+    "name": "New Jersey",
+    "year": "2024",
+    "coverage": "Domestic workers (childcare, housecleaning, elderly and disability care); excludes workers with fewer than 5 hrs/month; covers all workers regardless of immigration status",
+    "provisions": "Workers’ compensation, unemployment insurance, temporary disability and family leave insurance, NJ Law Against Discrimination protections, minimum wage and overtime",
+    "note": "Most comprehensive inclusion of domestic workers in state insurance and benefits systems of any DWBR to date."
+  },
+  {
+    "name": "Washington",
+    "year": "2026",
+    "coverage": "Nannies, housecleaners, home care aides, personal attendants working ≥4 hrs/month, one of the lowest coverage thresholds of any state",
+    "provisions": "Minimum wage, overtime (1.5×) after 40 hrs/week, written employment agreements, advance termination notice (2 weeks; 4 weeks for live-in workers), privacy protections for live-in workers; effective July 1, 2027",
+    "note": "The thirteenth state, and the culmination of Seattle’s eight-year proving ground. See Chapter III for the full legislative timeline."
+  }
+]
