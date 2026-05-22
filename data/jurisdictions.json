@@ -2,113 +2,177 @@
   {
     "name": "New York",
     "year": "2010",
-    "coverage": "Non-casual domestic workers: nannies, housecleaners, companions, home attendants. Excludes casual babysitters and family members.",
-    "provisions": "Overtime (1.5×) after 40 hrs, 1 rest day/week, 3 paid days off after 1 year, harassment protections under Human Rights Law",
-    "note": "First in the nation. It became the legislative template every state that followed adapted."
-  },
-  {
-    "name": "California",
-    "year": "2013",
-    "coverage": "Personal attendants (nannies, caregivers for children or adults with disabilities), live-in and live-out",
-    "provisions": "Overtime (1.5×) after 9 hrs/day or 45 hrs/week; made permanent via SB 1015 in 2016 after initial sunset clause",
-    "note": "First state to extend overtime specifically to personal attendants, a category previously exempted under federal law."
+    "executive": "David Paterson",
+    "role": "Governor",
+    "party": "Democrat",
+    "signed": "August 31, 2010",
+    "bill": "A1470-B / S2311-E",
+    "vote": "Senate 33-28, 3 Republican crossovers",
+    "note": "First in the nation. The bill was watered down from earlier versions (workers' comp was stripped), but it became the legislative template every state that followed adapted."
   },
   {
     "name": "Hawaii",
     "year": "2013",
-    "coverage": "Live-in and live-out domestic service workers; excludes babysitters working fewer than 20 hrs/week",
-    "provisions": "Minimum wage, overtime after 40 hrs/week, comprehensive anti-discrimination (race, sex, age, disability, sexual orientation, ancestry)",
-    "note": "Second state in the nation; brought domestic workers formally under the state’s employer–employee framework for the first time."
+    "executive": "Neil Abercrombie",
+    "role": "Governor",
+    "party": "Democrat",
+    "signed": "July 1, 2013",
+    "bill": "SB 535 / Act 248",
+    "vote": "",
+    "note": "Second state in the nation. Hawaii's legislature had Democratic supermajorities in both chambers. Brought domestic workers formally under the state employer-employee framework for the first time."
+  },
+  {
+    "name": "California",
+    "year": "2013",
+    "executive": "Jerry Brown",
+    "role": "Governor",
+    "party": "Democrat",
+    "signed": "September 26, 2013",
+    "bill": "AB 241",
+    "vote": "Assembly 45-25",
+    "note": "Brown had vetoed a broader earlier version (AB 889) in 2012. AB 241 was narrower, focused on overtime for personal attendants. A sunset clause was later removed by SB 1015 (2016), making it permanent."
   },
   {
     "name": "Massachusetts",
     "year": "2014",
-    "coverage": "Nannies, housekeepers, caregivers, companions; workers’ compensation required at ≥16 hrs/week",
-    "provisions": "24 hrs rest/week, 48 hrs rest/month, parental leave protections, anti-harassment and discrimination, retaliation protections",
-    "note": "Unusually strong rest-period and parental leave provisions, rare among DWBR laws at the time."
+    "executive": "Deval Patrick",
+    "role": "Governor",
+    "party": "Democrat",
+    "signed": "June 26, 2014",
+    "bill": "S.2132 / Chapter 148",
+    "vote": "Senate unanimous · House bipartisan supermajority",
+    "note": "Among the broadest bipartisan votes of any DWBR, with over 80 co-sponsors. Patrick was in his final year as governor. Unusually strong rest-period and parental leave provisions, rare among DWBR laws at the time."
   },
   {
     "name": "Connecticut",
     "year": "2015",
-    "coverage": "Domestic workers in childcare, housekeeping, caregiving, cooking; excludes casual babysitters and state-funded personal care attendants",
-    "provisions": "Written employment info required at hire, paid leave (72–120 hrs/year), severance for wrongful termination, advance termination notice",
-    "note": "Extended anti-discrimination protections to all household employers regardless of size; most state laws exempt small employers."
+    "executive": "Dannel Malloy",
+    "role": "Governor",
+    "party": "Democrat",
+    "signed": "July 2015",
+    "bill": "SB 446",
+    "vote": "Senate 33-3 · House 130-14",
+    "note": "The strongest bipartisan margins of any state DWBR. The final bill was narrowed during negotiation, with overtime and paid sick leave stripped, but anti-discrimination and harassment protections passed with near-unanimous support."
   },
   {
     "name": "Oregon",
     "year": "2015",
-    "coverage": "Nannies, housecleaners, maids; excludes independent contractors, senior companions, and casual babysitters",
-    "provisions": "24 consecutive hrs rest/week, 8 hrs rest per 24-hr period, adequate sleep conditions for live-in workers, 3 paid personal days/year (after 1 yr, ≥30 hrs/week)",
-    "note": "Unique emphasis on sleep and rest protections, the most specific live-in worker rest provisions of any state law."
+    "executive": "Kate Brown",
+    "role": "Governor",
+    "party": "Democrat",
+    "signed": "June 17, 2015",
+    "bill": "SB 552",
+    "vote": "",
+    "note": "Brown, the first openly bisexual governor in U.S. history, had recently succeeded Gov. Kitzhaber who resigned in February 2015. Oregon's law has the most specific live-in worker rest and sleep provisions of any state DWBR."
   },
   {
     "name": "Illinois",
     "year": "2016",
-    "coverage": "Nannies, housecleaners, caregivers working ≥8 hrs/week for one employer; excludes family members",
-    "provisions": "Anti-discrimination under Human Rights Act (including military service status), 24 hrs rest/week for workers ≥20 hrs/week, 20-min break per 7.5-hr shift",
-    "note": "One of few state DWBRs to list military service as an explicitly protected characteristic."
+    "executive": "Bruce Rauner",
+    "role": "Governor",
+    "party": "Republican",
+    "signed": "August 12, 2016",
+    "bill": "HB 1288 / Public Act 099-0758",
+    "vote": "Bipartisan",
+    "note": "The only Republican governor to sign a DWBR. Rauner frequently clashed with the Democratic-controlled legislature, making his signature notable. The law covered approximately 35,000 domestic workers and was among the first to explicitly list military service as a protected characteristic."
   },
   {
     "name": "Nevada",
     "year": "2017",
-    "coverage": "Domestic workers in private households; different provisions for live-in vs. live-out workers",
-    "provisions": "Written employment agreements, minimum wage, overtime (after 8 hrs/day or 40 hrs/week), 1 full day off/week, prohibition on monitoring private communications or confiscating personal documents, lodging deductions capped at 5× minimum wage",
-    "note": "Among the strongest privacy provisions in any state DWBR, prohibiting employer monitoring of private communications and confiscation of personal documents."
+    "executive": "Brian Sandoval",
+    "role": "Governor",
+    "party": "Republican",
+    "signed": "June 12, 2017",
+    "bill": "SB 232 / Chapter 550",
+    "vote": "Senate 12-9, party-line",
+    "note": "One of two Republican governors to sign a DWBR. The Senate passed it on a strict party-line vote with every Republican opposed, yet Sandoval, a noted moderate, signed it anyway. Among the strongest privacy provisions of any state law: employers may not monitor private communications or confiscate personal documents."
   },
   {
     "name": "Seattle",
     "year": "City · 2018",
-    "coverage": "All domestic workers within city limits (including part-time, live-in, and independent contractors), regardless of immigration status",
-    "provisions": "Seattle minimum wage, 30-min meal break (5+ hrs), 10-min paid rest break (4+ hrs), document retention prohibited (passports, SSNs), immigration-related retaliation banned",
-    "note": "First city DWBR in the nation. It became the organizing model Washington would follow eight years later."
+    "executive": "Jenny Durkan",
+    "role": "Mayor",
+    "party": "Democrat",
+    "signed": "July 27, 2018",
+    "bill": "CB 119286 / Ordinance 125627",
+    "vote": "Council 9-0",
+    "note": "First city DWBR in the nation. Sponsored by Councilmember Teresa Mosqueda. Established the first Domestic Workers Standards Board of any city. It became the organizing model Washington would follow eight years later."
   },
   {
     "name": "New Mexico",
     "year": "2019",
-    "coverage": "Domestic service and home care workers previously excluded from state minimum wage protections",
-    "provisions": "Minimum wage, overtime protections, wage enforcement by Dept. of Workforce Solutions, right to recover unpaid wages and damages",
-    "note": "Closed the historical loophole that had excluded domestic workers from the state’s minimum wage law entirely."
+    "executive": "Michelle Lujan Grisham",
+    "role": "Governor",
+    "party": "Democrat",
+    "signed": "April 2019",
+    "bill": "SB 85",
+    "vote": "",
+    "note": "Lujan Grisham's first year as governor. The bill removed the domestic worker exemption from New Mexico's minimum wage law, closing a longstanding loophole that had left workers with no legal recourse."
   },
   {
     "name": "Philadelphia",
     "year": "City · 2020",
-    "coverage": "Domestic workers (nannies, housecleaners, caregivers) working ≥5 hrs/month; covers workers regardless of immigration status",
-    "provisions": "Written employment agreements, paid leave accrued across multiple employers, 2-week termination notice (4 weeks for live-in workers)",
-    "note": "First ordinance to allow paid leave to accrue across multiple employers, addressing how domestic work is actually structured."
+    "executive": "Jim Kenney",
+    "role": "Mayor",
+    "party": "Democrat",
+    "signed": "November 26, 2019",
+    "bill": "Philadelphia Code Ch. 9-4500",
+    "vote": "Council unanimous",
+    "note": "First ordinance to allow paid leave to accrue across multiple employers, directly addressing how domestic work is actually structured. Effective May 1, 2020. Covered an estimated 16,000 workers."
   },
   {
     "name": "Virginia",
     "year": "2021",
-    "coverage": "Nannies, housecleaners, home care workers statewide; approx. 60,000 workers previously without any legal protections",
-    "provisions": "Minimum wage, anti-discrimination and harassment protections, privacy protections for live-in workers, right to a safe workplace",
-    "note": "First Southern state to pass a DWBR; workers previously had no legal recourse for sexual harassment or pregnancy discrimination."
+    "executive": "Ralph Northam",
+    "role": "Governor",
+    "party": "Democrat",
+    "signed": "March 31, 2021",
+    "bill": "SB 1310 / Chapter 513",
+    "vote": "Senate 21-18 · House 55-45",
+    "note": "First Southern state to pass a DWBR. Sponsored by Sen. Jennifer McClellan, the first Black woman to represent Richmond in the state Senate. Northam signed it in the final hours before a midnight deadline on near party-line votes."
   },
   {
     "name": "District of Columbia",
     "year": "City · 2022",
-    "coverage": "Housekeepers, nannies, home health aides in the District; approx. 9,000 workers previously excluded from the DC Human Rights Act",
-    "provisions": "DC Human Rights Act protections (effective Oct. 2023), written work agreements required, domestic worker outreach and education program established",
-    "note": "Reversed the DC Human Rights Act’s historical exclusion of domestic workers, a direct legacy of the exclusions written into federal law in 1938."
-  },
-  {
-    "name": "Rhode Island",
-    "year": "2024",
-    "coverage": "Domestic service workers in private homes (nannies, housecleaners, home care aides) previously exempted from the state minimum wage law",
-    "provisions": "Minimum wage, overtime (1.5×) after 40 hrs/week, enforcement by state labor department",
-    "note": "Eliminated the longstanding exemption of domestic workers from Rhode Island’s minimum wage statute."
+    "executive": "Muriel Bowser",
+    "role": "Mayor",
+    "party": "Democrat",
+    "signed": "Became law March 10, 2023 without signature",
+    "bill": "Bill 24-712 / DC Law 24-305",
+    "vote": "Council 13-0",
+    "note": "Bowser allowed the bill to lapse into law without signing, reportedly objecting to its funding requirements. The only DWBR whose executive withheld their signature. The DC Council passed it unanimously. Effective October 1, 2023."
   },
   {
     "name": "New Jersey",
     "year": "2024",
-    "coverage": "Domestic workers (childcare, housecleaning, elderly and disability care); excludes workers with fewer than 5 hrs/month; covers all workers regardless of immigration status",
-    "provisions": "Workers’ compensation, unemployment insurance, temporary disability and family leave insurance, NJ Law Against Discrimination protections, minimum wage and overtime",
-    "note": "Most comprehensive inclusion of domestic workers in state insurance and benefits systems of any DWBR to date."
+    "executive": "Phil Murphy",
+    "role": "Governor",
+    "party": "Democrat",
+    "signed": "January 12, 2024",
+    "bill": "A822 / S723 / P.L. 2023 Ch.262",
+    "vote": "Senate 24-11 · Assembly 48-26",
+    "note": "Most comprehensive inclusion of domestic workers in state insurance and benefits systems of any DWBR to date. Murphy signed it four days after Assembly passage. No Republican co-sponsors. Effective July 1, 2024."
+  },
+  {
+    "name": "Rhode Island",
+    "year": "2024",
+    "executive": "Daniel McKee",
+    "role": "Governor",
+    "party": "Democrat",
+    "signed": "June 24, 2024",
+    "bill": "S 2021",
+    "vote": "",
+    "note": "Eliminated the domestic worker exemption from Rhode Island's Minimum Wage Act. Scope was limited: workers' compensation benefits were not extended. McKee was in his final year as governor."
   },
   {
     "name": "Washington",
     "year": "2026",
-    "coverage": "Nannies, housecleaners, home care aides, personal attendants working ≥4 hrs/month, one of the lowest coverage thresholds of any state",
-    "provisions": "Minimum wage, overtime (1.5×) after 40 hrs/week, written employment agreements, advance termination notice (2 weeks; 4 weeks for live-in workers), privacy protections for live-in workers; effective July 1, 2027",
-    "note": "The thirteenth state, and the culmination of Seattle’s eight-year proving ground. See Chapter III for the full legislative timeline."
+    "executive": "Bob Ferguson",
+    "role": "Governor",
+    "party": "Democrat",
+    "signed": "March 9, 2026",
+    "bill": "HB 2355",
+    "vote": "House 57-39 · Senate 28-20",
+    "note": "The thirteenth state, and the culmination of Seattle's eight-year proving ground. Ferguson succeeded Jay Inslee. Sponsored by Rep. Brianna Thomas and Sen. Rebecca Saldaña, both from Seattle. See Chapter III for the full legislative timeline."
   }
 ]

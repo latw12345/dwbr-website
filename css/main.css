@@ -679,6 +679,33 @@ nav {
   font-size: 13px;
   color: var(--ink-3);
 }
+.jd-executive {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.party-badge {
+  display: inline-block;
+  padding: 2px 7px;
+  border-radius: 999px;
+  font-family: var(--mono);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+.party-d {
+  background: #e8eef5;
+  color: #3d6080;
+  border: 1px solid #c4d4e4;
+}
+.party-r {
+  background: #f5eceb;
+  color: #8a3e3e;
+  border: 1px solid #e4c8c6;
+}
 
 /* ── CELL GRID (Seattle ordinance, etc.) ──────── */
 .cell-grid {

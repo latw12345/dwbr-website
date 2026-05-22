@@ -309,6 +309,11 @@ d3.json("DWBR_Timeline_US_States_with_Cities.geojson").then(data => {
         return { x: p[0], y: p[1] };
     }
 
+    // Compute Seattle's projected pixel position once so Washington's label
+    // can be anchored relative to it and guaranteed not to overlap the dot.
+    const seattleFeat = allFeatures.find(d => isPoint(d) && getName(d) === "Seattle");
+    const seattlePos  = seattleFeat ? pointCoords(seattleFeat) : null;
+
     function labelPosition(d) {
         const name = getName(d);
 
@@ -334,6 +339,19 @@ d3.json("DWBR_Timeline_US_States_with_Cities.geojson").then(data => {
 
         const c = path.centroid(d);
         if (!isFinite(c[0]) || !isFinite(c[1])) return null;
+
+        // Position Washington's label relative to Seattle's dot, not the state
+        // centroid, so the text can never land on the city circle regardless of
+        // how D3 computes the polygon centroid.
+        if (name === "Washington" && seattlePos) {
+            const lx = seattlePos.x + 72;
+            const ly = seattlePos.y + 28;
+            return {
+                x: lx, y: ly, anchor: "start",
+                lineX1: c[0], lineY1: c[1],
+                lineX2: lx - 4, lineY2: ly - 4
+            };
+        }
 
         let dx = 0, dy = 0, anchor = "middle";
         if (name === "New York") { dx = 22; dy = -12; anchor = "start"; }

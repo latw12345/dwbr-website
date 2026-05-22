@@ -9,7 +9,12 @@ function esc(s) {
 function renderJurisdictions(data) {
   const grid = document.getElementById('jurisdiction-grid');
   if (!grid) return;
-  grid.innerHTML = data.map(jd => `
+  grid.innerHTML = data.map(jd => {
+    const partyClass = jd.party === 'Republican' ? 'party-r' : 'party-d';
+    const voteRow = jd.vote
+      ? `<div><div class="label-mono">Vote</div><div class="body-sm">${esc(jd.vote)}</div></div>`
+      : '';
+    return `
     <details class="jd-card">
       <summary class="jd-summary">
         <span class="jd-name">${esc(jd.name)}<span class="jd-year">${esc(jd.year)}</span></span>
@@ -18,18 +23,26 @@ function renderJurisdictions(data) {
       <div class="jd-body">
         <div class="jd-detail">
           <div>
-            <div class="label-mono">Coverage</div>
-            <div class="body-sm">${esc(jd.coverage)}</div>
+            <div class="label-mono">${esc(jd.role)}</div>
+            <div class="body-sm jd-executive">
+              ${esc(jd.executive)}<span class="party-badge ${partyClass}">${esc(jd.party)}</span>
+            </div>
           </div>
           <div>
-            <div class="label-mono">Key provisions</div>
-            <div class="body-sm">${esc(jd.provisions)}</div>
+            <div class="label-mono">Signed</div>
+            <div class="body-sm">${esc(jd.signed)}</div>
           </div>
+          <div>
+            <div class="label-mono">Bill</div>
+            <div class="body-sm">${esc(jd.bill)}</div>
+          </div>
+          ${voteRow}
         </div>
         <div class="jd-note">${esc(jd.note)}</div>
       </div>
     </details>
-  `).join('');
+  `;
+  }).join('');
 }
 
 fetch('data/jurisdictions.json')
