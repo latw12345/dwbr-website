@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Seattle DWO: Key Locations</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,400;1,6..72,500&family=Epilogue:wght@400;500;600;700&family=Roboto+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <link rel="stylesheet" href="../../css/tokens.css">
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      height: 100%;
+      font-family: var(--sans);
+      background: var(--paper);
+      color: var(--ink);
+    }
+
+    .shell {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      min-height: 580px;
+    }
+
+    /* ── detail panel ── */
+    .detail-panel {
+      flex-shrink: 0;
+      display: grid;
+      grid-template-columns: 140px 1fr;
+      gap: 22px;
+      padding: 18px 22px;
+      background: linear-gradient(to bottom, #fbfcfb, #f7faf8);
+      border-bottom: 1px solid #e2ebe6;
+      align-items: start;
+      min-height: 130px;
+    }
+
+    .detail-date {
+      background: var(--paper-3, #eef3f1);
+      border: 1px solid #dde8e3;
+      border-radius: 14px;
+      padding: 14px 12px;
+      color: var(--sage-deep);
+    }
+
+    .detail-date .monthday {
+      font-family: var(--serif);
+      font-size: 26px;
+      font-weight: 600;
+      font-style: italic;
+      line-height: 1.05;
+      margin-bottom: 5px;
+    }
+
+    .detail-date .year {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--ink-3);
+    }
+
+    .detail-main { min-width: 0; }
+
+    .detail-topline {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .type-badge {
+      display: inline-block;
+      padding: 5px 10px;
+      border-radius: 999px;
+      font-family: var(--mono);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--sage-deep);
+      background: #e6efeb;
+      border: 1px solid #d3e1da;
+    }
+
+    .detail-media {
+      float: right;
+      margin: 2px 0 10px 18px;
+      width: 200px;
+    }
+
+    .detail-main::after { content: ''; display: table; clear: both; }
+
+    .detail-img {
+      display: block;
+      width: 100%;
+      height: auto;
+      border-radius: 8px;
+      border: 1px solid var(--rule);
+      cursor: zoom-in;
+    }
+
+    .detail-caption {
+      font-size: 11px;
+      color: var(--ink-3);
+      line-height: 1.4;
+      font-style: italic;
+      margin-top: 5px;
+    }
+
+    .detail-credit {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--ink-3);
+      margin-top: 2px;
+    }
+
+    .detail-headline {
+      font-family: var(--serif);
+      font-size: 21px;
+      line-height: 1.25;
+      margin: 0 0 10px;
+      color: #456258;
+      font-weight: 500;
+    }
+
+    .detail-text {
+      font-size: 14px;
+      line-height: 1.65;
+      color: var(--ink);
+    }
+
+    /* ── map ── */
+    #map {
+      flex: 1;
+      min-height: 0;
+      z-index: 0;
+    }
+
+    /* ── custom markers ── */
+    .map-marker {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: #ffffff;
+      border: 2px solid #7fa394;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--mono);
+      font-size: 10px;
+      font-weight: 700;
+      color: #4a7c6e;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(74, 95, 88, 0.18);
+      transition: transform 0.15s, background 0.15s;
+    }
+
+    .map-marker.active {
+      background: #5b7a70;
+      border-color: #3d5a4a;
+      color: #ffffff;
+      transform: scale(1.3);
+      box-shadow: 0 4px 14px rgba(74, 95, 88, 0.32);
+    }
+
+    /* ── lightbox ── */
+    .lightbox {
+      position: fixed;
+      inset: 0;
+      background: rgba(12, 22, 18, 0.90);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      cursor: zoom-out;
+      backdrop-filter: blur(6px);
+      animation: lb-in 0.18s ease;
+    }
+
+    @keyframes lb-in { from { opacity: 0; } to { opacity: 1; } }
+
+    .lightbox[hidden] { display: none; }
+
+    .lightbox-img {
+      max-width: 90vw;
+      max-height: 88vh;
+      width: auto;
+      height: auto;
+      border-radius: 6px;
+      box-shadow: 0 32px 96px rgba(0,0,0,0.55);
+      cursor: default;
+    }
+
+    .lightbox-close {
+      position: absolute;
+      top: 18px;
+      right: 22px;
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.18);
+      border-radius: 999px;
+      color: rgba(255,255,255,0.85);
+      font-size: 20px;
+      line-height: 1;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .lightbox-close:hover { background: rgba(255,255,255,0.22); }
+
+    /* ── leaflet overrides ── */
+    .leaflet-control-attribution { font-size: 9px; }
+
+    @media (max-width: 720px) {
+      .detail-panel { grid-template-columns: 1fr; }
+      .detail-date { max-width: 180px; }
+      .detail-media { float: none; width: 100%; margin: 0 0 12px; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="lightbox" class="lightbox" hidden>
+  <button class="lightbox-close" aria-label="Close">×</button>
+  <img class="lightbox-img" id="lightboxImg" src="" alt="">
+</div>
+
+<div class="shell">
+
+  <div class="detail-panel">
+    <div class="detail-date">
+      <div class="monthday" id="detailMonthDay"></div>
+      <div class="year" id="detailYear"></div>
+    </div>
+
+    <div class="detail-main" id="detailMain">
+      <div class="detail-topline">
+        <span class="type-badge" id="detailType"></span>
+      </div>
+      <div class="detail-media" id="detailMedia"></div>
+      <h2 class="detail-headline" id="detailHeadline">Loading…</h2>
+      <div class="detail-text" id="detailText"></div>
+    </div>
+  </div>
+
+  <div id="map"></div>
+
+</div>
+
+<script>
+const LOCATIONS = [
+  {
+    lat: 47.5583, lng: -122.3714,
+    monthDay: "Apr 7",
+    year: "2018",
+    type: "Listening Session",
+    name: "Youngstown Cultural Arts Center",
+    text: "One of three spring listening sessions held across the city. Workers gathered at Youngstown to share experiences with wage theft, isolation, and the absence of written contracts. Their testimony would directly shape the bill's language.",
+    img: null, caption: "", credit: "", altText: ""
+  },
+  {
+    lat: 47.6165, lng: -122.3213,
+    monthDay: "Apr 27",
+    year: "2018",
+    type: "Listening Session",
+    name: "Seattle Central College",
+    text: "A second spring listening session, drawing workers from Capitol Hill and the Central District. Seattle Central's accessible location made it a gathering point for workers who commuted across council districts.",
+    img: null, caption: "", credit: "", altText: ""
+  },
+  {
+    lat: 47.6948, lng: -122.3551,
+    monthDay: "May 5",
+    year: "2018",
+    type: "Listening Session",
+    name: "Greenwood Branch Library",
+    text: "Third listening session, at 8016 Greenwood Ave N. The library's community room reached workers in North Seattle neighborhoods often left out of downtown organizing. Testimony from this session broadened the geographic record of the campaign.",
+    img: null, caption: "", credit: "", altText: ""
+  },
+  {
+    lat: 47.6395, lng: -122.3578,
+    monthDay: "May 31",
+    year: "2018",
+    type: "Education Session",
+    name: "Queen Anne Community Center",
+    text: "A dedicated session on wage boards at 1901 1st Ave W, covering the Standards Board model that would become one of the most distinctive features of the ordinance. Workers and advocates learned how the board structure could give them ongoing formal input into their own working conditions.",
+    img: null, caption: "", credit: "", altText: ""
+  },
+  {
+    lat: 47.6037, lng: -122.3295,
+    monthDay: "-",
+    year: "2018",
+    type: "Council meetings",
+    name: "Seattle City Hall",
+    text: "Multiple council meetings held throughout 2018 as the ordinance moved through committee and toward the floor vote. The council voted 9–0 in favor.",
+    img: null, caption: "", credit: "", altText: ""
+  },
+  {
+    lat: 47.5984, lng: -122.3164,
+    monthDay: "Jul",
+    year: "2018",
+    type: "Bill signing",
+    name: "Casa Latina",
+    text: "Mayor Jenny Durkan signed the ordinance at Casa Latina, the worker center that had anchored organizing throughout the campaign. Signing it here, not at City Hall, was deliberate: the law belonged to the workers who built it.",
+    img: null, caption: "", credit: "", altText: ""
+  },
+  {
+    lat: 47.5833, lng: -122.3142,
+    monthDay: "-",
+    year: "2018-19",
+    type: "Rulemaking",
+    name: "El Centro de la Raza",
+    text: "Rulemaking meetings held at El Centro de la Raza following the ordinance's passage. Translating the law into enforceable regulations required multiple sessions with workers, employers, and city staff.",
+    img: null, caption: "", credit: "", altText: ""
+  }
+];
+
+let activeIndex = 0;
+const markers = [];
+
+// lightbox
+const lightbox    = document.getElementById('lightbox');
+const lightboxImg = document.getElementById('lightboxImg');
+
+function openLightbox(src, alt) {
+  lightboxImg.src = src;
+  lightboxImg.alt = alt || '';
+  lightbox.hidden = false;
+}
+function closeLightbox() {
+  lightbox.hidden = true;
+  lightboxImg.src = '';
+}
+lightbox.addEventListener('click', e => { if (e.target !== lightboxImg) closeLightbox(); });
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && !lightbox.hidden) { closeLightbox(); return; }
+  if (e.key === 'ArrowLeft'  && activeIndex > 0)                    { e.preventDefault(); setActive(activeIndex - 1); }
+  if (e.key === 'ArrowRight' && activeIndex < LOCATIONS.length - 1) { e.preventDefault(); setActive(activeIndex + 1); }
+});
+document.querySelector('.lightbox-close').addEventListener('click', closeLightbox);
+
+// map
+const map = L.map('map', {
+  center: [47.615, -122.335],
+  zoom: 12,
+  zoomControl: true,
+  scrollWheelZoom: false
+});
+
+L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+  subdomains: 'abcd',
+  maxZoom: 19
+}).addTo(map);
+
+function makeIcon(index, active) {
+  return L.divIcon({
+    className: '',
+    html: `<div class="map-marker${active ? ' active' : ''}">${String(index + 1).padStart(2, '0')}</div>`,
+    iconSize: [30, 30],
+    iconAnchor: [15, 15]
+  });
+}
+
+function setActive(index) {
+  activeIndex = index;
+  const loc = LOCATIONS[index];
+
+  document.getElementById('detailMonthDay').textContent = loc.monthDay;
+  document.getElementById('detailYear').textContent     = loc.year;
+  document.getElementById('detailType').textContent     = loc.type;
+  document.getElementById('detailHeadline').textContent = loc.name;
+  document.getElementById('detailText').textContent     = loc.text;
+
+  const media = document.getElementById('detailMedia');
+  media.innerHTML = '';
+  if (loc.img) {
+    const img = document.createElement('img');
+    img.src       = loc.img;
+    img.alt       = loc.altText || loc.name;
+    img.className = 'detail-img';
+    img.addEventListener('click', () => openLightbox(loc.img, img.alt));
+    media.appendChild(img);
+    if (loc.caption) {
+      const cap = document.createElement('div');
+      cap.className   = 'detail-caption';
+      cap.textContent = loc.caption;
+      media.appendChild(cap);
+    }
+    if (loc.credit) {
+      const cred = document.createElement('div');
+      cred.className   = 'detail-credit';
+      cred.textContent = loc.credit;
+      media.appendChild(cred);
+    }
+  }
+
+  markers.forEach((m, i) => m.setIcon(makeIcon(i, i === index)));
+  map.panTo([loc.lat, loc.lng], { animate: true, duration: 0.5 });
+}
+
+LOCATIONS.forEach((loc, i) => {
+  const m = L.marker([loc.lat, loc.lng], {
+    icon: makeIcon(i, i === 0),
+    title: loc.name
+  }).addTo(map);
+  m.on('click', () => setActive(i));
+  markers.push(m);
+});
+
+setActive(0);
+</script>
+</body>
+</html>

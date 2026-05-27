@@ -5,9 +5,9 @@
     "executive": "David Paterson",
     "role": "Governor",
     "party": "Democrat",
-    "signed": "August 31, 2010",
+    "signed": "August 2010",
+    "effective": "November 2010",
     "bill": "A1470-B / S2311-E",
-    "vote": "Senate 33-28, 3 Republican crossovers",
     "note": "First in the nation. The bill was watered down from earlier versions (workers' comp was stripped), but it became the legislative template every state that followed adapted."
   },
   {
@@ -16,9 +16,9 @@
     "executive": "Neil Abercrombie",
     "role": "Governor",
     "party": "Democrat",
-    "signed": "July 1, 2013",
+    "signed": "July 2013",
+    "effective": "July 2013",
     "bill": "SB 535 / Act 248",
-    "vote": "",
     "note": "Second state in the nation. Hawaii's legislature had Democratic supermajorities in both chambers. Brought domestic workers formally under the state employer-employee framework for the first time."
   },
   {
@@ -27,9 +27,9 @@
     "executive": "Jerry Brown",
     "role": "Governor",
     "party": "Democrat",
-    "signed": "September 26, 2013",
-    "bill": "AB 241",
-    "vote": "Assembly 45-25",
+    "signed": "September 2013",
+    "effective": "Janurary 2014",
+    "bill": "AB 241 / SB 1015",
     "note": "Brown had vetoed a broader earlier version (AB 889) in 2012. AB 241 was narrower, focused on overtime for personal attendants. A sunset clause was later removed by SB 1015 (2016), making it permanent."
   },
   {
@@ -38,9 +38,9 @@
     "executive": "Deval Patrick",
     "role": "Governor",
     "party": "Democrat",
-    "signed": "June 26, 2014",
+    "signed": "June 2014",
+    "effective": "April 2015",
     "bill": "S.2132 / Chapter 148",
-    "vote": "Senate unanimous · House bipartisan supermajority",
     "note": "Among the broadest bipartisan votes of any DWBR, with over 80 co-sponsors. Patrick was in his final year as governor. Unusually strong rest-period and parental leave provisions, rare among DWBR laws at the time."
   },
   {
@@ -49,9 +49,9 @@
     "executive": "Dannel Malloy",
     "role": "Governor",
     "party": "Democrat",
-    "signed": "July 2015",
+    "signed": "June 2015",
+    "effective": "Janurary 2016",
     "bill": "SB 446",
-    "vote": "Senate 33-3 · House 130-14",
     "note": "The strongest bipartisan margins of any state DWBR. The final bill was narrowed during negotiation, with overtime and paid sick leave stripped, but anti-discrimination and harassment protections passed with near-unanimous support."
   },
   {
@@ -60,9 +60,9 @@
     "executive": "Kate Brown",
     "role": "Governor",
     "party": "Democrat",
-    "signed": "June 17, 2015",
+    "signed": "June 2015",
+    "effective": "Janurary 2016",
     "bill": "SB 552",
-    "vote": "",
     "note": "Brown, the first openly bisexual governor in U.S. history, had recently succeeded Gov. Kitzhaber who resigned in February 2015. Oregon's law has the most specific live-in worker rest and sleep provisions of any state DWBR."
   },
   {
@@ -71,9 +71,9 @@
     "executive": "Bruce Rauner",
     "role": "Governor",
     "party": "Republican",
-    "signed": "August 12, 2016",
+    "signed": "August 2016",
+    "effective": "Janurary 2017",
     "bill": "HB 1288 / Public Act 099-0758",
-    "vote": "Bipartisan",
     "note": "The only Republican governor to sign a DWBR. Rauner frequently clashed with the Democratic-controlled legislature, making his signature notable. The law covered approximately 35,000 domestic workers and was among the first to explicitly list military service as a protected characteristic."
   },
   {
@@ -82,20 +82,20 @@
     "executive": "Brian Sandoval",
     "role": "Governor",
     "party": "Republican",
-    "signed": "June 12, 2017",
+    "signed": "June 2017",
+    "effective": "Janurary 2018",
     "bill": "SB 232 / Chapter 550",
-    "vote": "Senate 12-9, party-line",
     "note": "One of two Republican governors to sign a DWBR. The Senate passed it on a strict party-line vote with every Republican opposed, yet Sandoval, a noted moderate, signed it anyway. Among the strongest privacy provisions of any state law: employers may not monitor private communications or confiscate personal documents."
   },
   {
     "name": "Seattle",
-    "year": "City · 2018",
+    "year": "2018",
     "executive": "Jenny Durkan",
     "role": "Mayor",
     "party": "Democrat",
-    "signed": "July 27, 2018",
+    "signed": "July 2018",
+    "effective": "",
     "bill": "CB 119286 / Ordinance 125627",
-    "vote": "Council 9-0",
     "note": "First city DWBR in the nation. Sponsored by Councilmember Teresa Mosqueda. Established the first Domestic Workers Standards Board of any city. It became the organizing model Washington would follow eight years later."
   },
   {
@@ -105,19 +105,19 @@
     "role": "Governor",
     "party": "Democrat",
     "signed": "April 2019",
+    "effective": "",
     "bill": "SB 85",
-    "vote": "",
     "note": "Lujan Grisham's first year as governor. The bill removed the domestic worker exemption from New Mexico's minimum wage law, closing a longstanding loophole that had left workers with no legal recourse."
   },
   {
     "name": "Philadelphia",
-    "year": "City · 2020",
+    "year": "2020",
     "executive": "Jim Kenney",
     "role": "Mayor",
     "party": "Democrat",
-    "signed": "November 26, 2019",
+    "signed": "November 2019",
+    "effective": "",
     "bill": "Philadelphia Code Ch. 9-4500",
-    "vote": "Council unanimous",
     "note": "First ordinance to allow paid leave to accrue across multiple employers, directly addressing how domestic work is actually structured. Effective May 1, 2020. Covered an estimated 16,000 workers."
   },
   {
@@ -126,9 +126,9 @@
     "executive": "Ralph Northam",
     "role": "Governor",
     "party": "Democrat",
-    "signed": "March 31, 2021",
-    "bill": "SB 1310 / Chapter 513",
-    "vote": "Senate 21-18 · House 55-45",
+    "signed": "March 2021",
+    "effective": "",
+    "bill": "HB 2032 / SB 1310 / Chapter 513",
     "note": "First Southern state to pass a DWBR. Sponsored by Sen. Jennifer McClellan, the first Black woman to represent Richmond in the state Senate. Northam signed it in the final hours before a midnight deadline on near party-line votes."
   },
   {
@@ -137,9 +137,9 @@
     "executive": "Muriel Bowser",
     "role": "Mayor",
     "party": "Democrat",
-    "signed": "Became law March 10, 2023 without signature",
+    "signed": "March 2023",
+    "effective": "",
     "bill": "Bill 24-712 / DC Law 24-305",
-    "vote": "Council 13-0",
     "note": "Bowser allowed the bill to lapse into law without signing, reportedly objecting to its funding requirements. The only DWBR whose executive withheld their signature. The DC Council passed it unanimously. Effective October 1, 2023."
   },
   {
@@ -148,9 +148,9 @@
     "executive": "Phil Murphy",
     "role": "Governor",
     "party": "Democrat",
-    "signed": "January 12, 2024",
+    "signed": "January 2024",
+    "effective": "",
     "bill": "A822 / S723 / P.L. 2023 Ch.262",
-    "vote": "Senate 24-11 · Assembly 48-26",
     "note": "Most comprehensive inclusion of domestic workers in state insurance and benefits systems of any DWBR to date. Murphy signed it four days after Assembly passage. No Republican co-sponsors. Effective July 1, 2024."
   },
   {
@@ -159,9 +159,9 @@
     "executive": "Daniel McKee",
     "role": "Governor",
     "party": "Democrat",
-    "signed": "June 24, 2024",
+    "signed": "June 2024",
+    "effective": "",
     "bill": "S 2021",
-    "vote": "",
     "note": "Eliminated the domestic worker exemption from Rhode Island's Minimum Wage Act. Scope was limited: workers' compensation benefits were not extended. McKee was in his final year as governor."
   },
   {
@@ -170,9 +170,9 @@
     "executive": "Bob Ferguson",
     "role": "Governor",
     "party": "Democrat",
-    "signed": "March 9, 2026",
-    "bill": "HB 2355",
-    "vote": "House 57-39 · Senate 28-20",
+    "signed": "March 2026",
+    "effective": "",
+    "bill": "HB 2355 / SB 6053",
     "note": "The thirteenth state, and the culmination of Seattle's eight-year proving ground. Ferguson succeeded Jay Inslee. Sponsored by Rep. Brianna Thomas and Sen. Rebecca Saldaña, both from Seattle. See Chapter III for the full legislative timeline."
   }
 ]

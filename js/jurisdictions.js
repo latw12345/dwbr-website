@@ -11,8 +11,8 @@ function renderJurisdictions(data) {
   if (!grid) return;
   grid.innerHTML = data.map(jd => {
     const partyClass = jd.party === 'Republican' ? 'party-r' : 'party-d';
-    const voteRow = jd.vote
-      ? `<div><div class="label-mono">Vote</div><div class="body-sm">${esc(jd.vote)}</div></div>`
+    const effectiveRow = jd.effective
+      ? `<div><div class="label-mono">Effective</div><div class="body-sm">${esc(jd.effective)}</div></div>`
       : '';
     return `
     <details class="jd-card">
@@ -36,7 +36,7 @@ function renderJurisdictions(data) {
             <div class="label-mono">Bill</div>
             <div class="body-sm">${esc(jd.bill)}</div>
           </div>
-          ${voteRow}
+          ${effectiveRow}
         </div>
         <div class="jd-note">${esc(jd.note)}</div>
       </div>
