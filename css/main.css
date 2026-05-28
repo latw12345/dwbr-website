@@ -634,6 +634,15 @@ nav {
   background: var(--paper);
   padding: 22px 24px;
   cursor: pointer;
+  box-shadow: inset 3px 0 0 transparent;
+  transition: box-shadow 0.18s, background 0.18s;
+}
+.jd-card:hover {
+  box-shadow: inset 3px 0 0 var(--sage);
+}
+.jd-card[open] {
+  box-shadow: inset 3px 0 0 var(--sage-deep);
+  background: var(--paper-2);
 }
 .jd-summary {
   list-style: none;
@@ -661,6 +670,15 @@ nav {
   font-size: 16px;
   color: var(--moss);
   flex-shrink: 0;
+  font-size: 0;
+}
+.jd-toggle::before {
+  font-size: 16px;
+  content: '+';
+}
+.jd-card[open] .jd-toggle::before {
+  content: '−';
+  color: var(--sage-deep);
 }
 .jd-body {
   margin-top: 16px;
