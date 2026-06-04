@@ -8,7 +8,7 @@
     "signed": "August 2010",
     "effective": "November 2010",
     "bill": "A1470-B / S2311-E",
-    "note": "First in the nation. The bill was watered down from earlier versions (workers' comp was stripped), but it became the legislative template every state that followed adapted."
+    "note": "AFL-CIO president John Sweeney, whose mother had worked as a domestic worker for over forty years, traveled to Albany to lobby personally for the bill. His testimony was credited as a turning point in the campaign's final push."
   },
   {
     "name": "Hawaii",
@@ -19,7 +19,7 @@
     "signed": "July 2013",
     "effective": "July 2013",
     "bill": "SB 535 / Act 248",
-    "note": "Second state in the nation. Hawaii's legislature had Democratic supermajorities in both chambers. Brought domestic workers formally under the state employer-employee framework for the first time."
+    "note": "The bill passed both chambers with little opposition and took effect the same day it was signed, one of the fastest implementation timelines of any domestic workers law in the country."
   },
   {
     "name": "California",
@@ -30,7 +30,7 @@
     "signed": "September 2013",
     "effective": "Janurary 2014",
     "bill": "AB 241 / SB 1015",
-    "note": "Brown had vetoed a broader earlier version (AB 889) in 2012. AB 241 was narrower, focused on overtime for personal attendants. A sunset clause was later removed by SB 1015 (2016), making it permanent."
+    "note": "California is the only state to pass two separate pieces of domestic worker legislation, the original 2013 law and another in 2016, which made it permanent. No other state has returned to strengthen its law through a second bill."
   },
   {
     "name": "Massachusetts",
@@ -41,7 +41,7 @@
     "signed": "June 2014",
     "effective": "April 2015",
     "bill": "S.2132 / Chapter 148",
-    "note": "Among the broadest bipartisan votes of any DWBR, with over 80 co-sponsors. Patrick was in his final year as governor. Unusually strong rest-period and parental leave provisions, rare among DWBR laws at the time."
+    "note": "The law guaranteed eight weeks of unpaid parental leave to domestic workers employed by the same household for at least three months, and required employers to pay workers for all time they were required to be on the premises, including before and after scheduled shifts."
   },
   {
     "name": "Connecticut",
@@ -52,7 +52,7 @@
     "signed": "June 2015",
     "effective": "Janurary 2016",
     "bill": "SB 446",
-    "note": "The strongest bipartisan margins of any state DWBR. The final bill was narrowed during negotiation, with overtime and paid sick leave stripped, but anti-discrimination and harassment protections passed with near-unanimous support."
+    "note": "The bill drew near-unanimous support across both chambers, with bipartisan votes that produced some of the broadest legislative margins of any domestic workers law passed to date."
   },
   {
     "name": "Oregon",
@@ -63,7 +63,7 @@
     "signed": "June 2015",
     "effective": "Janurary 2016",
     "bill": "SB 552",
-    "note": "Brown, the first openly bisexual governor in U.S. history, had recently succeeded Gov. Kitzhaber who resigned in February 2015. Oregon's law has the most specific live-in worker rest and sleep provisions of any state DWBR."
+    "note": "Governor Kate Brown, who signed the bill in her first year in office, was the first openly bisexual governor in United States history, having assumed office in February 2015 following her predecessor's resignation."
   },
   {
     "name": "Illinois",
@@ -74,7 +74,7 @@
     "signed": "August 2016",
     "effective": "Janurary 2017",
     "bill": "HB 1288 / Public Act 099-0758",
-    "note": "The only Republican governor to sign a DWBR. Rauner frequently clashed with the Democratic-controlled legislature, making his signature notable. The law covered approximately 35,000 domestic workers and was among the first to explicitly list military service as a protected characteristic."
+    "note": "The five-year campaign was led by the Illinois Domestic Workers Coalition, a multiethnic organizing effort drawing workers from Latino, Filipino, and Polish communities across Chicago and the state."
   },
   {
     "name": "Nevada",
@@ -85,7 +85,7 @@
     "signed": "June 2017",
     "effective": "Janurary 2018",
     "bill": "SB 232 / Chapter 550",
-    "note": "One of two Republican governors to sign a DWBR. The Senate passed it on a strict party-line vote with every Republican opposed, yet Sandoval, a noted moderate, signed it anyway. Among the strongest privacy provisions of any state law: employers may not monitor private communications or confiscate personal documents."
+    "note": "The bill passed the Senate on a strict party-line vote with all Republicans opposed. Governor Brian Sandoval, a Republican widely noted as a moderate, signed it anyway, one of only two Republican governors to sign a domestic workers law."
   },
   {
     "name": "Seattle",
@@ -94,9 +94,9 @@
     "role": "Mayor",
     "party": "Democrat",
     "signed": "July 2018",
-    "effective": "",
+    "effective": "July 2019",
     "bill": "CB 119286 / Ordinance 125627",
-    "note": "First city DWBR in the nation. Sponsored by Councilmember Teresa Mosqueda. Established the first Domestic Workers Standards Board of any city. It became the organizing model Washington would follow eight years later."
+    "note": "The ordinance established the first Domestic Worker Standards Board of any city in the country, creating a formal body to investigate industry conditions and make ongoing recommendations on worker health, safety, and wellbeing."
   },
   {
     "name": "New Mexico",
@@ -105,20 +105,20 @@
     "role": "Governor",
     "party": "Democrat",
     "signed": "April 2019",
-    "effective": "",
+    "effective": "June 2019",
     "bill": "SB 85",
-    "note": "Lujan Grisham's first year as governor. The bill removed the domestic worker exemption from New Mexico's minimum wage law, closing a longstanding loophole that had left workers with no legal recourse."
+    "note": "Signed during Governor Lujan Grisham's first year in office, it extended minimum wage protections to domestic workers for the first time in the state's history, bringing New Mexico into alignment with the growing majority of states that had already acted."
   },
   {
     "name": "Philadelphia",
-    "year": "2020",
+    "year": "2019",
     "executive": "Jim Kenney",
     "role": "Mayor",
     "party": "Democrat",
     "signed": "November 2019",
-    "effective": "",
+    "effective": "May 2020",
     "bill": "Philadelphia Code Ch. 9-4500",
-    "note": "First ordinance to allow paid leave to accrue across multiple employers, directly addressing how domestic work is actually structured. Effective May 1, 2020. Covered an estimated 16,000 workers."
+    "note": "The law introduced the first portable paid leave system of any domestic workers ordinance: workers accrue paid time off across multiple employers, with each employer contributing a pro-rated share based on hours worked."
   },
   {
     "name": "Virginia",
@@ -127,20 +127,20 @@
     "role": "Governor",
     "party": "Democrat",
     "signed": "March 2021",
-    "effective": "",
-    "bill": "HB 2032 / SB 1310 / Chapter 513",
-    "note": "First Southern state to pass a DWBR. Sponsored by Sen. Jennifer McClellan, the first Black woman to represent Richmond in the state Senate. Northam signed it in the final hours before a midnight deadline on near party-line votes."
+    "effective": "July 2021",
+    "bill": "HB 2032 / SB 1310",
+    "note": "Senator Jennifer McClellan, who sponsored the bill, described her family's multigenerational history in domestic work as the direct personal background behind her commitment to the legislation. Her great-grandmother, grandmother, and mother had all worked as domestic workers."
   },
   {
     "name": "District of Columbia",
-    "year": "2022",
+    "year": "2023",
     "executive": "Muriel Bowser",
     "role": "Mayor",
     "party": "Democrat",
-    "signed": "March 2023",
-    "effective": "",
+    "signed": "Janurary 2023",
+    "effective": "October 2023",
     "bill": "Bill 24-712 / DC Law 24-305",
-    "note": "Bowser allowed the bill to lapse into law without signing, reportedly objecting to its funding requirements. The only DWBR whose executive withheld their signature. The DC Council passed it unanimously. Effective October 1, 2023."
+    "note": "It was the first domestic workers law to undergo congressional review before taking effect, as required under the District Clause of the Constitution. The DC Council voted unanimously to pass it."
   },
   {
     "name": "New Jersey",
@@ -149,9 +149,9 @@
     "role": "Governor",
     "party": "Democrat",
     "signed": "January 2024",
-    "effective": "",
+    "effective": "July 2024",
     "bill": "A822 / S723 / P.L. 2023 Ch.262",
-    "note": "Most comprehensive inclusion of domestic workers in state insurance and benefits systems of any DWBR to date. Murphy signed it four days after Assembly passage. No Republican co-sponsors. Effective July 1, 2024."
+    "note": "Murphy signed the bill as part of a package of three immigrants' rights laws on the same day, one of the broader single-day legislative signings on labor and immigration in the state's recent history."
   },
   {
     "name": "Rhode Island",
@@ -160,9 +160,9 @@
     "role": "Governor",
     "party": "Democrat",
     "signed": "June 2024",
-    "effective": "",
-    "bill": "S 2021",
-    "note": "Eliminated the domestic worker exemption from Rhode Island's Minimum Wage Act. Scope was limited: workers' compensation benefits were not extended. McKee was in his final year as governor."
+    "effective": "June 2024",
+    "bill": "S 2021 / H 7532",
+    "note": "The law took effect immediately upon signing, with no implementation delay. It worked by removing a single statutory provision that had explicitly classified domestic workers as non-employees under Rhode Island's minimum wage law."
   },
   {
     "name": "Washington",
@@ -171,8 +171,8 @@
     "role": "Governor",
     "party": "Democrat",
     "signed": "March 2026",
-    "effective": "",
+    "effective": "July 2027",
     "bill": "HB 2355 / SB 6053",
-    "note": "The thirteenth state, and the culmination of Seattle's eight-year proving ground. Ferguson succeeded Jay Inslee. Sponsored by Rep. Brianna Thomas and Sen. Rebecca Saldaña, both from Seattle. See Chapter III for the full legislative timeline."
+    "note": "Representative Brianna Thomas, the bill's prime sponsor, cleaned houses with her mother as a child in Georgia. She carried that experience to Olympia, where the bill passed after years of coalition building across the state."
   }
 ]

@@ -221,7 +221,7 @@ nav {
 /* ── STAT GRID ────────────────────────────────── */
 .stats {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   gap: 0;
   border-top: 1px solid var(--ink);
   border-bottom: 1px solid var(--rule);
@@ -274,7 +274,21 @@ nav {
   color: var(--ink);
   max-width: 640px;
 }
+.narrative::after { content: ''; display: table; clear: both; }
 .narrative p + p { margin-top: 20px; text-indent: 1.5em; }
+.stats--float {
+  float: right;
+  width: 40%;
+  min-width: 220px;
+  margin: 6px 0 28px 4%;
+  grid-template-columns: 1fr;
+}
+.context-wrap {
+  display: flow-root;
+}
+.context-wrap .narrative {
+  max-width: none;
+}
 .narrative p:first-of-type::first-letter {
   font-family: var(--serif);
   font-weight: 500;
@@ -888,8 +902,9 @@ footer {
   .section-header { grid-template-columns: 1fr; gap: 24px; }
   .section-marker { position: static; }
   .stats { grid-template-columns: repeat(2, 1fr); }
-  .stat:nth-child(2) { border-right: none; }
-  .stat:nth-child(1), .stat:nth-child(2) { border-bottom: 1px solid var(--rule-soft); }
+  .stat:nth-child(even) { border-right: none; }
+  .stat { border-bottom: 1px solid var(--rule-soft); }
+  .stat:last-child { border-bottom: none; }
   .chapters { grid-template-columns: 1fr; }
   .protection-list { grid-template-columns: 1fr; }
   .nav-links a { font-size: 11px; padding: 6px 10px; }
