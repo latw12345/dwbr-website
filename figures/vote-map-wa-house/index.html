@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WA DWBR Vote Map · House · 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@400;600;700&family=Roboto+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../css/tokens.css">
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--sans);
+  background: var(--paper);
+  color: var(--ink);
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+#map-wrap {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+}
+
+svg#map {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.district {
+  stroke: var(--paper);
+  stroke-width: 0.6px;
+  cursor: pointer;
+  transition: stroke-width 0.1s;
+}
+
+.district:hover {
+  stroke: #fff;
+  stroke-width: 1.8px;
+}
+
+.slider-group {
+  cursor: ew-resize;
+}
+
+.compare-label {
+  position: absolute;
+  top: 14px;
+  width: 80px;
+  text-align: center;
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: rgba(74, 95, 88, 0.45);
+  pointer-events: none;
+  z-index: 5;
+  display: none;
+}
+#compare-label-left  { left: 0; }
+#compare-label-right { right: 0; }
+
+#tooltip {
+  position: absolute;
+  pointer-events: none;
+  background: #fff;
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  padding: 10px 13px;
+  box-shadow: 0 4px 18px rgba(74,95,88,.13);
+  font-size: 13px;
+  min-width: 180px;
+  max-width: 260px;
+  opacity: 0;
+  transition: opacity 0.1s;
+  z-index: 10;
+}
+
+.tt-dist {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  margin-bottom: 7px;
+}
+
+.tt-agg {
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  margin-bottom: 8px;
+  padding-bottom: 7px;
+  border-bottom: 1px solid #eef3f1;
+  color: var(--ink);
+}
+
+.tt-compare-label {
+  font-family: var(--mono);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: #b0b8b4;
+  margin-bottom: 4px;
+}
+
+.tt-sep {
+  border-top: 1px solid #eef3f1;
+  margin: 5px 0 6px;
+}
+
+.tt-row {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 2px 0;
+}
+
+.tt-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1a2820;
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tt-party {
+  font-family: var(--mono);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: .06em;
+  padding: 1px 5px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+.tt-party.D { background: #dbe8f5; color: #1d5fa8; }
+.tt-party.R { background: #f5dbe0; color: #b02020; }
+
+.tt-vote {
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .06em;
+  flex-shrink: 0;
+}
+.tt-vote.Yea     { color: #3d6b5e; }
+.tt-vote.Nay     { color: #8b3a3a; }
+.tt-vote.Excused { color: var(--ink-3); }
+.tt-vote.No-Vote { color: var(--ink-3); }
+
+.bottom-bar {
+  padding: 8px 0 10px;
+  text-align: center;
+  background: var(--paper);
+}
+
+.controls-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: nowrap;
+  background: rgba(245,247,246,.97);
+  padding: 7px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--rule);
+  box-shadow: 0 2px 12px rgba(74,95,88,.07);
+}
+
+.chamber-btn {
+  padding: 4px 14px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--ink-3);
+  cursor: pointer;
+  border-radius: 999px;
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  transition: all .18s;
+  flex-shrink: 0;
+}
+
+.chamber-btn.active {
+  background: var(--sage);
+  color: #fff;
+  border-color: var(--sage-deep);
+}
+
+.chamber-btn:not(.active):hover {
+  background: var(--sage-tint);
+  color: var(--ink);
+}
+
+.bar-sep {
+  width: 1px;
+  height: 16px;
+  background: var(--rule);
+  flex-shrink: 0;
+}
+
+.legend {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: nowrap;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  white-space: nowrap;
+}
+
+.legend-swatch {
+  width: 11px;
+  height: 11px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+</style>
+</head>
+<body>
+
+<div id="map-wrap">
+  <svg id="map"></svg>
+  <div id="compare-label-left"  class="compare-label">2020</div>
+  <div id="compare-label-right" class="compare-label">2026</div>
+  <div id="tooltip"></div>
+</div>
+
+<div class="bottom-bar">
+  <div class="controls-row">
+    <button class="chamber-btn" id="btn-compare">Compare 2020</button>
+    <div class="bar-sep"></div>
+    <div class="legend" id="legend"></div>
+  </div>
+</div>
+
+<script>
+const HOUSE_COLORS = {
+  "2 Yea":           "#4a7c6e",
+  "2 Nay":           "#a04040",
+  "1 Yea 1 Nay":     "#c49a3a",
+  "1 Yea 1 No Vote": "#7aaa9a",
+  "1 Nay 1 No Vote": "#c07a7a",
+};
+const BASE_COLOR = "#dde8e3";
+
+const HOUSE_AGG_LABEL = {
+  "2 Yea":           "Both Yea",
+  "2 Nay":           "Both Nay",
+  "1 Yea 1 Nay":     "Split",
+  "1 Yea 1 No Vote": "Yea + Excused",
+  "1 Nay 1 No Vote": "Nay + Excused",
+};
+
+const HOUSE_LEGEND = [
+  { color:"#4a7c6e", label:"Both Yea" },
+  { color:"#a04040", label:"Both Nay" },
+  { color:"#c49a3a", label:"Split" },
+  { color:"#7aaa9a", label:"Yea + Excused" },
+  { color:"#c07a7a", label:"Nay + Excused" },
+];
+
+const HM = {
+   1: [{f:"Davina",   l:"Duerr",       p:"D",v:"Yea"},    {f:"Shelley",   l:"Kloba",      p:"D",v:"Yea"}],
+   2: [{f:"Andrew",   l:"Barkis",      p:"R",v:"Nay"},    {f:"Matt",      l:"Marshall",   p:"R",v:"Nay"}],
+   3: [{f:"Natasha",  l:"Hill",        p:"D",v:"Yea"},    {f:"Timm",      l:"Ormsby",     p:"D",v:"Yea"}],
+   4: [{f:"Rob",      l:"Chase",       p:"R",v:"Nay"},    {f:"Suzanne",   l:"Schmidt",    p:"R",v:"Nay"}],
+   5: [{f:"Lisa",     l:"Callan",      p:"D",v:"Yea"},    {f:"Zach",      l:"Hall",       p:"D",v:"Yea"}],
+   6: [{f:"Jenny",    l:"Graham",      p:"R",v:"Nay"},    {f:"Mike",      l:"Volz",       p:"R",v:"Nay"}],
+   7: [{f:"Hunter",   l:"Abell",       p:"R",v:"Nay"},    {f:"Andrew",    l:"Engell",     p:"R",v:"Nay"}],
+   8: [{f:"Stephanie",l:"Barnard",     p:"R",v:"Nay"},    {f:"April",     l:"Connors",    p:"R",v:"Nay"}],
+   9: [{f:"Mary",     l:"Dye",         p:"R",v:"Nay"},    {f:"Joe",       l:"Schmick",    p:"R",v:"Nay"}],
+  10: [{f:"Dave",     l:"Paul",        p:"D",v:"Yea"},    {f:"Clyde",     l:"Shavers",    p:"D",v:"Yea"}],
+  11: [{f:"Steve",    l:"Bergquist",   p:"D",v:"Yea"},    {f:"David",     l:"Hackney",    p:"D",v:"Yea"}],
+  12: [{f:"Brian",    l:"Burnett",     p:"R",v:"Nay"},    {f:"Mike",      l:"Steele",     p:"R",v:"Nay"}],
+  13: [{f:"Alex",     l:"Ybarra",      p:"R",v:"Nay"},    {f:"Tom",       l:"Dent",       p:"R",v:"Excused"}],
+  14: [{f:"Deb",      l:"Manjarrez",   p:"R",v:"Nay"},    {f:"Gloria",    l:"Mendoza",    p:"R",v:"Nay"}],
+  15: [{f:"Chris",    l:"Corry",       p:"R",v:"Nay"},    {f:"Jeremie",   l:"Dufault",    p:"R",v:"Nay"}],
+  16: [{f:"Mark",     l:"Klicker",     p:"R",v:"Nay"},    {f:"Skyler",    l:"Rude",       p:"R",v:"Nay"}],
+  17: [{f:"David",    l:"Stuebe",      p:"R",v:"Nay"},    {f:"Kevin",     l:"Waters",     p:"R",v:"Nay"}],
+  18: [{f:"John",     l:"Ley",         p:"R",v:"Nay"},    {f:"Stephanie", l:"McClintock", p:"R",v:"Nay"}],
+  19: [{f:"Joel",     l:"McEntire",    p:"R",v:"Nay"},    {f:"Jim",       l:"Walsh",       p:"R",v:"Nay"}],
+  20: [{f:"Peter",    l:"Abbarno",     p:"R",v:"Nay"},    {f:"Ed",        l:"Orcutt",     p:"R",v:"Nay"}],
+  21: [{f:"Lillian",  l:"Ortiz-Self",  p:"D",v:"Yea"},    {f:"Strom",     l:"Peterson",   p:"D",v:"Yea"}],
+  22: [{f:"Beth",     l:"Doglio",      p:"D",v:"Yea"},    {f:"Lisa",      l:"Parshley",   p:"D",v:"Yea"}],
+  23: [{f:"Greg",     l:"Nance",       p:"D",v:"Yea"},    {f:"Tarra",     l:"Simmons",    p:"D",v:"Yea"}],
+  24: [{f:"Adam",     l:"Bernbaum",    p:"D",v:"Yea"},    {f:"Steve",     l:"Tharinger",  p:"D",v:"Excused"}],
+  25: [{f:"Cyndy",    l:"Jacobsen",    p:"R",v:"Nay"},    {f:"Michael",   l:"Keaton",     p:"R",v:"Nay"}],
+  26: [{f:"Adison",   l:"Richards",    p:"D",v:"Nay"},    {f:"Michelle",  l:"Valdez",     p:"R",v:"Nay"}],
+  27: [{f:"Jake",     l:"Fey",         p:"D",v:"Yea"},    {f:"Laurie",    l:"Jinkins",    p:"D",v:"Yea"}],
+  28: [{f:"Dan",      l:"Bronoske",    p:"D",v:"Yea"},    {f:"Mari",      l:"Leavitt",    p:"D",v:"Yea"}],
+  29: [{f:"Sharlett", l:"Mena",        p:"D",v:"Yea"},    {f:"Melanie",   l:"Morgan",     p:"D",v:"Yea"}],
+  30: [{f:"Kristine", l:"Reeves",      p:"D",v:"Yea"},    {f:"Jamila",    l:"Taylor",     p:"D",v:"Yea"}],
+  31: [{f:"Joshua",   l:"Penner",      p:"R",v:"Nay"},    {f:"Drew",      l:"Stokesbary", p:"R",v:"Nay"}],
+  32: [{f:"Lauren",   l:"Davis",       p:"D",v:"Yea"},    {f:"Cindy",     l:"Ryu",        p:"D",v:"Yea"}],
+  33: [{f:"Mia",      l:"Gregerson",   p:"D",v:"Yea"},    {f:"Edwin",     l:"Obras",      p:"D",v:"Yea"}],
+  34: [{f:"Joe",      l:"Fitzgibbon",  p:"D",v:"Yea"},    {f:"Brianna",   l:"Thomas",     p:"D",v:"Yea"}],
+  35: [{f:"Travis",   l:"Couture",     p:"R",v:"Nay"},    {f:"Dan",       l:"Griffey",    p:"R",v:"Nay"}],
+  36: [{f:"Liz",      l:"Berry",       p:"D",v:"Yea"},    {f:"Julia",     l:"Reed",       p:"D",v:"Yea"}],
+  37: [{f:"Sharon",   l:"Santos",      p:"D",v:"Yea"},    {f:"Chipalo",   l:"Street",     p:"D",v:"Yea"}],
+  38: [{f:"Julio",    l:"Cortes",      p:"D",v:"Yea"},    {f:"Mary",      l:"Fosse",      p:"D",v:"Yea"}],
+  39: [{f:"Carolyn",  l:"Eslick",      p:"R",v:"Yea"},    {f:"Sam",       l:"Low",        p:"R",v:"Yea"}],
+  40: [{f:"Debra",    l:"Lekanoff",    p:"D",v:"Yea"},    {f:"Alex",      l:"Ramel",      p:"D",v:"Yea"}],
+  41: [{f:"My-Linh",  l:"Thai",        p:"D",v:"Yea"},    {f:"Janice",    l:"Zahn",       p:"D",v:"Yea"}],
+  42: [{f:"Joe",      l:"Timmons",     p:"D",v:"Yea"},    {f:"Alicia",    l:"Rule",       p:"D",v:"Nay"}],
+  43: [{f:"Nicole",   l:"Macri",       p:"D",v:"Yea"},    {f:"Shaun",     l:"Scott",      p:"D",v:"Yea"}],
+  44: [{f:"April",    l:"Berg",        p:"D",v:"Yea"},    {f:"Brandy",    l:"Donaghy",    p:"D",v:"Yea"}],
+  45: [{f:"Roger",    l:"Goodman",     p:"D",v:"Yea"},    {f:"Larry",     l:"Springer",   p:"D",v:"Yea"}],
+  46: [{f:"Darya",    l:"Farivar",     p:"D",v:"Yea"},    {f:"Gerry",     l:"Pollet",     p:"D",v:"Yea"}],
+  47: [{f:"Debra",    l:"Entenman",    p:"D",v:"Yea"},    {f:"Chris",     l:"Stearns",    p:"D",v:"Yea"}],
+  48: [{f:"Osman",    l:"Salahuddin",  p:"D",v:"Yea"},    {f:"Amy",       l:"Walen",      p:"D",v:"Nay"}],
+  49: [{f:"Monica",   l:"Stonier",     p:"D",v:"Yea"},    {f:"Sharon",    l:"Wylie",      p:"D",v:"Yea"}],
+};
+
+const HM2020 = {
+   1: [{f:"Davina",    l:"Duerr",        p:"D",v:"Yea"}, {f:"Shelley",   l:"Kloba",       p:"D",v:"Yea"}],
+   2: [{f:"Andrew",    l:"Barkis",       p:"R",v:"Nay"}, {f:"J.T.",      l:"Wilcox",      p:"R",v:"Nay"}],
+   3: [{f:"Timm",      l:"Ormsby",       p:"D",v:"Yea"}, {f:"Marcus",    l:"Riccelli",    p:"D",v:"Yea"}],
+   4: [{f:"Bob",       l:"McCaslin",     p:"R",v:"Nay"}, {f:"Matt",      l:"Shea",        p:"R",v:"Nay"}],
+   5: [{f:"Lisa",      l:"Callan",       p:"D",v:"Yea"}, {f:"Bill",      l:"Ramos",       p:"D",v:"Yea"}],
+   6: [{f:"Jenny",     l:"Graham",       p:"R",v:"Nay"}, {f:"Mike",      l:"Volz",        p:"R",v:"Nay"}],
+   7: [{f:"Joel",      l:"Kretz",        p:"R",v:"Nay"}, {f:"Jacquelin", l:"Maycumber",   p:"R",v:"Nay"}],
+   8: [{f:"Matt",      l:"Boehnke",      p:"R",v:"Nay"}, {f:"Brad",      l:"Klippert",    p:"R",v:"Nay"}],
+   9: [{f:"Mary",      l:"Dye",          p:"R",v:"Nay"}, {f:"Joe",       l:"Schmick",     p:"R",v:"Nay"}],
+  10: [{f:"Dave",      l:"Paul",         p:"D",v:"Yea"}, {f:"Norma",     l:"Smith",       p:"R",v:"Nay"}],
+  11: [{f:"Steve",     l:"Bergquist",    p:"D",v:"Yea"}, {f:"Zack",      l:"Hudgins",     p:"D",v:"Yea"}],
+  12: [{f:"Keith",     l:"Goehner",      p:"R",v:"Nay"}, {f:"Mike",      l:"Steele",      p:"R",v:"Nay"}],
+  13: [{f:"Tom",       l:"Dent",         p:"R",v:"Nay"}, {f:"Alex",      l:"Ybarra",      p:"R",v:"Yea"}],
+  14: [{f:"Chris",     l:"Corry",        p:"R",v:"Nay"}, {f:"Gina",      l:"Mosbrucker",  p:"R",v:"Nay"}],
+  15: [{f:"Bruce",     l:"Chandler",     p:"R",v:"Yea"}, {f:"Jeremie",   l:"Dufault",     p:"R",v:"Nay"}],
+  16: [{f:"Bill",      l:"Jenkin",       p:"R",v:"Nay"}, {f:"Skyler",    l:"Rude",        p:"R",v:"Nay"}],
+  17: [{f:"Paul",      l:"Harris",       p:"R",v:"Nay"}, {f:"Vicki",     l:"Kraft",       p:"R",v:"Nay"}],
+  18: [{f:"Larry",     l:"Hoff",         p:"R",v:"Nay"}, {f:"Brandon",   l:"Vick",        p:"R",v:"Nay"}],
+  19: [{f:"Brian",     l:"Blake",        p:"D",v:"Yea"}, {f:"Jim",       l:"Walsh",       p:"R",v:"Nay"}],
+  20: [{f:"Richard",   l:"Debolt",       p:"R",v:"Nay"}, {f:"Ed",        l:"Orcutt",      p:"R",v:"Nay"}],
+  21: [{f:"Lillian",   l:"Ortiz-Self",   p:"D",v:"Yea"}, {f:"Strom",     l:"Peterson",    p:"D",v:"Yea"}],
+  22: [{f:"Beth",      l:"Doglio",       p:"D",v:"Yea"}, {f:"Laurie",    l:"Dolan",       p:"D",v:"Yea"}],
+  23: [{f:"Sherry",    l:"Appleton",     p:"D",v:"Yea"}, {f:"Drew",      l:"Hansen",      p:"D",v:"Yea"}],
+  24: [{f:"Mike",      l:"Chapman",      p:"D",v:"Yea"}, {f:"Steve",     l:"Tharinger",   p:"D",v:"Yea"}],
+  25: [{f:"Kelly",     l:"Chambers",     p:"R",v:"Nay"}, {f:"Chris",     l:"Gildon",      p:"R",v:"Nay"}],
+  26: [{f:"Michelle",  l:"Caldier",      p:"R",v:"Nay"}, {f:"Jesse",     l:"Young",       p:"R",v:"Nay"}],
+  27: [{f:"Jake",      l:"Fey",          p:"D",v:"Yea"}, {f:"Laurie",    l:"Jinkins",     p:"D",v:"Yea"}],
+  28: [{f:"Christine", l:"Kilduff",      p:"D",v:"Yea"}, {f:"Mari",      l:"Leavitt",     p:"D",v:"Yea"}],
+  29: [{f:"Steve",     l:"Kirby",        p:"D",v:"Yea"}, {f:"Melanie",   l:"Morgan",      p:"D",v:"Yea"}],
+  30: [{f:"Jesse",     l:"Johnson",      p:"D",v:"Yea"}, {f:"Mike",      l:"Pellicciotti",p:"D",v:"Yea"}],
+  31: [{f:"Morgan",    l:"Irwin",        p:"R",v:"Nay"}, {f:"Drew",      l:"Stokesbary",  p:"R",v:"Nay"}],
+  32: [{f:"Lauren",    l:"Davis",        p:"D",v:"Yea"}, {f:"Cindy",     l:"Ryu",         p:"D",v:"Yea"}],
+  33: [{f:"Mia",       l:"Gregerson",    p:"D",v:"Yea"}, {f:"Tina",      l:"Orwall",      p:"D",v:"Yea"}],
+  34: [{f:"Eileen",    l:"Cody",         p:"D",v:"Yea"}, {f:"Joe",       l:"Fitzgibbon",  p:"D",v:"Yea"}],
+  35: [{f:"Dan",       l:"Griffey",      p:"R",v:"Nay"}, {f:"Drew",      l:"MacEwen",     p:"R",v:"Nay"}],
+  36: [{f:"Noel",      l:"Frame",        p:"D",v:"Yea"}, {f:"Gael",      l:"Tarleton",    p:"D",v:"Yea"}],
+  37: [{f:"Eric",      l:"Pettigrew",    p:"D",v:"Yea"}, {f:"Sharon",    l:"Santos",      p:"D",v:"Yea"}],
+  38: [{f:"June",      l:"Robinson",     p:"D",v:"Yea"}, {f:"Mike",      l:"Sells",       p:"D",v:"Yea"}],
+  39: [{f:"Carolyn",   l:"Eslick",       p:"R",v:"Nay"}, {f:"Robert",    l:"Sutherland",  p:"R",v:"Nay"}],
+  40: [{f:"Debra",     l:"Lekanoff",     p:"D",v:"Yea"}, {f:"Alex",      l:"Ramel",       p:"D",v:"Yea"}],
+  41: [{f:"Tana",      l:"Senn",         p:"D",v:"Yea"}, {f:"My-Linh",   l:"Thai",        p:"D",v:"Yea"}],
+  42: [{f:"Sharon",    l:"Shewmake",     p:"D",v:"Yea"}, {f:"Luanne",    l:"Van Werven",  p:"R",v:"Nay"}],
+  43: [{f:"Frank",     l:"Chopp",        p:"D",v:"Yea"}, {f:"Nicole",    l:"Macri",       p:"D",v:"Yea"}],
+  44: [{f:"John",      l:"Lovick",       p:"D",v:"Yea"}, {f:"Jared",     l:"Mead",        p:"D",v:"Yea"}],
+  45: [{f:"Roger",     l:"Goodman",      p:"D",v:"Yea"}, {f:"Larry",     l:"Springer",    p:"D",v:"Yea"}],
+  46: [{f:"Gerry",     l:"Pollet",       p:"D",v:"Yea"}, {f:"Javier",    l:"Valdez",      p:"D",v:"Yea"}],
+  47: [{f:"Debra",     l:"Entenman",     p:"D",v:"Yea"}, {f:"Pat",       l:"Sullivan",    p:"D",v:"Yea"}],
+  48: [{f:"Vandana",   l:"Slatter",      p:"D",v:"Yea"}, {f:"Amy",       l:"Walen",       p:"D",v:"Yea"}],
+  49: [{f:"Monica",    l:"Stonier",      p:"D",v:"Yea"}, {f:"Sharon",    l:"Wylie",       p:"D",v:"Yea"}],
+};
+
+let compareMode = false;
+let sliderX = null;
+let houseGeo = null;
+let houseGeo2020 = null;
+let lookup2020 = null, lookup2026 = null;
+
+const tooltip = document.getElementById("tooltip");
+const mapWrap = document.getElementById("map-wrap");
+
+const svg = d3.select("#map");
+const defs = svg.append("defs");
+const clipRect = defs.append("clipPath").attr("id", "clip-2026").append("rect");
+const g2020 = svg.append("g");
+const g2026 = svg.append("g").attr("clip-path", "url(#clip-2026)");
+
+const sliderGroup = svg.append("g").attr("class", "slider-group").style("display", "none");
+const sliderHit = sliderGroup.append("rect").attr("fill", "transparent").attr("y", 0).attr("width", 32);
+const sliderLine = sliderGroup.append("line").attr("stroke", "#fff").attr("stroke-width", 2).attr("pointer-events", "none");
+const sliderHandle = sliderGroup.append("circle")
+  .attr("r", 18).attr("fill", "#fff")
+  .attr("stroke", "#dde8e3").attr("stroke-width", 1.5)
+  .attr("filter", "drop-shadow(0 2px 6px rgba(74,95,88,.18))")
+  .attr("pointer-events", "none");
+sliderGroup.append("text")
+  .attr("text-anchor", "middle").attr("dominant-baseline", "central")
+  .attr("font-family", "system-ui, sans-serif").attr("font-size", 10)
+  .attr("fill", "#7f918a").attr("pointer-events", "none")
+  .text("◀ ▶");
+
+function dims() {
+  return { W: mapWrap.clientWidth, H: mapWrap.clientHeight };
+}
+
+function buildProjection(geo) {
+  const { W, H } = dims();
+  return d3.geoMercator().fitExtent([[16, 16], [W - 16, H - 16]], geo);
+}
+
+function updateSlider() {
+  const { W, H } = dims();
+  const x = sliderX;
+  clipRect.attr("x", x).attr("y", 0).attr("width", W - x).attr("height", H);
+  sliderHit.attr("x", x - 16).attr("height", H);
+  sliderLine.attr("x1", x).attr("y1", 0).attr("x2", x).attr("y2", H);
+  sliderHandle.attr("cx", x).attr("cy", H / 2);
+  svg.select("text").attr("x", x).attr("y", H / 2);
+}
+
+sliderGroup.call(
+  d3.drag().on("start drag", function(event) {
+    const { W } = dims();
+    sliderX = Math.max(80, Math.min(W - 80, event.x));
+    updateSlider();
+  })
+);
+
+window.addEventListener("resize", () => { if (compareMode) updateSlider(); });
+
+function houseColor(d)     { return HOUSE_COLORS[d.properties["House Aggregate 2026_Vote"]] || BASE_COLOR; }
+function houseColor2020(d) { return HOUSE_COLORS[d.properties["House Aggregate 2020_Vote"]] || BASE_COLOR; }
+
+function showTooltip(event, d) {
+  const dist  = d.properties.District;
+  const wrapR = mapWrap.getBoundingClientRect();
+  let html;
+
+  if (compareMode) {
+    const f20  = lookup2020.get(dist);
+    const f26  = lookup2026.get(dist);
+    const AS   = "border-bottom:none;margin-bottom:3px;padding-bottom:0";
+    const agg20 = f20?.properties["House Aggregate 2020_Vote"] || "";
+    const agg26 = f26?.properties["House Aggregate 2026_Vote"] || "";
+    const c20   = HOUSE_COLORS[agg20] || "#7f918a";
+    const c26   = HOUSE_COLORS[agg26] || "#7f918a";
+    const memberRow = m =>
+      `<div class="tt-row">
+        <span class="tt-name">${m.f} ${m.l}</span>
+        <span class="tt-party ${m.p}">${m.p}</span>
+        <span class="tt-vote ${m.v}">${m.v}</span>
+      </div>`;
+    html =
+      `<div class="tt-dist">District ${dist}</div>` +
+      `<div class="tt-compare-label">2020</div>` +
+      `<div class="tt-agg" style="color:${c20};${AS}">${HOUSE_AGG_LABEL[agg20] || agg20}</div>` +
+      (HM2020[dist] || []).map(memberRow).join("") +
+      `<div class="tt-sep"></div>` +
+      `<div class="tt-compare-label">2026</div>` +
+      `<div class="tt-agg" style="color:${c26};${AS}">${HOUSE_AGG_LABEL[agg26] || agg26}</div>` +
+      (HM[dist] || []).map(memberRow).join("");
+  } else {
+    const agg      = d.properties["House Aggregate 2026_Vote"] || "";
+    const aggColor = HOUSE_COLORS[agg] || "#7f918a";
+    const aggLabel = HOUSE_AGG_LABEL[agg] || agg;
+    const memberRow = m =>
+      `<div class="tt-row">
+        <span class="tt-name">${m.f} ${m.l}</span>
+        <span class="tt-party ${m.p}">${m.p}</span>
+        <span class="tt-vote ${m.v}">${m.v}</span>
+      </div>`;
+    html =
+      `<div class="tt-dist">District ${dist}</div>` +
+      `<div class="tt-agg" style="color:${aggColor}">${aggLabel}</div>` +
+      (HM[dist] || []).map(memberRow).join("");
+  }
+
+  tooltip.innerHTML = html;
+  tooltip.style.opacity = "1";
+
+  const tx = event.clientX - wrapR.left;
+  const ty = event.clientY - wrapR.top;
+  const tw = tooltip.offsetWidth  || 220;
+  const th = tooltip.offsetHeight || 80;
+  const { W, H } = dims();
+  tooltip.style.left = (tx + 14 + tw > W ? tx - tw - 10 : tx + 14) + "px";
+  tooltip.style.top  = (ty - 10 + th > H ? ty - th - 4  : ty - 10) + "px";
+}
+
+function hideTooltip() {
+  tooltip.style.opacity = "0";
+}
+
+function renderLegend() {
+  document.getElementById("legend").innerHTML = HOUSE_LEGEND.map(i =>
+    `<span class="legend-item">
+      <span class="legend-swatch" style="background:${i.color}"></span>${i.label}
+    </span>`
+  ).join("");
+}
+
+function draw() {
+  lookup2026 = new Map(houseGeo.features.map(f => [f.properties.District, f]));
+  lookup2020 = new Map(houseGeo2020.features.map(f => [f.properties.District, f]));
+
+  const proj   = buildProjection(houseGeo);
+  const pathFn = d3.geoPath().projection(proj);
+
+  if (compareMode) {
+    if (sliderX === null) sliderX = dims().W / 2;
+    sliderGroup.style("display", null);
+    d3.select("#compare-label-left").style("display", "block");
+    d3.select("#compare-label-right").style("display", "block");
+    updateSlider();
+  } else {
+    const { W, H } = dims();
+    clipRect.attr("x", 0).attr("y", 0).attr("width", W).attr("height", H);
+    sliderGroup.style("display", "none");
+    d3.select("#compare-label-left").style("display", "none");
+    d3.select("#compare-label-right").style("display", "none");
+  }
+
+  g2020.selectAll("path.district")
+    .data(compareMode ? houseGeo2020.features : [], d => d.properties.GEOID)
+    .join(
+      enter => enter.append("path")
+        .attr("class", "district")
+        .attr("d", pathFn)
+        .attr("fill", houseColor2020)
+        .on("mousemove", (evt, d) => showTooltip(evt, d))
+        .on("mouseleave", hideTooltip),
+      update => update.transition().duration(380).ease(d3.easeCubicOut).attr("fill", houseColor2020),
+      exit => exit.remove()
+    );
+
+  g2026.selectAll("path.district")
+    .data(houseGeo.features, d => d.properties.GEOID)
+    .join(
+      enter => enter.append("path")
+        .attr("class", "district")
+        .attr("d", pathFn)
+        .attr("fill", houseColor)
+        .on("mousemove", (evt, d) => showTooltip(evt, d))
+        .on("mouseleave", hideTooltip),
+      update => update.transition().duration(380).ease(d3.easeCubicOut).attr("fill", houseColor)
+    );
+
+  renderLegend();
+}
+
+document.getElementById("btn-compare").addEventListener("click", () => {
+  compareMode = !compareMode;
+  document.getElementById("btn-compare").classList.toggle("active", compareMode);
+  hideTooltip();
+  draw();
+});
+
+Promise.all([
+  d3.json("../vote-map-wa/house_aggregate.geojson"),
+  d3.json("../vote-map-wa/2020_house_aggregate.geojson"),
+]).then(([house, house20]) => {
+  houseGeo     = house;
+  houseGeo2020 = house20;
+  draw();
+}).catch(() => {
+  mapWrap.innerHTML =
+    `<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#7f918a;font-size:14px;font-family: var(--sans);">
+      Could not load district data.
+    </div>`;
+});
+</script>
+<script>
+  new ResizeObserver(() => {
+    const h = document.documentElement.scrollHeight;
+    if (h > 0) window.parent.postMessage({ type: 'iframe-resize', height: h }, '*');
+  }).observe(document.documentElement);
+</script>
+</body>
+</html>
