@@ -982,6 +982,76 @@ sup.fn:hover { opacity: .7; }
 }
 .source-pop-link:hover { text-decoration: underline; }
 
+/* ── ABOUT MODAL ─────────────────────────────── */
+.about-btn {
+  background: none;
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  cursor: pointer;
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  padding: 7px 16px;
+  transition: color .15s, border-color .15s, background .15s;
+}
+.about-btn:hover { color: var(--ink); border-color: var(--ink-2); background: var(--paper-3); }
+.about-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(12, 22, 18, 0.72);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 300;
+  backdrop-filter: blur(4px);
+  animation: fadein .2s ease;
+}
+.about-modal[hidden] { display: none; }
+.about-modal-box {
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  box-shadow: 0 24px 64px rgba(12, 22, 18, 0.22);
+  padding: 36px 40px;
+  max-width: 520px;
+  width: calc(100vw - 48px);
+  position: relative;
+}
+.about-modal-close {
+  position: absolute;
+  top: 16px; right: 18px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 22px;
+  line-height: 1;
+  color: var(--ink-3);
+  padding: 4px 8px;
+  transition: color .15s;
+}
+.about-modal-close:hover { color: var(--ink); }
+.about-modal-text {
+  font-family: var(--serif);
+  font-size: 16px;
+  line-height: 1.65;
+  color: var(--ink-2);
+  margin-bottom: 28px;
+}
+.about-modal-cite {
+  padding-top: 24px;
+  border-top: 1px solid var(--rule-soft);
+}
+.about-modal-cite-text {
+  font-family: var(--serif);
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--ink-2);
+  font-style: italic;
+  margin-top: 8px;
+}
+
 /* ── FOOTER ───────────────────────────────────── */
 footer {
   padding: 56px 32px 40px;

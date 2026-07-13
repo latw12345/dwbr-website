@@ -26,6 +26,7 @@
     <li><a data-page="seattle"><span class="nav-full">Ch. II · Seattle</span><span class="nav-short">II · Seattle</span></a></li>
     <li><a data-page="wa"><span class="nav-full">Ch. III · Washington</span><span class="nav-short">III · WA</span></a></li>
   </ul>
+  <button class="about-btn" id="aboutBtn">About</button>
 </nav>
 
 
@@ -116,7 +117,7 @@
         <div class="section-body">
           <h2 class="h2">A movement, told three ways.</h2>
           <p class="lede">
-            One geographic scale isn't enough. Read the national story, then the city campaign that proved it could happen at the munincipal level, then the state-level mechanics of how a bill became a law in Washington state.
+            One geographic scale isn't enough. Read the national story, then the city campaign that proved it could happen at the municipal level, then the state-level mechanics of how a bill became a law in Washington state.
           </p>
         </div>
       </div>
@@ -458,18 +459,6 @@
     </div>
   </section>
 
-  <section class="section">
-    <div class="narrow">
-      <div class="pullquote">
-        <span class="pullquote-mark">"</span>
-        <p class="pullquote-text">
-          They didn't write a bill and bring it to us. They sat in our living rooms until we wrote the bill ourselves.
-        </p>
-        <div class="pullquote-cite">Casa Latina member, on the 2018 Seattle ordinance</div>
-      </div>
-    </div>
-  </section>
-
   <div class="page-nav">
     <a class="prev" data-page="us">
       <div class="label">← Chapter I</div>
@@ -715,18 +704,6 @@
     </div>
   </section>
 
-  <section class="section">
-    <div class="narrow">
-      <div class="pullquote">
-        <span class="pullquote-mark">"</span>
-        <p class="pullquote-text">
-          Seventeen years ago, our work was invisible to the law. Today the Governor of Washington has signed our names into it.
-        </p>
-        <div class="pullquote-cite">Statement from the WA DWBR coalition, March 9, 2026</div>
-      </div>
-    </div>
-  </section>
-
   <div class="page-nav">
     <a class="prev" data-page="seattle">
       <div class="label">← Chapter II</div>
@@ -749,6 +726,18 @@
 <!-- ══════════════════════════════════════════════════
      SCRIPTS — routing
 ══════════════════════════════════════════════════ -->
+<div id="about-modal" class="about-modal" hidden>
+  <div class="about-modal-box">
+    <button class="about-modal-close" id="aboutClose" aria-label="Close">×</button>
+    <div class="label-mono" style="margin-bottom:18px;">About this project</div>
+    <p class="about-modal-text">This website was created by Li-An Song as part of the Gerald W. Halmo Geography Scholars Program in the Department of Geography at the University of Washington, Spring Quarter 2026. Special thanks to Professor Kim England for her guidance and mentorship throughout this project.</p>
+    <div class="about-modal-cite">
+      <div class="label-mono" style="margin-bottom:8px;">Suggested Citation</div>
+      <p class="about-modal-cite-text">Li-An Song with Kim England (2026) &#8220;Domestic Workers Bills of Rights in the US, Seattle and Washington State.&#8221; University of Washington Department of Geography.</p>
+    </div>
+  </div>
+</div>
+
 <div id="source-pop" class="source-pop" hidden>
   <div class="source-pop-label">Source</div>
   <div class="source-pop-org" id="source-pop-org"></div>

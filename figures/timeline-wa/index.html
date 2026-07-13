@@ -323,6 +323,80 @@
       text-align: right;
     }
 
+    /* ── IMAGE CARDS ── */
+    .event-card.has-image {
+      background-size: cover;
+      background-position: center;
+    }
+    .event-card.has-image .event-date  { color: rgba(255,255,255,0.78); }
+    .event-card.has-image .event-title { color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,0.35); }
+    .event-card.has-image .event-group { color: rgba(255,255,255,0.55); }
+
+    /* ── DETAIL MEDIA ── */
+    .detail-media {
+      float: right;
+      margin: 2px 0 12px 20px;
+      width: 240px;
+    }
+    .detail-main::after { content: ''; display: table; clear: both; }
+    .detail-img {
+      display: block;
+      width: 100%;
+      height: auto;
+      border-radius: 8px;
+      border: 1px solid var(--rule);
+      cursor: zoom-in;
+    }
+    .detail-caption {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.4;
+      font-style: italic;
+      margin-top: 6px;
+    }
+
+    /* ── LIGHTBOX ── */
+    .lightbox {
+      position: fixed;
+      inset: 0;
+      background: rgba(12,22,18,0.90);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      cursor: zoom-out;
+      backdrop-filter: blur(6px);
+      animation: lb-in 0.18s ease;
+    }
+    @keyframes lb-in { from { opacity: 0; } to { opacity: 1; } }
+    .lightbox[hidden] { display: none; }
+    .lightbox-img {
+      max-width: 90vw;
+      max-height: 88vh;
+      width: auto;
+      height: auto;
+      border-radius: 6px;
+      box-shadow: 0 32px 96px rgba(0,0,0,0.55);
+      cursor: default;
+    }
+    .lightbox-close {
+      position: absolute;
+      top: 18px; right: 22px;
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.18);
+      border-radius: 999px;
+      color: rgba(255,255,255,0.85);
+      font-size: 20px;
+      line-height: 1;
+      width: 36px; height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .lightbox-close:hover { background: rgba(255,255,255,0.22); }
+
     @media (max-width: 880px) {
       .detail-panel {
         grid-template-columns: 1fr;
@@ -331,6 +405,8 @@
       .detail-date {
         max-width: 220px;
       }
+
+      .detail-media { float: none; width: 100%; margin: 0 0 14px; }
     }
 
     @media (max-width: 640px) {
@@ -351,6 +427,11 @@
   </style>
 </head>
 <body>
+  <div id="lightbox" class="lightbox" hidden>
+    <button class="lightbox-close" aria-label="Close">×</button>
+    <img class="lightbox-img" id="lightboxImg" src="" alt="">
+  </div>
+
   <div class="page">
 
     <section class="timeline-shell">
@@ -365,6 +446,7 @@
             <span class="group-badge" id="detailGroup">In the House</span>
             <span class="event-time" id="detailTime"></span>
           </div>
+          <div class="detail-media" id="detailMedia"></div>
           <h2 class="detail-headline" id="detailHeadline">Prefiled for introduction.</h2>
           <div class="detail-text" id="detailText"></div>
         </div>
@@ -394,24 +476,24 @@
   <script>
     const events = [
       { date: "2026-01-09", displayDate: "Jan 9",  year: "2026", monthDay: "Jan 9",  group: "In the House", time: "", headline: "Prefiled for introduction.", text: "" },
-      { date: "2026-01-12", displayDate: "Jan 12", year: "2026", monthDay: "Jan 12", group: "In the House", time: "", headline: "First reading, referred to Labor & Workplace Standards. (View original bill)", text: "" },
-      { date: "2026-01-20", displayDate: "Jan 20", year: "2026", monthDay: "Jan 20", group: "In the House", time: "10:30 AM", headline: "Public hearing in the House Committee on Labor & Workplace Standards at 10:30 AM. (Committee materials)", text: "" },
-      { date: "2026-01-30", displayDate: "Jan 30", year: "2026", monthDay: "Jan 30", group: "In the House", time: "10:30 AM", headline: "Executive action taken in the House Committee on Labor & Workplace Standards at 10:30 AM. (Committee materials)", text: `<p>LAWS - Majority; 1st substitute bill be substituted, do pass. (View 1st substitute) (Majority report)</p><p>Minority; do not pass. (Minority report)</p>` },
+      { date: "2026-01-12", displayDate: "Jan 12", year: "2026", monthDay: "Jan 12", group: "In the House", time: "", headline: "First reading, referred to Labor & Workplace Standards.", text: "" },
+      { date: "2026-01-20", displayDate: "Jan 20", year: "2026", monthDay: "Jan 20", group: "In the House", time: "10:30 AM", headline: "Public hearing in the House Committee on Labor & Workplace Standards at 10:30 AM.", text: "", img: "img/20 Jan.jpg" },
+      { date: "2026-01-30", displayDate: "Jan 30", year: "2026", monthDay: "Jan 30", group: "In the House", time: "10:30 AM", headline: "Executive action taken in the House Committee on Labor & Workplace Standards at 10:30 AM.", text: `<p>LAWS - Majority; 1st substitute bill be substituted, do pass.</p><p>Minority; do not pass.</p>` },
       { date: "2026-02-03", displayDate: "Feb 3",  year: "2026", monthDay: "Feb 3",  group: "In the House", time: "", headline: "Referred to Appropriations.", text: "" },
-      { date: "2026-02-05", displayDate: "Feb 5",  year: "2026", monthDay: "Feb 5",  group: "In the House", time: "10:30 AM", headline: "Public hearing in the House Committee on Appropriations at 10:30 AM. (Committee materials)", text: "" },
-      { date: "2026-02-07", displayDate: "Feb 7",  year: "2026", monthDay: "Feb 7",  group: "In the House", time: "9:00 AM", headline: "Executive action taken in the House Committee on Appropriations at 9:00 AM. (Committee materials)", text: `<p>APP - Majority; do pass 1st substitute bill proposed by Labor & Workplace Standards. (Majority report)</p><p>Minority; do not pass. (Minority report)</p><p>Minority; without recommendation. (Minority report)</p>` },
+      { date: "2026-02-05", displayDate: "Feb 5",  year: "2026", monthDay: "Feb 5",  group: "In the House", time: "10:30 AM", headline: "Public hearing in the House Committee on Appropriations at 10:30 AM.", text: "", img: "img/5 Feb.jpg" },
+      { date: "2026-02-07", displayDate: "Feb 7",  year: "2026", monthDay: "Feb 7",  group: "In the House", time: "9:00 AM", headline: "Executive action taken in the House Committee on Appropriations at 9:00 AM.", text: `<p>APP - Majority; do pass 1st substitute bill proposed by Labor & Workplace Standards.</p><p>Minority; do not pass.</p><p>Minority; without recommendation.</p>` },
       { date: "2026-02-09", displayDate: "Feb 9",  year: "2026", monthDay: "Feb 9",  group: "In the House", time: "", headline: "Referred to Rules 2 Review.", text: "" },
       { date: "2026-02-11", displayDate: "Feb 11", year: "2026", monthDay: "Feb 11", group: "In the House", time: "", headline: "Rules Committee relieved of further consideration. Placed on second reading.", text: "" },
-      { date: "2026-02-12", displayDate: "Feb 12", year: "2026", monthDay: "Feb 12", group: "In the House", time: "", headline: "1st substitute bill substituted (LAWS 26). (View 1st substitute)", text: `<p>Rules suspended. Placed on Third Reading.</p><p>Third reading, passed; yeas, 57; nays, 39; absent, 0; excused, 2. (View this roll call)</p>` },
+      { date: "2026-02-12", displayDate: "Feb 12", year: "2026", monthDay: "Feb 12", group: "In the House", time: "", headline: "1st substitute bill substituted.", text: `<p>Rules suspended. Placed on Third Reading.</p><p>Third reading, passed; yeas, 57; nays, 39; absent, 0; excused, 2.</p>`, img: "img/12 Feb.jpg" },
       { date: "2026-02-16", displayDate: "Feb 16", year: "2026", monthDay: "Feb 16", group: "In the Senate", time: "", headline: "First reading, referred to Labor & Commerce.", text: "" },
-      { date: "2026-02-20", displayDate: "Feb 20", year: "2026", monthDay: "Feb 20", group: "In the Senate", time: "8:00 AM", headline: "Executive action taken in the Senate Committee on Labor & Commerce at 8:00 AM. (Committee materials)", text: `<p>LC - Majority; do pass. (Majority report)</p><p>Minority; do not pass. (Minority report)</p><p>Minority; without recommendation. (Minority report)</p>` },
+      { date: "2026-02-20", displayDate: "Feb 20", year: "2026", monthDay: "Feb 20", group: "In the Senate", time: "8:00 AM", headline: "Executive action taken in the Senate Committee on Labor & Commerce at 8:00 AM.", text: `<p>LC - Majority; do pass.</p><p>Minority; do not pass.</p><p>Minority; without recommendation.</p>` },
       { date: "2026-02-23", displayDate: "Feb 23", year: "2026", monthDay: "Feb 23", group: "In the Senate", time: "", headline: "Passed to Rules Committee for second reading.", text: "" },
       { date: "2026-02-24", displayDate: "Feb 24", year: "2026", monthDay: "Feb 24", group: "In the Senate", time: "", headline: "Placed on second reading by Rules Committee.", text: "" },
-      { date: "2026-02-26", displayDate: "Feb 26", year: "2026", monthDay: "Feb 26", group: "In the Senate", time: "", headline: "Rules suspended. Placed on Third Reading.", text: `<p>Third reading, passed; yeas, 28; nays, 20; absent, 0; excused, 1. (View this roll call)</p>` },
+      { date: "2026-02-26", displayDate: "Feb 26", year: "2026", monthDay: "Feb 26", group: "In the Senate", time: "", headline: "Rules suspended. Placed on Third Reading.", text: `<p>Third reading, passed; yeas, 28; nays, 20; absent, 0; excused, 1.</p>`, img: "img/26 Feb.jpg" },
       { date: "2026-02-28", displayDate: "Feb 28", year: "2026", monthDay: "Feb 28", group: "In the House", time: "", headline: "Speaker signed.", text: "" },
       { date: "2026-02-28", displayDate: "Feb 28", year: "2026", monthDay: "Feb 28", group: "In the Senate", time: "", headline: "President signed.", text: "" },
       { date: "2026-03-03", displayDate: "Mar 3",  year: "2026", monthDay: "Mar 3",  group: "Other", time: "", headline: "Delivered to Governor.", text: "" },
-      { date: "2026-03-09", displayDate: "Mar 9",  year: "2026", monthDay: "Mar 9",  group: "Other", time: "", headline: "Governor signed.", text: `<p>Chapter 15, 2026 Laws. (View session law)</p><p>Effective date 7/1/2027.</p>` }
+      { date: "2026-03-09", displayDate: "Mar 9",  year: "2026", monthDay: "Mar 9",  group: "Other", time: "", headline: "Governor signed.", text: `<p>Chapter 15, 2026 Laws.</p><p>Effective date 7/1/2027.</p>`, img: "img/9 March.jpg" }
     ];
 
     const zoomLevels = [
@@ -436,8 +518,23 @@
     const detailGroup = document.getElementById("detailGroup");
     const detailTime = document.getElementById("detailTime");
     const detailHeadline = document.getElementById("detailHeadline");
-    const detailText = document.getElementById("detailText");
+    const detailText  = document.getElementById("detailText");
+    const detailMedia = document.getElementById("detailMedia");
     const zoomReadout = document.getElementById("zoomReadout");
+    const lightbox    = document.getElementById("lightbox");
+    const lightboxImg = document.getElementById("lightboxImg");
+
+    function openLightbox(src, alt) {
+      lightboxImg.src = src;
+      lightboxImg.alt = alt;
+      lightbox.hidden = false;
+    }
+    function closeLightbox() {
+      lightbox.hidden = true;
+      lightboxImg.src = '';
+    }
+    lightbox.addEventListener('click', e => { if (e.target !== lightboxImg) closeLightbox(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape' && !lightbox.hidden) closeLightbox(); });
 
     function parseDate(str) {
       const [y, m, d] = str.split("-").map(Number);
@@ -632,6 +729,11 @@
         card.setAttribute("tabindex", "0");
         card.setAttribute("aria-pressed", String(event.index === activeIndex));
 
+        if (event.img) {
+          card.classList.add("has-image");
+          card.style.backgroundImage = `linear-gradient(rgba(20,38,32,.56), rgba(20,38,32,.74)), url('${event.img}')`;
+        }
+
         const date = document.createElement("div");
         date.className = "event-date";
         date.textContent = event.displayDate;
@@ -687,6 +789,16 @@
       detailTime.textContent = event.time ? event.time : "";
       detailHeadline.textContent = event.headline;
       detailText.innerHTML = event.text || "";
+
+      detailMedia.innerHTML = '';
+      if (event.img) {
+        const img = document.createElement('img');
+        img.src       = event.img;
+        img.alt       = event.headline;
+        img.className = 'detail-img';
+        img.addEventListener('click', () => openLightbox(event.img, img.alt));
+        detailMedia.appendChild(img);
+      }
 
       progressText.textContent = `${index + 1} of ${events.length}`;
       updateActiveVisuals();

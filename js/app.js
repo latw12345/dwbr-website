@@ -67,6 +67,13 @@ document.addEventListener('keydown', e => {
   }
 });
 
+// About modal
+const aboutModal = document.getElementById('about-modal');
+document.getElementById('aboutBtn').addEventListener('click', () => { aboutModal.hidden = false; });
+document.getElementById('aboutClose').addEventListener('click', () => { aboutModal.hidden = true; });
+aboutModal.addEventListener('click', e => { if (e.target === aboutModal) aboutModal.hidden = true; });
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && !aboutModal.hidden) aboutModal.hidden = true; });
+
 window.addEventListener('message', e => {
   if (e.data?.type !== 'iframe-resize') return;
   const frame = Array.from(document.querySelectorAll('iframe'))
